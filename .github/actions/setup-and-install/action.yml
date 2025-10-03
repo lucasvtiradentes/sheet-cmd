@@ -1,0 +1,16 @@
+name: Setup Node and install dependencies
+
+description: Setup Node.js, install npm packages, and use the cache if possible
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.11.0
+        cache: 'npm'
+
+    - name: Install dependencies
+      shell: sh
+      run: npm ci

@@ -1,0 +1,45 @@
+name: 'Callable CI'
+
+on:
+  workflow_call:
+    inputs:
+      run_build:
+        description: 'Run build'
+        type: boolean
+        required: true
+      run_typecheck:
+        description: 'Run typecheck'
+        type: boolean
+        required: true
+    secrets:
+      TURBO_TOKEN:
+        description: Turbo token for cache
+        required: false
+      TURBO_TEAM:
+        description: Turbo team for cache
+        required: false
+
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
+jobs:
+  typecheck:
+    if: inputs.run_typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-and-install
+
+      - name: Run typecheck
+        run: npx turbo typecheck
+
+  build:
+    if: inputs.run_build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-and-install
+
+      - name: Build package
+        run: npx turbo build

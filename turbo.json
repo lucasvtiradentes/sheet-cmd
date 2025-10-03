@@ -1,0 +1,40 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "remoteCache": {
+    "enabled": true
+  },
+  "tasks": {
+    "typecheck": {
+      "outputLogs": "new-only",
+      "inputs": [
+        "src/**",
+        "tsconfig.json",
+        "package.json"
+      ]
+    },
+    "build": {
+      "outputLogs": "new-only",
+      "outputs": [
+        "dist/**"
+      ],
+      "inputs": [
+        "src/**",
+        "tsconfig.json",
+        "package.json"
+      ]
+    },
+    "test:unit": {
+      "outputLogs": "full",
+      "inputs": [
+        "tests/unit/**",
+        "src/**",
+        "tests/unit/vitest.config.ts",
+        "package.json"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    }
+  }
+}
