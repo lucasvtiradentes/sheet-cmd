@@ -12,8 +12,14 @@
 
 - **Multi-spreadsheet support** - Manage multiple Google Sheets with separate credentials
 - **Active spreadsheet system** - Set once, use everywhere (no need for -s flag)
+- **Complete tab management** - Create, rename, copy, and remove tabs
+- **Data operations** - Read, write, append rows with multiple output formats
+- **Formula preservation** - Backup/restore with formulas intact (CSV-raw format)
+- **Import/Export** - CSV import and export to JSON/CSV formats
+- **Backup & Restore** - Full or partial backups with formula preservation
 - **Secure credential management** - All credentials stored locally on your machine
 - **LLM-friendly** - Designed for AI tool integrations like Claude Code
+- **Shell completion** - Auto-completion for zsh and bash
 - **Self-updating** - Built-in update mechanism that detects your package manager
 
 ## :question: Motivation
@@ -58,9 +64,59 @@ sheet-cmd spreadsheet remove [name]       # Remove spreadsheet
 
 ### Sheet Operations
 
+All sheet commands use the active spreadsheet if `-s` flag is not specified.
+
+#### Tab Management
+
 ```bash
-sheet-cmd sheet list-tabs                 # List tabs (uses active spreadsheet)
-sheet-cmd sheet list-tabs -s <name>       # List tabs from specific spreadsheet
+sheet-cmd sheet list-tabs                 # List all tabs
+sheet-cmd sheet add-tab -t <name>         # Add a new tab
+sheet-cmd sheet remove-tab -t <name>      # Remove a tab
+sheet-cmd sheet rename-tab -t <old> -n <new>  # Rename a tab
+sheet-cmd sheet copy-tab -t <name> --to <new>  # Copy a tab
+```
+
+#### Data Operations
+
+```bash
+# Read sheet content
+sheet-cmd sheet read-sheet -t <name>                    # Read in markdown format
+sheet-cmd sheet read-sheet -t <name> -f csv             # Read in CSV format
+sheet-cmd sheet read-sheet -t <name> -f csv-raw         # Read with formulas (CSV)
+sheet-cmd sheet read-sheet -t <name> -o output.md       # Save to file
+
+# Write to cells
+sheet-cmd sheet write-cell -t <name> -c A1 -v "Hello"   # Write to single cell
+sheet-cmd sheet write-cell -t <name> -r A1:B2 -v "val1, val2; val3, val4"  # Write to range
+
+# Append rows
+sheet-cmd sheet append-row -t <name> -v "col1, col2, col3"  # Append new row
+```
+
+#### Import/Export
+
+```bash
+# Import CSV
+sheet-cmd sheet import-csv -t <name> -f data.csv        # Import CSV
+sheet-cmd sheet import-csv -t <name> -f data.csv --skip-header  # Skip first row
+
+# Export data
+sheet-cmd sheet export -t <name> -f json -o output.json # Export to JSON
+sheet-cmd sheet export -t <name> -f csv -o output.csv   # Export to CSV
+sheet-cmd sheet export -t <name> -r B2:I25 -f csv       # Export range to CSV
+```
+
+#### Backup & Restore
+
+```bash
+# Backup (saves in CSV format with formulas preserved)
+sheet-cmd sheet backup -o ./backup/                     # Backup all tabs
+sheet-cmd sheet backup -o ./backup/ -t monthly          # Backup specific tab
+
+# Restore (preserves formulas)
+sheet-cmd sheet restore -i ./backup/2025-10-03T04-40-32/  # Restore all tabs
+sheet-cmd sheet restore -i ./backup/2025-10-03T04-40-32/ -t monthly  # Restore specific tab
+sheet-cmd sheet restore -i ./backup/2025-10-03T04-40-32/ --create-tabs  # Create tabs if needed
 ```
 
 ## :gear: Shell Completion
@@ -85,7 +141,7 @@ source ~/.bashrc
 Now you can use tab completion:
 - `sheet-cmd <TAB>` → shows: spreadsheet, sheet, update, completion
 - `sheet-cmd spreadsheet <TAB>` → shows: add, list, switch, active, remove
-- `sheet-cmd sheet <TAB>` → shows: list-tabs
+- `sheet-cmd sheet <TAB>` → shows: list-tabs, read-sheet, add-tab, remove-tab, rename-tab, copy-tab, write-cell, append-row, import-csv, export, backup, restore
 
 ## :package: Setting Up Google Service Account
 

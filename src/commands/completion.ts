@@ -69,8 +69,8 @@ _sheet_cmd_sheet() {
         'append-row:Append a new row to the end of the sheet'
         'import-csv:Import CSV file to a sheet tab'
         'export:Export sheet data to JSON or CSV format'
-        'backup:Backup all tabs from the spreadsheet'
-        'restore:Restore tabs from a backup directory'
+        'backup:Backup tabs from the spreadsheet in CSV format with formulas preserved'
+        'restore:Restore tabs from a backup directory (preserves formulas)'
     )
     _describe 'sheet command' sheet_commands
 }
