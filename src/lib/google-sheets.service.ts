@@ -130,4 +130,102 @@ export class GoogleSheetsService {
 
     await sheet.delete();
   }
+
+  async renameSheet(oldName: string, newName: string): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[oldName];
+    if (!sheet) {
+      throw new Error(`Sheet '${oldName}' not found`);
+    }
+
+    await sheet.updateProperties({ title: newName });
+  }
+
+  async copySheet(sheetName: string, newSheetName: string): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    await sheet.duplicate({ title: newSheetName });
+  }
+
+  async writeCell(sheetName: string, cell: string, value: string): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    await sheet.loadCells(cell);
+    const targetCell = sheet.getCellByA1(cell);
+    targetCell.value = value;
+    await sheet.saveUpdatedCells();
+  }
+
+  async writeCellRange(sheetName: string, range: string, values: string[][]): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    await sheet.loadCells(range);
+
+    // Parse range (e.g., "A1:B2")
+    const [start, end] = range.split(':');
+    const startCell = sheet.getCellByA1(start);
+    const endCell = sheet.getCellByA1(end);
+
+    let valueRowIndex = 0;
+    for (let row = startCell.rowIndex; row <= endCell.rowIndex; row++) {
+      let valueColIndex = 0;
+      for (let col = startCell.columnIndex; col <= endCell.columnIndex; col++) {
+        const cell = sheet.getCell(row, col);
+        if (values[valueRowIndex] && values[valueRowIndex][valueColIndex] !== undefined) {
+          cell.value = values[valueRowIndex][valueColIndex];
+        }
+        valueColIndex++;
+      }
+      valueRowIndex++;
+    }
+
+    await sheet.saveUpdatedCells();
+  }
+
+  async appendRow(sheetName: string, values: string[]): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    await sheet.addRow(values);
+  }
 }
