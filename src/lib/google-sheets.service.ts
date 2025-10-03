@@ -228,4 +228,39 @@ export class GoogleSheetsService {
 
     await sheet.addRow(values);
   }
+
+  async getSheetDataRange(sheetName: string, range: string, includeFormulas = false): Promise<string[][]> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    await sheet.loadCells(range);
+
+    // Parse range (e.g., "A1:B2")
+    const [start, end] = range.split(':');
+    const startCell = sheet.getCellByA1(start);
+    const endCell = sheet.getCellByA1(end);
+
+    const data: string[][] = [];
+    for (let row = startCell.rowIndex; row <= endCell.rowIndex; row++) {
+      const rowData: string[] = [];
+      for (let col = startCell.columnIndex; col <= endCell.columnIndex; col++) {
+        const cell = sheet.getCell(row, col);
+        const value = includeFormulas && cell.formula
+          ? cell.formula
+          : (cell.formattedValue ?? '');
+        rowData.push(value);
+      }
+      data.push(rowData);
+    }
+
+    return data;
+  }
 }
