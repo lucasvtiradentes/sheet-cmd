@@ -1,0 +1,23 @@
+{
+  "name": "llm-sheets",
+  "version": "1.0.0",
+  "description": "Tool for LLM to interact with Google Sheets",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "keywords": ["google-sheets", "llm", "tool"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "google-auth-library": "^9.14.2",
+    "google-spreadsheet": "^4.1.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
