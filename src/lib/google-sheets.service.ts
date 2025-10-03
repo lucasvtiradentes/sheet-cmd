@@ -44,4 +44,90 @@ export class GoogleSheetsService {
       })),
     };
   }
+
+  async getSheetData(sheetName: string, includeFormulas = false): Promise<string[][]> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    await sheet.loadCells();
+
+    // Find the actual data range by finding the last row and column with content
+    let lastRow = 0;
+    let lastCol = 0;
+
+    for (let row = 0; row < sheet.rowCount; row++) {
+      for (let col = 0; col < sheet.columnCount; col++) {
+        const cell = sheet.getCell(row, col);
+        const value = includeFormulas && cell.formula
+          ? cell.formula
+          : (cell.formattedValue ?? '');
+
+        if (value !== '') {
+          lastRow = Math.max(lastRow, row);
+          lastCol = Math.max(lastCol, col);
+        }
+      }
+    }
+
+    // If no data found, return empty array
+    if (lastRow === 0 && lastCol === 0) {
+      const firstCell = sheet.getCell(0, 0);
+      const firstValue = includeFormulas && firstCell.formula
+        ? firstCell.formula
+        : (firstCell.formattedValue ?? '');
+
+      if (firstValue === '') {
+        return [];
+      }
+    }
+
+    // Build data array from 0 to lastRow and 0 to lastCol
+    const data: string[][] = [];
+    for (let row = 0; row <= lastRow; row++) {
+      const rowData: string[] = [];
+      for (let col = 0; col <= lastCol; col++) {
+        const cell = sheet.getCell(row, col);
+        const value = includeFormulas && cell.formula
+          ? cell.formula
+          : (cell.formattedValue ?? '');
+        rowData.push(value);
+      }
+      data.push(rowData);
+    }
+
+    return data;
+  }
+
+  async addSheet(sheetName: string): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    await this.doc.addSheet({ title: sheetName });
+  }
+
+  async removeSheet(sheetName: string): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    await sheet.delete();
+  }
 }
