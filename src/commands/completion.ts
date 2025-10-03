@@ -60,6 +60,17 @@ _sheet_cmd_sheet() {
     local sheet_commands
     sheet_commands=(
         'list-tabs:List all tabs/sheets in a spreadsheet'
+        'read-sheet:Read the complete content of a sheet tab'
+        'add-tab:Add a new tab/sheet to the spreadsheet'
+        'remove-tab:Remove a tab/sheet from the spreadsheet'
+        'rename-tab:Rename a tab/sheet in the spreadsheet'
+        'copy-tab:Copy a tab/sheet to a new tab'
+        'write-cell:Write to a specific cell or range of cells'
+        'append-row:Append a new row to the end of the sheet'
+        'import-csv:Import CSV file to a sheet tab'
+        'export:Export sheet data to JSON or CSV format'
+        'backup:Backup tabs from the spreadsheet in CSV format with formulas preserved'
+        'restore:Restore tabs from a backup directory (preserves formulas)'
     )
     _describe 'sheet command' sheet_commands
 }
@@ -80,7 +91,7 @@ _sheet_cmd_completion() {
     local spreadsheet_commands="add list remove switch active"
 
     # Sheet subcommands
-    local sheet_commands="list-tabs"
+    local sheet_commands="list-tabs read-sheet add-tab remove-tab rename-tab copy-tab write-cell append-row import-csv export backup restore"
 
     if [[ \$cword -eq 1 ]]; then
         COMPREPLY=(\$(compgen -W "\$commands" -- "\$cur"))

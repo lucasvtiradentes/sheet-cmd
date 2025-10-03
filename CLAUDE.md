@@ -24,10 +24,39 @@ This is a CLI tool for Google Sheets that provides a secure, multi-spreadsheet m
 
 ### Command Structure
 Commands follow a hierarchical pattern using Commander.js:
-- `sheet-cmd spreadsheet [add|list|remove|switch|active]` - Spreadsheet configuration management
-  - `switch` - Sets the active spreadsheet (no need for -s flag in subsequent commands)
-  - `active` - Shows which spreadsheet is currently active
-- `sheet-cmd sheet [list-tabs]` - Sheet operations (uses active spreadsheet if not specified)
+
+#### Spreadsheet Management (`sheet-cmd spreadsheet`)
+- `add` - Add a new spreadsheet (interactive)
+- `list` - List all configured spreadsheets (* = active)
+- `remove` - Remove a spreadsheet configuration
+- `switch` - Sets the active spreadsheet (no need for -s flag in subsequent commands)
+- `active` - Shows which spreadsheet is currently active
+
+#### Sheet Operations (`sheet-cmd sheet`)
+All sheet commands use the active spreadsheet if `-s` flag is not specified.
+
+**Tab Management:**
+- `list-tabs` - List all tabs/sheets in a spreadsheet
+- `add-tab -t <name>` - Add a new tab/sheet
+- `remove-tab -t <name>` - Remove a tab/sheet
+- `rename-tab -t <old> -n <new>` - Rename a tab/sheet
+- `copy-tab -t <name> --to <new>` - Copy a tab to a new tab
+
+**Data Operations:**
+- `read-sheet -t <name> [-f format] [-o file]` - Read sheet content (formats: markdown, csv, csv-raw)
+- `write-cell -t <name> -c <cell> -v <value>` - Write to a single cell
+- `write-cell -t <name> -r <range> -v <values>` - Write to a range (use `,` for columns, `;` for rows)
+- `append-row -t <name> -v <values>` - Append a row to the end
+
+**Import/Export:**
+- `import-csv -t <name> -f <file> [--skip-header]` - Import CSV file to a tab
+- `export -t <name> [-r range] -f <format> [-o file]` - Export to JSON or CSV
+
+**Backup/Restore:**
+- `backup -o <dir> [-t tab]` - Backup all tabs (or specific tab) in CSV format with formulas
+- `restore -i <dir> [-t tab] [--create-tabs]` - Restore from backup (preserves formulas)
+
+#### Utility Commands
 - `sheet-cmd update` - Self-update functionality
 - `sheet-cmd completion install` - Shell completion management
 
@@ -93,10 +122,23 @@ When adding a new command:
 ## Google Sheets Service
 
 The `GoogleSheetsService` provides:
+
+**Sheet Information:**
 - `getSheetInfo()` - Get spreadsheet metadata and list of tabs
-- `getSheetData()` - Read data from a specific sheet
-- `updateCell()` - Update a single cell
-- `updateMultipleCells()` - Batch update multiple cells
-- `addRow()` - Append a new row to a sheet
+
+**Reading Data:**
+- `getSheetData(sheetName, includeFormulas?)` - Read all data from a sheet (with optional formulas)
+- `getSheetDataRange(sheetName, range, includeFormulas?)` - Read data from a specific range
+
+**Writing Data:**
+- `writeCell(sheetName, cell, value)` - Write to a single cell
+- `writeCellRange(sheetName, range, values[][])` - Write to a range of cells (preserves formulas)
+- `appendRow(sheetName, values[])` - Append a new row to the end of a sheet
+
+**Tab Management:**
+- `addSheet(sheetName)` - Create a new tab/sheet
+- `removeSheet(sheetName)` - Delete a tab/sheet
+- `renameSheet(oldName, newName)` - Rename a tab/sheet
+- `copySheet(sheetName, newSheetName)` - Duplicate a tab/sheet
 
 When extending the service, maintain the existing patterns and error handling.
