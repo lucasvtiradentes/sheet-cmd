@@ -24,8 +24,10 @@ This is a CLI tool for Google Sheets that provides a secure, multi-spreadsheet m
 
 ### Command Structure
 Commands follow a hierarchical pattern using Commander.js:
-- `sheet-cmd spreadsheet [add|list|remove]` - Spreadsheet configuration management
-- `sheet-cmd sheet [list-tabs]` - Sheet operations
+- `sheet-cmd spreadsheet [add|list|remove|switch|active]` - Spreadsheet configuration management
+  - `switch` - Sets the active spreadsheet (no need for -s flag in subsequent commands)
+  - `active` - Shows which spreadsheet is currently active
+- `sheet-cmd sheet [list-tabs]` - Sheet operations (uses active spreadsheet if not specified)
 - `sheet-cmd update` - Self-update functionality
 - `sheet-cmd completion install` - Shell completion management
 
@@ -41,8 +43,12 @@ When adding, removing, or modifying commands/subcommands, you MUST update the sh
 The `ConfigManager` class handles all configuration:
 - Configs stored in OS-specific directories (Linux: `~/.config/sheet-cmd/`)
 - Uses JSON format for configs
-- Two-tier system: `user_metadata.json` points to active `config.json`
+- Two-tier system:
+  - `user_metadata.json` - Stores active config path and active spreadsheet name
+  - `config.json` - Stores all spreadsheet credentials and settings
 - Supports multiple Google Sheets with separate credentials per spreadsheet
+- Active spreadsheet system: Set once with `switch`, use everywhere without -s flag
+- Auto-cleanup: Removing a spreadsheet clears it as active if it was set
 
 ### Google Sheets Integration
 The `GoogleSheetsService` wraps the `google-spreadsheet` library:

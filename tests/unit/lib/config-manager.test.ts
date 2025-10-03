@@ -145,4 +145,56 @@ describe('ConfigManager', () => {
       expect(result[1].name).toBe('sheet2');
     });
   });
+
+  describe('active spreadsheet management', () => {
+    it('should set and get active spreadsheet', async () => {
+      await configManager.addSpreadsheet('test-sheet', 'test-id', 'test@example.com', 'test-key');
+
+      configManager.setActiveSpreadsheet('test-sheet');
+
+      const activeSpreadsheet = configManager.getActiveSpreadsheet();
+      expect(activeSpreadsheet).toBeDefined();
+      expect(activeSpreadsheet?.name).toBe('test-sheet');
+    });
+
+    it('should return null when no active spreadsheet set', () => {
+      const activeSpreadsheet = configManager.getActiveSpreadsheet();
+
+      expect(activeSpreadsheet).toBeNull();
+    });
+
+    it('should throw error when setting non-existent spreadsheet as active', () => {
+      expect(() => configManager.setActiveSpreadsheet('non-existent')).toThrow(
+        "Spreadsheet 'non-existent' not found"
+      );
+    });
+
+    it('should clear active spreadsheet when it is removed', async () => {
+      await configManager.addSpreadsheet('test-sheet', 'test-id', 'test@example.com', 'test-key');
+      configManager.setActiveSpreadsheet('test-sheet');
+
+      await configManager.removeSpreadsheet('test-sheet');
+
+      const activeSpreadsheet = configManager.getActiveSpreadsheet();
+      expect(activeSpreadsheet).toBeNull();
+    });
+
+    it('should get active spreadsheet name', async () => {
+      await configManager.addSpreadsheet('test-sheet', 'test-id', 'test@example.com', 'test-key');
+      configManager.setActiveSpreadsheet('test-sheet');
+
+      const activeSpreadsheetName = configManager.getActiveSpreadsheetName();
+      expect(activeSpreadsheetName).toBe('test-sheet');
+    });
+
+    it('should clear active spreadsheet', async () => {
+      await configManager.addSpreadsheet('test-sheet', 'test-id', 'test@example.com', 'test-key');
+      configManager.setActiveSpreadsheet('test-sheet');
+
+      configManager.clearActiveSpreadsheet();
+
+      const activeSpreadsheet = configManager.getActiveSpreadsheet();
+      expect(activeSpreadsheet).toBeNull();
+    });
+  });
 });

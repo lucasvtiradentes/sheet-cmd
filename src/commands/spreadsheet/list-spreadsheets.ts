@@ -9,6 +9,7 @@ export function createListSpreadsheetsCommand(): Command {
     .action(async () => {
       const configManager = new ConfigManager();
       const spreadsheets = configManager.getAllSpreadsheets();
+      const activeSpreadsheetName = configManager.getActiveSpreadsheetName();
 
       if (spreadsheets.length === 0) {
         Logger.warning('No spreadsheets configured. Use "sheet-cmd spreadsheet add" to add one.');
@@ -17,8 +18,15 @@ export function createListSpreadsheetsCommand(): Command {
 
       Logger.bold('\nConfigured spreadsheets:');
       spreadsheets.forEach((spreadsheet) => {
-        Logger.plain(`  • ${spreadsheet.name}`);
+        const isActive = spreadsheet.name === activeSpreadsheetName;
+        const marker = isActive ? '* ' : '  ';
+        Logger.plain(`${marker}${spreadsheet.name}${isActive ? ' (active)' : ''}`);
         Logger.dim(`    ID: ${spreadsheet.spreadsheet_id}`);
       });
+
+      if (activeSpreadsheetName) {
+        Logger.plain('');
+        Logger.dim('* = active spreadsheet');
+      }
     });
 }

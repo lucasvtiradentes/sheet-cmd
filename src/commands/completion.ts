@@ -50,6 +50,8 @@ _sheet_cmd_spreadsheet() {
         'add:Add a new spreadsheet configuration'
         'list:List all configured spreadsheets'
         'remove:Remove a spreadsheet configuration'
+        'switch:Switch to a different spreadsheet (sets as active)'
+        'active:Show the currently active spreadsheet'
     )
     _describe 'spreadsheet command' spreadsheet_commands
 }
@@ -75,7 +77,7 @@ _sheet_cmd_completion() {
     local commands="spreadsheet sheet update completion"
 
     # Spreadsheet subcommands
-    local spreadsheet_commands="add list remove"
+    local spreadsheet_commands="add list remove switch active"
 
     # Sheet subcommands
     local sheet_commands="list-tabs"

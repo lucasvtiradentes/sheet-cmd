@@ -128,6 +128,11 @@ export class ConfigManager {
 
     delete config.spreadsheets[name];
     this.saveConfig();
+
+    // Clear active spreadsheet if it's the one being removed
+    if (this.userMetadata?.active_spreadsheet === name) {
+      this.clearActiveSpreadsheet();
+    }
   }
 
   getAllSpreadsheets(): SpreadsheetCredentials[] {
@@ -164,5 +169,43 @@ export class ConfigManager {
       ...updates
     };
     this.saveConfig();
+  }
+
+  // Active spreadsheet management
+
+  setActiveSpreadsheet(name: string): void {
+    const config = this.loadConfig();
+
+    if (!config.spreadsheets[name]) {
+      throw new Error(`Spreadsheet '${name}' not found`);
+    }
+
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    this.userMetadata.active_spreadsheet = name;
+    writeJson(CONFIG_PATHS.userMetadataFile, this.userMetadata);
+  }
+
+  getActiveSpreadsheet(): SpreadsheetCredentials | null {
+    if (!this.userMetadata?.active_spreadsheet) {
+      return null;
+    }
+
+    return this.getSpreadsheet(this.userMetadata.active_spreadsheet);
+  }
+
+  getActiveSpreadsheetName(): string | null {
+    return this.userMetadata?.active_spreadsheet || null;
+  }
+
+  clearActiveSpreadsheet(): void {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    this.userMetadata.active_spreadsheet = undefined;
+    writeJson(CONFIG_PATHS.userMetadataFile, this.userMetadata);
   }
 }
