@@ -1,6 +1,7 @@
 import { Command } from 'commander';
 
 import { ConfigManager } from '../../lib/config-manager.js';
+import { columnLetterToNumber } from '../../lib/excel-utils.js';
 import { GoogleSheetsService } from '../../lib/google-sheets.service.js';
 import { Logger } from '../../lib/logger.js';
 
@@ -68,6 +69,41 @@ export function createWriteCellCommand(): Command {
           const values = rows.map(row =>
             row.split(',').map(cell => cell.trim())
           );
+
+          // Validate range dimensions match the provided values
+          const rangeParts = options.range.split(':');
+          if (rangeParts.length === 2) {
+            const [startCell, endCell] = rangeParts;
+
+            // Extract row and column from cells (e.g., "A1" -> row=1, col=A)
+            const startMatch = startCell.match(/^([A-Z]+)(\d+)$/);
+            const endMatch = endCell.match(/^([A-Z]+)(\d+)$/);
+
+            if (startMatch && endMatch) {
+              const startRow = parseInt(startMatch[2]);
+              const endRow = parseInt(endMatch[2]);
+              const startCol = startMatch[1];
+              const endCol = endMatch[1];
+
+              // Calculate expected dimensions
+              const expectedRows = endRow - startRow + 1;
+              const expectedCols = columnLetterToNumber(endCol) - columnLetterToNumber(startCol) + 1;
+
+              // Get actual dimensions
+              const actualRows = values.length;
+              const actualCols = Math.max(...values.map(row => row.length));
+
+              // Validate dimensions
+              if (actualRows !== expectedRows || actualCols !== expectedCols) {
+                Logger.error(
+                  `Dimension mismatch: Range ${options.range} expects ${expectedRows}x${expectedCols} ` +
+                  `but got ${actualRows}x${actualCols} values`
+                );
+                Logger.info(`Tip: Provide ${expectedRows} rows with ${expectedCols} columns each`);
+                process.exit(1);
+              }
+            }
+          }
 
           Logger.loading(`Writing to range ${options.range}...`);
           await sheetsService.writeCellRange(options.tab, options.range, values);

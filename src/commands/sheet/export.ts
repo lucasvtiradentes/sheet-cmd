@@ -2,43 +2,11 @@ import { writeFileSync } from 'fs';
 import { Command } from 'commander';
 
 import { ConfigManager } from '../../lib/config-manager.js';
+import { formatAsCSV, formatAsJSON } from '../../lib/data-formatters.js';
 import { GoogleSheetsService } from '../../lib/google-sheets.service.js';
 import { Logger } from '../../lib/logger.js';
 
 type ExportFormat = 'json' | 'csv';
-
-function formatAsJSON(data: string[][]): string {
-  if (data.length === 0) return '[]';
-
-  // First row as headers
-  const [headers, ...rows] = data;
-
-  const jsonData = rows.map(row => {
-    const obj: Record<string, string> = {};
-    headers.forEach((header, index) => {
-      obj[header] = row[index] || '';
-    });
-    return obj;
-  });
-
-  return JSON.stringify(jsonData, null, 2);
-}
-
-function formatAsCSV(data: string[][]): string {
-  return data
-    .map(row =>
-      row
-        .map(cell => {
-          const value = cell || '';
-          if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-            return `"${value.replace(/"/g, '""')}"`;
-          }
-          return value;
-        })
-        .join(',')
-    )
-    .join('\n');
-}
 
 export function createExportCommand(): Command {
   return new Command('export')

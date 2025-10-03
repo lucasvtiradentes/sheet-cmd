@@ -3,42 +3,10 @@ import { join } from 'path';
 import { Command } from 'commander';
 
 import { ConfigManager } from '../../lib/config-manager.js';
+import { parseCSV } from '../../lib/csv-parser.js';
+import { createRange } from '../../lib/excel-utils.js';
 import { GoogleSheetsService } from '../../lib/google-sheets.service.js';
 import { Logger } from '../../lib/logger.js';
-
-function parseCSV(content: string): string[][] {
-  const lines = content.split('\n').filter(line => line.trim() !== '');
-  const result: string[][] = [];
-
-  for (const line of lines) {
-    const row: string[] = [];
-    let current = '';
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++) {
-      const char = line[i];
-
-      if (char === '"') {
-        if (inQuotes && line[i + 1] === '"') {
-          current += '"';
-          i++;
-        } else {
-          inQuotes = !inQuotes;
-        }
-      } else if (char === ',' && !inQuotes) {
-        row.push(current.trim());
-        current = '';
-      } else {
-        current += char;
-      }
-    }
-
-    row.push(current.trim());
-    result.push(row);
-  }
-
-  return result;
-}
 
 export function createRestoreCommand(): Command {
   return new Command('restore')
@@ -174,8 +142,7 @@ export function createRestoreCommand(): Command {
           // Calculate the range for all data
           const numRows = data.length;
           const numCols = Math.max(...data.map(row => row.length));
-          const endCol = String.fromCharCode(65 + numCols - 1);
-          const range = `A1:${endCol}${numRows}`;
+          const range = createRange(1, 0, numRows, numCols - 1);
 
           Logger.loading(`Writing ${numRows} rows to ${actualTabName}...`);
 

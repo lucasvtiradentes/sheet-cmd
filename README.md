@@ -214,7 +214,3 @@ npm run test                              # Run tests
 ## :scroll: License
 
 MIT License - see [LICENSE](LICENSE) file for details.
-
-## :pray: Credits
-
-Architecture inspired by [linear-cmd](https://github.com/lucasvtiradentes/linear-cmd).
