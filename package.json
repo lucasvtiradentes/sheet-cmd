@@ -29,8 +29,16 @@
     "tool",
     "cli"
   ],
-  "author": "",
+  "author": "Lucas Vieira",
   "license": "MIT",
+  "homepage": "https://github.com/lucasvtiradentes/sheet-cmd#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lucasvtiradentes/sheet-cmd.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lucasvtiradentes/sheet-cmd/issues"
+  },
   "dependencies": {
     "chalk": "^5.4.1",
     "commander": "^14.0.0",
