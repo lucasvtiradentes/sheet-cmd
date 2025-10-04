@@ -6,20 +6,22 @@ import { formatAsCSV, formatAsMarkdown } from '../../lib/data-formatters.js';
 import { GoogleSheetsService } from '../../lib/google-sheets.service.js';
 import { Logger } from '../../lib/logger.js';
 
-type OutputFormat = 'markdown' | 'csv' | 'csv-raw';
+type OutputFormat = 'markdown' | 'csv';
 
 export function createReadSheetCommand(): Command {
   return new Command('read-sheet')
     .description('Read the complete content of a sheet tab')
     .requiredOption('-t, --tab <name>', 'Tab/sheet name to read')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .option('-f, --format <type>', 'Output format: markdown, csv, csv-raw (default: markdown)', 'markdown')
-    .option('-o, --output <file>', 'Save output to file instead of displaying')
+    .option('-o, --output <type>', 'Output format: markdown, csv (default: markdown)', 'markdown')
+    .option('-f, --formulas', 'Include formulas instead of calculated values')
+    .option('-e, --export <file>', 'Export output to file instead of displaying')
     .action(async (options: {
       tab: string;
       spreadsheet?: string;
-      format: OutputFormat;
-      output?: string;
+      output: OutputFormat;
+      formulas?: boolean;
+      export?: string;
     }) => {
       try {
         const configManager = new ConfigManager();
@@ -43,9 +45,9 @@ export function createReadSheetCommand(): Command {
           process.exit(1);
         }
 
-        const validFormats: OutputFormat[] = ['markdown', 'csv', 'csv-raw'];
-        if (!validFormats.includes(options.format)) {
-          Logger.error(`Invalid format '${options.format}'. Valid formats: ${validFormats.join(', ')}`);
+        const validFormats: OutputFormat[] = ['markdown', 'csv'];
+        if (!validFormats.includes(options.output)) {
+          Logger.error(`Invalid output format '${options.output}'. Valid formats: ${validFormats.join(', ')}`);
           process.exit(1);
         }
 
@@ -56,7 +58,7 @@ export function createReadSheetCommand(): Command {
         });
 
         Logger.loading(`Reading sheet '${options.tab}'...`);
-        const includeFormulas = options.format === 'csv-raw';
+        const includeFormulas = options.formulas ?? false;
         const data = await sheetsService.getSheetData(options.tab, includeFormulas);
 
         if (data.length === 0) {
@@ -65,15 +67,15 @@ export function createReadSheetCommand(): Command {
         }
 
         let output: string;
-        if (options.format === 'markdown') {
+        if (options.output === 'markdown') {
           output = formatAsMarkdown(data);
         } else {
           output = formatAsCSV(data);
         }
 
-        if (options.output) {
-          writeFileSync(options.output, output, 'utf-8');
-          Logger.success(`Content saved to ${options.output}`);
+        if (options.export) {
+          writeFileSync(options.export, output, 'utf-8');
+          Logger.success(`Content exported to ${options.export}`);
         } else {
           Logger.success(`Content of sheet '${options.tab}':\n`);
           Logger.plain(output);
