@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { loadGlobalFixtures } from '../global-fixtures';
 import { execCommand } from '../test-utils';
 
-describe('Sheet Operations E2E', () => {
+describe('Read Sheet E2E', () => {
   let testHomeDir: string;
 
   beforeEach(async () => {
@@ -14,17 +14,6 @@ describe('Sheet Operations E2E', () => {
 
     testHomeDir = fixtures.testHomeDir;
   });
-
-  it('should list tabs from the test spreadsheet', async () => {
-    const listTabsResult = await execCommand('npm run dev -- spreadsheet list-tabs', undefined, 15000, testHomeDir);
-
-    expect(listTabsResult.exitCode).toBe(0);
-    expect(listTabsResult.stdout).toContain('Tabs');
-    expect(listTabsResult.stdout).toContain('sheet-cmd-test');
-
-    // Should list at least one tab
-    expect(listTabsResult.stdout.length).toBeGreaterThan(0);
-  }, 30000);
 
   it('should read a sheet tab content', async () => {
     // First list tabs to get a tab name

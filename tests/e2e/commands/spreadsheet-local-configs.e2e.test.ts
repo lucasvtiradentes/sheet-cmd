@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { loadGlobalFixtures } from '../global-fixtures';
 import { execCommand } from '../test-utils';
 
-describe('Spreadsheet Commands E2E', () => {
+describe('Spreadsheet Local Configs E2E', () => {
   let testHomeDir: string;
 
   beforeEach(async () => {

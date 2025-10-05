@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { loadGlobalFixtures } from '../global-fixtures';
 import { execCommand } from '../test-utils';
 
-describe('Tab Management E2E', () => {
+describe('Tab Operations E2E', () => {
   let testHomeDir: string;
   const uniqueTabName = `Test-Tab-${Date.now()}`;
 
