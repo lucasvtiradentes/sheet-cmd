@@ -16,7 +16,7 @@ describe('Sheet Operations E2E', () => {
   });
 
   it('should list tabs from the test spreadsheet', async () => {
-    const listTabsResult = await execCommand('node dist/cli.js sheet list-tabs', undefined, 15000, testHomeDir);
+    const listTabsResult = await execCommand('npm run dev -- spreadsheet list-tabs', undefined, 15000, testHomeDir);
 
     expect(listTabsResult.exitCode).toBe(0);
     expect(listTabsResult.stdout).toContain('Tabs');
@@ -28,7 +28,7 @@ describe('Sheet Operations E2E', () => {
 
   it('should read a sheet tab content', async () => {
     // First list tabs to get a tab name
-    const listTabsResult = await execCommand('node dist/cli.js sheet list-tabs', undefined, 15000, testHomeDir);
+    const listTabsResult = await execCommand('npm run dev -- spreadsheet list-tabs', undefined, 15000, testHomeDir);
     expect(listTabsResult.exitCode).toBe(0);
 
     // Extract first tab name from output (assuming format contains tab names)
@@ -40,9 +40,17 @@ describe('Sheet Operations E2E', () => {
 
     const tabName = tabMatch[1].trim();
 
+    // Ensure tab has content before reading
+    await execCommand(
+      `npm run dev -- sheet write-cell -t "${tabName}" -c A1 -v "Test Content"`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
     // Read the tab content - using -t flag without quotes in args
     const readResult = await execCommand(
-      `node dist/cli.js sheet read-sheet -t ${tabName}`,
+      `npm run dev -- sheet read-sheet -t "${tabName}"`,
       undefined,
       15000,
       testHomeDir
@@ -50,11 +58,11 @@ describe('Sheet Operations E2E', () => {
 
     expect(readResult.exitCode).toBe(0);
     expect(readResult.stdout).toContain('Content of sheet');
-  }, 45000);
+  }, 60000);
 
   it('should handle non-existent tab gracefully', async () => {
     const readResult = await execCommand(
-      'node dist/cli.js sheet read-sheet -t "NonExistentTab123"',
+      'npm run dev -- sheet read-sheet -t "NonExistentTab123"',
       undefined,
       15000,
       testHomeDir

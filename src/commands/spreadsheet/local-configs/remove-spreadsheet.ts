@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
 
-import { ConfigManager } from '../../lib/config-manager.js';
-import { Logger } from '../../lib/logger.js';
+import { ConfigManager } from '../../../lib/config-manager.js';
+import { Logger } from '../../../lib/logger.js';
 
 export function createRemoveSpreadsheetCommand(): Command {
   return new Command('remove')

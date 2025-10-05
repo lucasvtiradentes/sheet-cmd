@@ -8,21 +8,6 @@ import { clearGlobalFixtures, loadGlobalFixtures, saveGlobalFixtures } from './g
 import { execCommand } from './test-utils';
 
 export async function setup() {
-  console.log('\n🔨 Building project for E2E tests...');
-
-  try {
-    // Run the build command
-    execSync('npm run build', {
-      stdio: 'inherit',
-      cwd: process.cwd()
-    });
-
-    console.log('✅ Build completed successfully\n');
-  } catch (error) {
-    console.error('❌ Build failed:', error);
-    process.exit(1);
-  }
-
   // Check if we should create global fixtures
   const spreadsheetId = process.env.SPREADSHEET_ID_E2E;
   const serviceAccountEmail = process.env.SERVICE_ACCOUNT_EMAIL_E2E;
@@ -77,7 +62,7 @@ export async function setup() {
 
     // Create test tab with sample data
     const testTabName = `E2E-Test-Tab-${Date.now()}`;
-    const addTabResult = await execCommand(`node dist/cli.js sheet add-tab -t "${testTabName}"`, undefined, 15000, testHomeDir);
+    const addTabResult = await execCommand(`npm run dev -- sheet add-tab -t "${testTabName}"`, undefined, 15000, testHomeDir);
 
     if (addTabResult.exitCode !== 0) {
       throw new Error(`Failed to create test tab: ${addTabResult.stderr}`);
@@ -87,7 +72,7 @@ export async function setup() {
 
     // Add some test data to the tab
     const writeDataResult = await execCommand(
-      `node dist/cli.js sheet write-cell -t "${testTabName}" -r A1:C2 -v "Name,Age,City;John,30,NYC;Jane,25,LA"`,
+      `npm run dev -- sheet write-cell -t "${testTabName}" -r A1:C2 -v "Name,Age,City;John,30,NYC;Jane,25,LA"`,
       undefined,
       15000,
       testHomeDir
@@ -143,7 +128,7 @@ export async function teardown() {
     // Delete test tab
     if (testTabName) {
       const deleteResult = await execCommand(
-        `node dist/cli.js sheet remove-tab -t "${testTabName}"`,
+        `npm run dev -- sheet remove-tab -t "${testTabName}"`,
         undefined,
         15000,
         testHomeDir

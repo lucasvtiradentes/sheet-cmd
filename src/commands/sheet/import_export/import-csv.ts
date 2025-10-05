@@ -1,10 +1,10 @@
 import { readFileSync } from 'fs';
 import { Command } from 'commander';
 
-import { ConfigManager } from '../../lib/config-manager.js';
-import { parseCSV } from '../../lib/csv-parser.js';
-import { GoogleSheetsService } from '../../lib/google-sheets.service.js';
-import { Logger } from '../../lib/logger.js';
+import { ConfigManager } from '../../../lib/config-manager.js';
+import { parseCSV } from '../../../lib/csv-parser.js';
+import { GoogleSheetsService } from '../../../lib/google-sheets.service.js';
+import { Logger } from '../../../lib/logger.js';
 
 export function createImportCsvCommand(): Command {
   return new Command('import-csv')

@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 
-import { ConfigManager } from '../../lib/config-manager.js';
-import { Logger } from '../../lib/logger.js';
+import { ConfigManager } from '../../../lib/config-manager.js';
+import { Logger } from '../../../lib/logger.js';
 
 export function createActiveSpreadsheetCommand(): Command {
   return new Command('active')

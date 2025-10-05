@@ -19,8 +19,7 @@
     "release": "npm run build && changeset publish",
     "turbo:typecheck": "turbo typecheck",
     "turbo:build": "turbo build",
-    "turbo:dev": "turbo dev",
-    "turbo:test:unit": "turbo test:unit"
+    "turbo:dev": "turbo dev"
   },
   "keywords": [
     "google-sheets",

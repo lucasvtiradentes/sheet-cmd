@@ -1,15 +1,16 @@
 import { Command } from 'commander';
 
-import { ConfigManager } from '../../lib/config-manager.js';
-import { GoogleSheetsService } from '../../lib/google-sheets.service.js';
-import { Logger } from '../../lib/logger.js';
+import { ConfigManager } from '../../../lib/config-manager.js';
+import { GoogleSheetsService } from '../../../lib/google-sheets.service.js';
+import { Logger } from '../../../lib/logger.js';
 
-export function createRemoveTabCommand(): Command {
-  return new Command('remove-tab')
-    .description('Remove a tab/sheet from the spreadsheet')
-    .requiredOption('-t, --tab <name>', 'Tab/sheet name to remove')
+export function createCopyTabCommand(): Command {
+  return new Command('copy-tab')
+    .description('Copy a tab/sheet to a new tab')
+    .requiredOption('-t, --tab <name>', 'Tab/sheet name to copy')
+    .requiredOption('--to <name>', 'New tab/sheet name')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: { tab: string; spreadsheet?: string }) => {
+    .action(async (options: { tab: string; to: string; spreadsheet?: string }) => {
       try {
         const configManager = new ConfigManager();
 
@@ -38,12 +39,12 @@ export function createRemoveTabCommand(): Command {
           privateKey: spreadsheet.private_key
         });
 
-        Logger.loading(`Removing tab '${options.tab}'...`);
-        await sheetsService.removeSheet(options.tab);
+        Logger.loading(`Copying tab '${options.tab}' to '${options.to}'...`);
+        await sheetsService.copySheet(options.tab, options.to);
 
-        Logger.success(`Tab '${options.tab}' removed successfully`);
+        Logger.success(`Tab '${options.tab}' copied to '${options.to}' successfully`);
       } catch (error) {
-        Logger.error('Failed to remove tab', error);
+        Logger.error('Failed to copy tab', error);
         process.exit(1);
       }
     });

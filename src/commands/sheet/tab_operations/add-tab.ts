@@ -1,16 +1,15 @@
 import { Command } from 'commander';
 
-import { ConfigManager } from '../../lib/config-manager.js';
-import { GoogleSheetsService } from '../../lib/google-sheets.service.js';
-import { Logger } from '../../lib/logger.js';
+import { ConfigManager } from '../../../lib/config-manager.js';
+import { GoogleSheetsService } from '../../../lib/google-sheets.service.js';
+import { Logger } from '../../../lib/logger.js';
 
-export function createCopyTabCommand(): Command {
-  return new Command('copy-tab')
-    .description('Copy a tab/sheet to a new tab')
-    .requiredOption('-t, --tab <name>', 'Tab/sheet name to copy')
-    .requiredOption('--to <name>', 'New tab/sheet name')
+export function createAddTabCommand(): Command {
+  return new Command('add-tab')
+    .description('Add a new tab/sheet to the spreadsheet')
+    .requiredOption('-t, --tab <name>', 'Tab/sheet name to create')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: { tab: string; to: string; spreadsheet?: string }) => {
+    .action(async (options: { tab: string; spreadsheet?: string }) => {
       try {
         const configManager = new ConfigManager();
 
@@ -39,12 +38,12 @@ export function createCopyTabCommand(): Command {
           privateKey: spreadsheet.private_key
         });
 
-        Logger.loading(`Copying tab '${options.tab}' to '${options.to}'...`);
-        await sheetsService.copySheet(options.tab, options.to);
+        Logger.loading(`Creating tab '${options.tab}'...`);
+        await sheetsService.addSheet(options.tab);
 
-        Logger.success(`Tab '${options.tab}' copied to '${options.to}' successfully`);
+        Logger.success(`Tab '${options.tab}' created successfully`);
       } catch (error) {
-        Logger.error('Failed to copy tab', error);
+        Logger.error('Failed to add tab', error);
         process.exit(1);
       }
     });

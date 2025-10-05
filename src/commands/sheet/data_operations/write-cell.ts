@@ -1,9 +1,9 @@
 import { Command } from 'commander';
 
-import { ConfigManager } from '../../lib/config-manager.js';
-import { columnLetterToNumber } from '../../lib/excel-utils.js';
-import { GoogleSheetsService } from '../../lib/google-sheets.service.js';
-import { Logger } from '../../lib/logger.js';
+import { ConfigManager } from '../../../lib/config-manager.js';
+import { columnLetterToNumber } from '../../../lib/excel-utils.js';
+import { GoogleSheetsService } from '../../../lib/google-sheets.service.js';
+import { Logger } from '../../../lib/logger.js';
 
 export function createWriteCellCommand(): Command {
   return new Command('write-cell')

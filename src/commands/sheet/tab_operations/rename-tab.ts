@@ -1,15 +1,16 @@
 import { Command } from 'commander';
 
-import { ConfigManager } from '../../lib/config-manager.js';
-import { GoogleSheetsService } from '../../lib/google-sheets.service.js';
-import { Logger } from '../../lib/logger.js';
+import { ConfigManager } from '../../../lib/config-manager.js';
+import { GoogleSheetsService } from '../../../lib/google-sheets.service.js';
+import { Logger } from '../../../lib/logger.js';
 
-export function createAddTabCommand(): Command {
-  return new Command('add-tab')
-    .description('Add a new tab/sheet to the spreadsheet')
-    .requiredOption('-t, --tab <name>', 'Tab/sheet name to create')
+export function createRenameTabCommand(): Command {
+  return new Command('rename-tab')
+    .description('Rename a tab/sheet in the spreadsheet')
+    .requiredOption('-t, --tab <name>', 'Current tab/sheet name')
+    .requiredOption('-n, --new-name <name>', 'New tab/sheet name')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: { tab: string; spreadsheet?: string }) => {
+    .action(async (options: { tab: string; newName: string; spreadsheet?: string }) => {
       try {
         const configManager = new ConfigManager();
 
@@ -38,12 +39,12 @@ export function createAddTabCommand(): Command {
           privateKey: spreadsheet.private_key
         });
 
-        Logger.loading(`Creating tab '${options.tab}'...`);
-        await sheetsService.addSheet(options.tab);
+        Logger.loading(`Renaming tab '${options.tab}' to '${options.newName}'...`);
+        await sheetsService.renameSheet(options.tab, options.newName);
 
-        Logger.success(`Tab '${options.tab}' created successfully`);
+        Logger.success(`Tab '${options.tab}' renamed to '${options.newName}' successfully`);
       } catch (error) {
-        Logger.error('Failed to add tab', error);
+        Logger.error('Failed to rename tab', error);
         process.exit(1);
       }
     });
