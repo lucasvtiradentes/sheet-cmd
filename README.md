@@ -95,9 +95,8 @@ sheet-cmd sheet append-row -n <name> -v "col1, col2, col3"  # Append new row
 
 ```bash
 # Import CSV
-sheet-cmd sheet import-csv -n <name> -f data.csv        # Import CSV
-sheet-cmd sheet import-csv -n <name> -f data.csv --skip-header  # Skip first row
-sheet-cmd sheet import-csv -n <name> -f data.csv --clear  # Clear existing data before importing
+sheet-cmd sheet import-csv -n <name> -f data.csv        # Import CSV with headers
+sheet-cmd sheet import-csv -n <name> -f data.csv --skip-header  # Skip first row when importing
 
 # Export data
 sheet-cmd sheet export -n <name> -f json -o output.json # Export to JSON

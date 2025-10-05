@@ -24,8 +24,8 @@ export function displayHelpText(): void {
   Logger.plain('  $ sheet-cmd sheet append-row -n <name> -v "val1,val2,val3"  # Append row');
   Logger.plain('');
   Logger.plain('  Import/Export:');
-  Logger.plain('  $ sheet-cmd sheet import-csv -n <name> -f data.csv  # Import CSV');
-  Logger.plain('  $ sheet-cmd sheet export -n <name> -f json  # Export to JSON/CSV');
+  Logger.plain('  $ sheet-cmd sheet import-csv -n <name> -f data.csv  # Import CSV to sheet');
+  Logger.plain('  $ sheet-cmd sheet export -n <name> -f json -o file.json  # Export to JSON/CSV');
   Logger.plain('');
   Logger.bold('UTILITY COMMANDS:');
   Logger.plain('  $ sheet-cmd update                       # Update to latest version');
