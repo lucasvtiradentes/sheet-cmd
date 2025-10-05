@@ -1,34 +1,30 @@
 import { Command } from 'commander';
 
-import { createAddTabCommand } from './add-tab.js';
-import { createAppendRowCommand } from './append-row.js';
-import { createBackupCommand } from './backup.js';
-import { createCopyTabCommand } from './copy-tab.js';
-import { createExportCommand } from './export.js';
-import { createImportCsvCommand } from './import-csv.js';
-import { createListTabsCommand } from './list-tabs.js';
+import { createListSheetsCommand } from './list-sheets.js';
 import { createReadSheetCommand } from './read-sheet.js';
-import { createRemoveTabCommand } from './remove-tab.js';
-import { createRenameTabCommand } from './rename-tab.js';
-import { createRestoreCommand } from './restore.js';
-import { createWriteCellCommand } from './write-cell.js';
+import { createAddSheetCommand } from './sheet_operations/add-sheet.js';
+import { createRemoveSheetCommand } from './sheet_operations/remove-sheet.js';
+import { createRenameSheetCommand } from './sheet_operations/rename-sheet.js';
+import { createCopySheetCommand } from './sheet_operations/copy-sheet.js';
+import { createWriteCellCommand } from './data_operations/write-cell.js';
+import { createAppendRowCommand } from './data_operations/append-row.js';
+import { createImportCsvCommand } from './import_export/import-csv.js';
+import { createExportCommand } from './import_export/export.js';
 
 export function createSheetCommand(): Command {
   const sheet = new Command('sheet');
   sheet.description('Manage and interact with Google Sheets');
 
-  sheet.addCommand(createListTabsCommand());
+  sheet.addCommand(createListSheetsCommand());
   sheet.addCommand(createReadSheetCommand());
-  sheet.addCommand(createAddTabCommand());
-  sheet.addCommand(createRemoveTabCommand());
-  sheet.addCommand(createRenameTabCommand());
-  sheet.addCommand(createCopyTabCommand());
+  sheet.addCommand(createAddSheetCommand());
+  sheet.addCommand(createRemoveSheetCommand());
+  sheet.addCommand(createRenameSheetCommand());
+  sheet.addCommand(createCopySheetCommand());
   sheet.addCommand(createWriteCellCommand());
   sheet.addCommand(createAppendRowCommand());
   sheet.addCommand(createImportCsvCommand());
   sheet.addCommand(createExportCommand());
-  sheet.addCommand(createBackupCommand());
-  sheet.addCommand(createRestoreCommand());
 
   return sheet;
 }

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { promisify } from 'util';
 
 import { Logger } from '../lib/logger.js';
+import { reinstallCompletionSilently } from './completion.js';
 
 const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -63,6 +64,23 @@ export function createUpdateCommand(): Command {
 
       if (stdout) {
         Logger.dim(stdout);
+      }
+
+      // Attempt to reinstall shell completions silently
+      const completionReinstalled = await reinstallCompletionSilently();
+      if (completionReinstalled) {
+        Logger.dim('✨ Shell completion updated');
+        Logger.info('');
+        Logger.info('To activate the updated completion, run:');
+
+        const currentShell = process.env.SHELL || '';
+        if (currentShell.includes('zsh')) {
+          Logger.info('  exec zsh');
+        } else if (currentShell.includes('bash')) {
+          Logger.info('  exec bash');
+        } else {
+          Logger.info('  # Restart your shell');
+        }
       }
     } catch (error) {
       Logger.error('Error updating', error);

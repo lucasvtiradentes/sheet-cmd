@@ -35,26 +35,23 @@ Commands follow a hierarchical pattern using Commander.js:
 #### Sheet Operations (`sheet-cmd sheet`)
 All sheet commands use the active spreadsheet if `-s` flag is not specified.
 
-**Tab Management:**
-- `list-tabs` - List all tabs/sheets in a spreadsheet
-- `add-tab -t <name>` - Add a new tab/sheet
-- `remove-tab -t <name>` - Remove a tab/sheet
-- `rename-tab -t <old> -n <new>` - Rename a tab/sheet
-- `copy-tab -t <name> --to <new>` - Copy a tab to a new tab
+**Sheet Management:**
+- `list-sheets` - List all sheets in a spreadsheet
+- `add-sheet -n <name>` - Add a new sheet
+- `remove-sheet -n <name>` - Remove a sheet
+- `rename-sheet -n <old> --new-name <new>` - Rename a sheet
+- `copy-sheet -n <name> --to <new>` - Copy a sheet to a new sheet
 
 **Data Operations:**
-- `read-sheet -t <name> [-f format] [-o file]` - Read sheet content (formats: markdown, csv, csv-raw)
-- `write-cell -t <name> -c <cell> -v <value>` - Write to a single cell
-- `write-cell -t <name> -r <range> -v <values>` - Write to a range (use `,` for columns, `;` for rows)
-- `append-row -t <name> -v <values>` - Append a row to the end
+- `read-sheet -n <name> [-f format] [-o file]` - Read sheet content (formats: markdown, csv, csv-raw)
+- `write-cell -n <name> -c <cell> -v <value>` - Write to a single cell
+- `write-cell -n <name> -r <range> -v <values>` - Write to a range (use `,` for columns, `;` for rows)
+- `append-row -n <name> -v <values>` - Append a row to the end
 
 **Import/Export:**
-- `import-csv -t <name> -f <file> [--skip-header]` - Import CSV file to a tab
-- `export -t <name> [-r range] -f <format> [-o file]` - Export to JSON or CSV
+- `import-csv -n <name> -f <file> [--skip-header]` - Import CSV file to a sheet
+- `export -n <name> [-r range] -f <format> [-o file]` - Export to JSON or CSV
 
-**Backup/Restore:**
-- `backup -o <dir> [-t tab]` - Backup all tabs (or specific tab) in CSV format with formulas
-- `restore -i <dir> [-t tab] [--create-tabs]` - Restore from backup (preserves formulas)
 
 #### Utility Commands
 - `sheet-cmd update` - Self-update functionality
@@ -106,18 +103,37 @@ The `GoogleSheetsService` wraps the `google-spreadsheet` library:
 - Security is critical - credentials are stored locally and never exposed
 - The tool is designed to be LLM-friendly with clear, structured outputs
 
+## Command Helpers
+
+To avoid code duplication, use the shared helper function when creating sheet commands:
+
+```typescript
+import { getGoogleSheetsService } from '../../lib/command-helpers.js';
+
+// Instead of repeating ConfigManager and service initialization logic:
+const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+```
+
+This helper:
+- Loads config manager
+- Resolves active spreadsheet if none specified
+- Validates spreadsheet exists
+- Creates and returns GoogleSheetsService instance
+- Handles all error messages and exits
+
 ## Adding New Commands
 
 When adding a new command:
 
 1. Create a new file in `src/commands/sheet/` or `src/commands/spreadsheet/`
 2. Implement the command using Commander.js following existing patterns
-3. Export a factory function (e.g., `createYourCommand()`)
-4. Add the command to the appropriate index file
-5. Update shell completion scripts in `src/commands/completion.ts`
-6. Update help text in `src/cli.ts`
-7. Test with `npm run dev -- your-command`
-8. Build and verify with `npm run build`
+3. **Use `getGoogleSheetsService()` helper to eliminate boilerplate**
+4. Export a factory function (e.g., `createYourCommand()`)
+5. Add the command to the appropriate index file
+6. Update shell completion scripts in `src/commands/completion.ts`
+7. Update help text in `src/commands/help-text.ts`
+8. Test with `npm run dev -- your-command`
+9. Build and verify with `npm run build`
 
 ## Google Sheets Service
 
@@ -135,10 +151,10 @@ The `GoogleSheetsService` provides:
 - `writeCellRange(sheetName, range, values[][])` - Write to a range of cells (preserves formulas)
 - `appendRow(sheetName, values[])` - Append a new row to the end of a sheet
 
-**Tab Management:**
-- `addSheet(sheetName)` - Create a new tab/sheet
-- `removeSheet(sheetName)` - Delete a tab/sheet
-- `renameSheet(oldName, newName)` - Rename a tab/sheet
-- `copySheet(sheetName, newSheetName)` - Duplicate a tab/sheet
+**Sheet Management:**
+- `addSheet(sheetName)` - Create a new sheet
+- `removeSheet(sheetName)` - Delete a sheet
+- `renameSheet(oldName, newName)` - Rename a sheet
+- `copySheet(sheetName, newSheetName)` - Duplicate a sheet
 
 When extending the service, maintain the existing patterns and error handling.

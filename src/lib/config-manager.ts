@@ -154,23 +154,6 @@ export class ConfigManager {
     }));
   }
 
-  updateSpreadsheetCredentials(
-    name: string,
-    updates: Partial<Omit<SpreadsheetCredentials, 'name'>>
-  ): void {
-    const config = this.loadConfig();
-
-    if (!config.spreadsheets[name]) {
-      throw new Error(`Spreadsheet '${name}' not found`);
-    }
-
-    config.spreadsheets[name] = {
-      ...config.spreadsheets[name],
-      ...updates
-    };
-    this.saveConfig();
-  }
-
   // Active spreadsheet management
 
   setActiveSpreadsheet(name: string): void {
@@ -207,5 +190,24 @@ export class ConfigManager {
 
     this.userMetadata.active_spreadsheet = undefined;
     writeJson(CONFIG_PATHS.userMetadataFile, this.userMetadata);
+  }
+
+  // Completion tracking
+
+  markCompletionInstalled(): void {
+    const config = this.loadConfig();
+    if (!config.settings) {
+      config.settings = {
+        max_results: 50,
+        default_columns: 'A:Z'
+      };
+    }
+    config.settings.completion_installed = true;
+    this.saveConfig();
+  }
+
+  isCompletionInstalled(): boolean {
+    const config = this.loadConfig();
+    return config.settings?.completion_installed === true;
   }
 }

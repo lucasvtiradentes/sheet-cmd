@@ -14,14 +14,12 @@
     "typecheck": "tsc --noEmit",
     "build": "rimraf ./dist && tsc",
     "start": "node dist/cli.js",
-    "test": "vitest --config tests/unit/vitest.config.ts",
-    "test:unit": "vitest run --config tests/unit/vitest.config.ts",
+    "test:e2e": "vitest run --config tests/e2e/vitest.config.ts",
     "changeset": "changeset",
     "release": "npm run build && changeset publish",
     "turbo:typecheck": "turbo typecheck",
     "turbo:build": "turbo build",
-    "turbo:dev": "turbo dev",
-    "turbo:test:unit": "turbo test:unit"
+    "turbo:dev": "turbo dev"
   },
   "keywords": [
     "google-sheets",
@@ -50,7 +48,8 @@
   "devDependencies": {
     "@changesets/cli": "^2.29.7",
     "@types/inquirer": "^9.0.8",
-    "@types/node": "^22.10.5",
+    "@types/node": "^22.18.8",
+    "dotenv": "^17.2.3",
     "rimraf": "^5.0.5",
     "tsx": "^4.19.2",
     "turbo": "^2.5.8",

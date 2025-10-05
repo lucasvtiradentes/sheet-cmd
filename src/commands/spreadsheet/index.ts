@@ -1,10 +1,10 @@
 import { Command } from 'commander';
 
-import { createActiveSpreadsheetCommand } from './active-spreadsheet.js';
-import { createAddSpreadsheetCommand } from './add-spreadsheet.js';
-import { createListSpreadsheetsCommand } from './list-spreadsheets.js';
-import { createRemoveSpreadsheetCommand } from './remove-spreadsheet.js';
-import { createSwitchSpreadsheetCommand } from './switch-spreadsheet.js';
+import { createActiveSpreadsheetCommand } from './local-configs/active-spreadsheet.js';
+import { createAddSpreadsheetCommand } from './local-configs/add-spreadsheet.js';
+import { createListSpreadsheetsCommand } from './local-configs/list-spreadsheets.js';
+import { createRemoveSpreadsheetCommand } from './local-configs/remove-spreadsheet.js';
+import { createSwitchSpreadsheetCommand } from './local-configs/switch-spreadsheet.js';
 
 export function createSpreadsheetCommand(): Command {
   const spreadsheet = new Command('spreadsheet');

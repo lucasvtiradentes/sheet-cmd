@@ -21,7 +21,8 @@ export const sheetsConfigSchema = z.object({
   settings: z
     .object({
       max_results: z.number().default(50),
-      default_columns: z.string().default('A:Z')
+      default_columns: z.string().default('A:Z'),
+      completion_installed: z.boolean().optional()
     })
     .optional()
 });
