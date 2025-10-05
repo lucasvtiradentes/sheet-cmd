@@ -1,21 +1,26 @@
 <div align="center">
 <a href="https://www.google.com/sheets/about/" target="_blank" rel="noopener noreferrer">
-  <img width="64" src="https://www.gstatic.com/images/branding/product/2x/sheets_2020q4_48dp.png" alt="Google Sheets logo">
+  <img width="64" src=".github/image/sheet.png" alt="Google Sheets logo">
 </a>
 <h2>Sheet cmd</h2>
 <p>A CLI tool to interact with Google Sheets - perfect for LLM integrations</p>
+<p>
+  <a href="https://www.npmjs.com/package/sheet-cmd"><img src="https://img.shields.io/npm/v/sheet-cmd.svg" alt="npm version"></a>
+  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <br>
+  <a href="#star-features">Features</a> • <a href="#question-motivation">Motivation</a> • <a href="#rocket-quick-start">Quick Start</a> • <a href="#bulb-usage">Usage</a> • <a href="#package-setup">Setup</a> • <a href="#wrench-development">Development</a>
+</p>
+
 </div>
-
-
 
 ## :star: Features
 
 - **Multi-spreadsheet support** - Manage multiple Google Sheets with separate credentials
 - **Active spreadsheet system** - Set once, use everywhere (no need for -s flag)
-- **Complete tab management** - Create, rename, copy, and remove tabs
+- **Complete sheet management** - Create, rename, copy, and remove sheets
 - **Data operations** - Read, write, append rows with multiple output formats
 - **Import/Export** - CSV import and export to JSON/CSV formats
-- **Secure credential management** - All credentials stored locally on your machine
+- **Secure credentials** - All credentials stored locally on your machine
 - **LLM-friendly** - Designed for AI tool integrations like Claude Code
 - **Shell completion** - Auto-completion for zsh and bash
 - **Self-updating** - Built-in update mechanism that detects your package manager
@@ -28,53 +33,59 @@ Because I want to enable LLMs like [Claude Code](https://www.anthropic.com/claud
 
 ## :rocket: Quick Start
 
-1. **Get your Google Service Account credentials** from [Google Cloud Console](https://console.cloud.google.com/)
-2. **Add your spreadsheet**: `sheet-cmd spreadsheet add` (Interactive setup)
-3. **Set as active**: `sheet-cmd spreadsheet switch my-sheet`
-4. **List tabs**: `sheet-cmd sheet list-sheets`
+```bash
+# Install
+npm install sheet-cmd -g
+
+# Setup spreadsheet
+sheet-cmd spreadsheet add
+
+# Set as active
+sheet-cmd spreadsheet switch my-sheet
+
+# Start using
+sheet-cmd sheet list-sheets
+```
 
 ## :bulb: Usage
 
-### Installation
+### Commands Overview
 
 ```bash
-npm install sheet-cmd -g
-# to uninstall run: npm uninstall sheet-cmd -g
+sheet-cmd --help                    # Show help
+sheet-cmd update                    # Update to latest version
 ```
 
-### General
+<details>
+<summary><b>Spreadsheet Management</b></summary>
 
 ```bash
-sheet-cmd update                          # Update to latest version (auto-detects npm/yarn/pnpm)
-sheet-cmd --help                          # Show available commands
-sheet-cmd <command> --help                # Show help for specific command
+sheet-cmd spreadsheet add               # Add spreadsheet (interactive)
+sheet-cmd spreadsheet list              # List all spreadsheets (* = active)
+sheet-cmd spreadsheet switch <name>     # Set active spreadsheet
+sheet-cmd spreadsheet active            # Show currently active spreadsheet
+sheet-cmd spreadsheet remove [name]     # Remove spreadsheet
 ```
 
-### Spreadsheet Management
+</details>
 
-```bash
-sheet-cmd spreadsheet add                 # Add spreadsheet (interactive)
-sheet-cmd spreadsheet list                # List all spreadsheets (* = active)
-sheet-cmd spreadsheet switch <name>       # Set active spreadsheet
-sheet-cmd spreadsheet active              # Show currently active spreadsheet
-sheet-cmd spreadsheet remove [name]       # Remove spreadsheet
-```
-
-### Sheet Operations
+<details>
+<summary><b>Sheet Management</b></summary>
 
 All sheet commands use the active spreadsheet if `-s` flag is not specified.
 
-#### Sheet Management
-
 ```bash
-sheet-cmd sheet list-sheets                 # List all sheets
-sheet-cmd sheet add-sheet -n <name>         # Add a new sheet
-sheet-cmd sheet remove-sheet -n <name>      # Remove a sheet
+sheet-cmd sheet list-sheets                              # List all sheets
+sheet-cmd sheet add-sheet -n <name>                      # Add a new sheet
+sheet-cmd sheet remove-sheet -n <name>                   # Remove a sheet
 sheet-cmd sheet rename-sheet -n <old> --new-name <new>  # Rename a sheet
-sheet-cmd sheet copy-sheet -n <name> --to <new>  # Copy a sheet
+sheet-cmd sheet copy-sheet -n <name> --to <new>         # Copy a sheet
 ```
 
-#### Data Operations
+</details>
+
+<details>
+<summary><b>Data Operations</b></summary>
 
 ```bash
 # Read sheet content
@@ -91,12 +102,15 @@ sheet-cmd sheet write-cell -n <name> -r A1:B2 -v "val1, val2; val3, val4"  # Wri
 sheet-cmd sheet append-row -n <name> -v "col1, col2, col3"  # Append new row
 ```
 
-#### Import/Export
+</details>
+
+<details>
+<summary><b>Import/Export</b></summary>
 
 ```bash
 # Import CSV
 sheet-cmd sheet import-csv -n <name> -f data.csv        # Import CSV with headers
-sheet-cmd sheet import-csv -n <name> -f data.csv --skip-header  # Skip first row when importing
+sheet-cmd sheet import-csv -n <name> -f data.csv --skip-header  # Skip first row
 
 # Export data
 sheet-cmd sheet export -n <name> -f json -o output.json # Export to JSON
@@ -104,31 +118,30 @@ sheet-cmd sheet export -n <name> -f csv -o output.csv   # Export to CSV
 sheet-cmd sheet export -n <name> -r B2:I25 -f csv       # Export range to CSV
 ```
 
-## :gear: Shell Completion
+</details>
 
-Enable autocompletion for commands and subcommands in your shell:
+<details>
+<summary><b>Shell Completion</b></summary>
 
 ```bash
-# Install completion for your current shell (auto-detects and gives instructions)
+# Install completion
 sheet-cmd completion install
+
+# Reload shell
+source ~/.zshrc   # for zsh
+source ~/.bashrc  # for bash
+
+# Use tab completion
+sheet-cmd <TAB>
+sheet-cmd spreadsheet <TAB>
+sheet-cmd sheet <TAB>
 ```
 
-After installation, restart your shell or source your shell config file:
+</details>
 
-```bash
-# For zsh
-source ~/.zshrc
+## :package: Setup
 
-# For bash
-source ~/.bashrc
-```
-
-Now you can use tab completion:
-- `sheet-cmd <TAB>` → shows: spreadsheet, sheet, update, completion
-- `sheet-cmd spreadsheet <TAB>` → shows: add, list, switch, active, remove
-- `sheet-cmd sheet <TAB>` → shows: list-sheets, read-sheet, add-sheet, remove-sheet, rename-sheet, copy-sheet, write-cell, append-row, import-csv, export
-
-## :package: Setting Up Google Service Account
+### Getting Google Service Account Credentials
 
 To use this tool, you need a Google Service Account with access to your spreadsheet:
 
@@ -159,7 +172,7 @@ You'll need:
 - **Service Account Email**: From the JSON file (`client_email`)
 - **Private Key**: From the JSON file (`private_key`)
 
-## :file_folder: Configuration
+### Configuration Files
 
 Configuration files are stored in:
 - **Linux/WSL**: `~/.config/sheet-cmd/`
@@ -191,9 +204,10 @@ Example `config.json`:
 ## :wrench: Development
 
 ```bash
-npm run dev                               # Run in development
-npm run build                             # Build for production
-npm run test                              # Run tests
+npm install                     # Install dependencies
+npm run dev                     # Run in development
+npm run build                   # Build for production
+npm run test:e2e                # Run E2E tests
 ```
 
 ## :scroll: License
