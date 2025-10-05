@@ -7,7 +7,7 @@ import { Command } from 'commander';
 import { ConfigManager } from '../lib/config-manager.js';
 import { Logger } from '../lib/logger.js';
 
-const ZSH_COMPLETION_SCRIPT = `#compdef sheet-cmd
+const ZSH_COMPLETION_SCRIPT = `#compdef sheet-cmd sheet
 
 _sheet_cmd() {
     local state line context
