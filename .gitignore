@@ -6,3 +6,6 @@ dist/
 .DS_Store
 ignore/
 .turbo
+
+
+.env.e2e
