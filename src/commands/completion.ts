@@ -79,15 +79,15 @@ _sheet_cmd_sheet() {
     case $state in
         args)
             case $line[1] in
-                list-tabs)
+                list-sheets)
                     _arguments \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
                 read-sheet)
                     _arguments \\
-                        '-t[Tab/sheet name]:tab:' \\
-                        '--tab[Tab/sheet name]:tab:' \\
+                        '-n[Sheet name]:tab:' \\
+                        '--name[Sheet name]:tab:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:' \\
                         '-o[Output format]:format:(markdown csv)' \\
@@ -97,41 +97,40 @@ _sheet_cmd_sheet() {
                         '-e[Export to file]:file:_files' \\
                         '--export[Export to file]:file:_files'
                     ;;
-                add-tab)
+                add-sheet)
                     _arguments \\
-                        '-t[Tab name]:tab:' \\
-                        '--tab[Tab name]:tab:' \\
+                        '-n[Sheet name]:tab:' \\
+                        '--name[Sheet name]:tab:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
-                remove-tab)
+                remove-sheet)
                     _arguments \\
-                        '-t[Tab name]:tab:' \\
-                        '--tab[Tab name]:tab:' \\
+                        '-n[Sheet name]:tab:' \\
+                        '--name[Sheet name]:tab:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
-                rename-tab)
+                rename-sheet)
                     _arguments \\
-                        '-t[Current tab name]:tab:' \\
-                        '--tab[Current tab name]:tab:' \\
-                        '-n[New tab name]:new:' \\
-                        '--new[New tab name]:new:' \\
+                        '-n[Current sheet name]:tab:' \\
+                        '--name[Current sheet name]:tab:' \\
+                        '--new-name[New sheet name]:new:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
-                copy-tab)
+                copy-sheet)
                     _arguments \\
-                        '-t[Source tab name]:tab:' \\
-                        '--tab[Source tab name]:tab:' \\
-                        '--to[Destination tab name]:to:' \\
+                        '-n[Source sheet name]:tab:' \\
+                        '--name[Source sheet name]:tab:' \\
+                        '--to[Destination sheet name]:to:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
                 write-cell)
                     _arguments \\
-                        '-t[Tab name]:tab:' \\
-                        '--tab[Tab name]:tab:' \\
+                        '-n[Sheet name]:tab:' \\
+                        '--name[Sheet name]:tab:' \\
                         '-c[Cell address]:cell:' \\
                         '--cell[Cell address]:cell:' \\
                         '-r[Range]:range:' \\
@@ -143,8 +142,8 @@ _sheet_cmd_sheet() {
                     ;;
                 append-row)
                     _arguments \\
-                        '-t[Tab name]:tab:' \\
-                        '--tab[Tab name]:tab:' \\
+                        '-n[Sheet name]:tab:' \\
+                        '--name[Sheet name]:tab:' \\
                         '-v[Values]:value:' \\
                         '--value[Values]:value:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
@@ -152,43 +151,25 @@ _sheet_cmd_sheet() {
                     ;;
                 import-csv)
                     _arguments \\
-                        '-t[Tab name]:tab:' \\
-                        '--tab[Tab name]:tab:' \\
+                        '-n[Sheet name]:tab:' \\
+                        '--name[Sheet name]:tab:' \\
                         '-f[CSV file]:file:_files' \\
                         '--file[CSV file]:file:_files' \\
                         '--skip-header[Skip header row]' \\
+                        '--clear[Clear existing data before importing]' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
                 export)
                     _arguments \\
-                        '-t[Tab name]:tab:' \\
-                        '--tab[Tab name]:tab:' \\
+                        '-n[Sheet name]:tab:' \\
+                        '--name[Sheet name]:tab:' \\
                         '-r[Range]:range:' \\
                         '--range[Range]:range:' \\
                         '-f[Format]:format:(json csv)' \\
                         '--format[Format]:format:(json csv)' \\
                         '-o[Output file]:file:_files' \\
                         '--output[Output file]:file:_files' \\
-                        '-s[Spreadsheet name]:spreadsheet:' \\
-                        '--spreadsheet[Spreadsheet name]:spreadsheet:'
-                    ;;
-                backup)
-                    _arguments \\
-                        '-o[Output directory]:directory:_directories' \\
-                        '--output[Output directory]:directory:_directories' \\
-                        '-t[Tab name]:tab:' \\
-                        '--tab[Tab name]:tab:' \\
-                        '-s[Spreadsheet name]:spreadsheet:' \\
-                        '--spreadsheet[Spreadsheet name]:spreadsheet:'
-                    ;;
-                restore)
-                    _arguments \\
-                        '-i[Input directory]:directory:_directories' \\
-                        '--input[Input directory]:directory:_directories' \\
-                        '-t[Tab name]:tab:' \\
-                        '--tab[Tab name]:tab:' \\
-                        '--create-tabs[Create tabs if they don'\''t exist]' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
@@ -200,18 +181,16 @@ _sheet_cmd_sheet() {
 _sheet_cmd_sheet_commands() {
     local sheet_commands
     sheet_commands=(
-        'list-tabs:List all tabs/sheets in a spreadsheet'
+        'list-sheets:List all sheets in a spreadsheet'
         'read-sheet:Read the complete content of a sheet tab'
-        'add-tab:Add a new tab/sheet to the spreadsheet'
-        'remove-tab:Remove a tab/sheet from the spreadsheet'
-        'rename-tab:Rename a tab/sheet in the spreadsheet'
-        'copy-tab:Copy a tab/sheet to a new tab'
+        'add-sheet:Add a new sheet to the spreadsheet'
+        'remove-sheet:Remove a sheet from the spreadsheet'
+        'rename-sheet:Rename a sheet in the spreadsheet'
+        'copy-sheet:Copy a sheet to a new sheet'
         'write-cell:Write to a specific cell or range of cells'
         'append-row:Append a new row to the end of the sheet'
         'import-csv:Import CSV file to a sheet tab'
         'export:Export sheet data to JSON or CSV format'
-        'backup:Backup tabs from the spreadsheet in CSV format with formulas preserved'
-        'restore:Restore tabs from a backup directory (preserves formulas)'
     )
     _describe 'sheet command' sheet_commands
 }
@@ -240,7 +219,7 @@ _sheet_cmd_completion() {
     local spreadsheet_commands="add list remove switch active"
 
     # Sheet subcommands
-    local sheet_commands="list-tabs read-sheet add-tab remove-tab rename-tab copy-tab write-cell append-row import-csv export backup restore"
+    local sheet_commands="list-sheets read-sheet add-sheet remove-sheet rename-sheet copy-sheet write-cell append-row import-csv export"
 
     if [[ \\$cword -eq 1 ]]; then
         COMPREPLY=(\\$(compgen -W "\\$commands" -- "\\$cur"))
@@ -261,78 +240,64 @@ _sheet_cmd_completion() {
         case "\\$\{COMP_WORDS[1]}" in
             sheet)
                 case "\\$\{COMP_WORDS[2]}" in
-                    list-tabs)
+                    list-sheets)
                         if [[ \\$cur == -* ]]; then
                             COMPREPLY=(\\$(compgen -W "-s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
                     read-sheet)
                         if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-t --tab -s --spreadsheet -o --output -f --formulas -e --export" -- "\\$cur"))
+                            COMPREPLY=(\\$(compgen -W "-n --name -s --spreadsheet -o --output -f --formulas -e --export" -- "\\$cur"))
                         elif [[ \\$prev == "-o" || \\$prev == "--output" ]]; then
                             COMPREPLY=(\\$(compgen -W "markdown csv" -- "\\$cur"))
                         elif [[ \\$prev == "-e" || \\$prev == "--export" ]]; then
                             COMPREPLY=(\\$(compgen -f -- "\\$cur"))
                         fi
                         ;;
-                    add-tab)
+                    add-sheet)
                         if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-t --tab -s --spreadsheet" -- "\\$cur"))
+                            COMPREPLY=(\\$(compgen -W "-n --name -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
-                    remove-tab)
+                    remove-sheet)
                         if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-t --tab -s --spreadsheet" -- "\\$cur"))
+                            COMPREPLY=(\\$(compgen -W "-n --name -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
-                    rename-tab)
+                    rename-sheet)
                         if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-t --tab -n --new -s --spreadsheet" -- "\\$cur"))
+                            COMPREPLY=(\\$(compgen -W "-n --name --new-name -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
-                    copy-tab)
+                    copy-sheet)
                         if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-t --tab --to -s --spreadsheet" -- "\\$cur"))
+                            COMPREPLY=(\\$(compgen -W "-n --name --to -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
                     write-cell)
                         if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-t --tab -c --cell -r --range -v --value -s --spreadsheet" -- "\\$cur"))
+                            COMPREPLY=(\\$(compgen -W "-n --name -c --cell -r --range -v --value -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
                     append-row)
                         if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-t --tab -v --value -s --spreadsheet" -- "\\$cur"))
+                            COMPREPLY=(\\$(compgen -W "-n --name -v --value -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
                     import-csv)
                         if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-t --tab -f --file --skip-header -s --spreadsheet" -- "\\$cur"))
+                            COMPREPLY=(\\$(compgen -W "-n --name -f --file --skip-header --clear -s --spreadsheet" -- "\\$cur"))
                         elif [[ \\$prev == "-f" || \\$prev == "--file" ]]; then
                             COMPREPLY=(\\$(compgen -f -- "\\$cur"))
                         fi
                         ;;
                     export)
                         if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-t --tab -r --range -f --format -o --output -s --spreadsheet" -- "\\$cur"))
+                            COMPREPLY=(\\$(compgen -W "-n --name -r --range -f --format -o --output -s --spreadsheet" -- "\\$cur"))
                         elif [[ \\$prev == "-f" || \\$prev == "--format" ]]; then
                             COMPREPLY=(\\$(compgen -W "json csv" -- "\\$cur"))
                         elif [[ \\$prev == "-o" || \\$prev == "--output" ]]; then
                             COMPREPLY=(\\$(compgen -f -- "\\$cur"))
-                        fi
-                        ;;
-                    backup)
-                        if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-o --output -t --tab -s --spreadsheet" -- "\\$cur"))
-                        elif [[ \\$prev == "-o" || \\$prev == "--output" ]]; then
-                            COMPREPLY=(\\$(compgen -d -- "\\$cur"))
-                        fi
-                        ;;
-                    restore)
-                        if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-i --input -t --tab --create-tabs -s --spreadsheet" -- "\\$cur"))
-                        elif [[ \\$prev == "-i" || \\$prev == "--input" ]]; then
-                            COMPREPLY=(\\$(compgen -d -- "\\$cur"))
                         fi
                         ;;
                 esac

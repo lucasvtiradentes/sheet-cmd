@@ -8,14 +8,14 @@ import { Logger } from '../../../lib/logger.js';
 
 export function createImportCsvCommand(): Command {
   return new Command('import-csv')
-    .description('Import CSV file to a sheet tab')
-    .requiredOption('-t, --tab <name>', 'Tab/sheet name')
+    .description('Import CSV file to a sheet')
+    .requiredOption('-n, --name <name>', 'Sheet name')
     .requiredOption('-f, --file <path>', 'CSV file path')
     .option('--skip-header', 'Skip the first row (header) when importing')
     .option('--clear', 'Clear existing data before importing')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
     .action(async (options: {
-      tab: string;
+      name: string;
       file: string;
       skipHeader?: boolean;
       clear?: boolean;
@@ -67,26 +67,42 @@ export function createImportCsvCommand(): Command {
           process.exit(0);
         }
 
-        Logger.loading(`Importing ${dataToImport.length} rows to '${options.tab}'...`);
+        Logger.loading(`Importing ${dataToImport.length} rows to '${options.name}'...`);
 
-        // If we're not skipping headers, write the first row as headers using writeCellRange
-        const startIndex = options.skipHeader ? 0 : 1;
+        if (options.skipHeader) {
+          // When skipping header, write all data rows starting from A1
+          // We need to write at least the first row to establish headers for appendRow to work
+          if (dataToImport.length > 0) {
+            // Write first data row as if it were headers (required by Google Sheets API)
+            const firstRowRange = `A1:${String.fromCharCode(65 + dataToImport[0].length - 1)}1`;
+            await sheetsService.writeCellRange(options.name, firstRowRange, [dataToImport[0]]);
 
-        if (!options.skipHeader && data.length > 0) {
-          // Write first row (headers) using writeCellRange
-          const headerRange = `A1:${String.fromCharCode(65 + data[0].length - 1)}1`;
-          await sheetsService.writeCellRange(options.tab, headerRange, [data[0]]);
-        }
+            // Append remaining rows
+            for (let i = 1; i < dataToImport.length; i++) {
+              await sheetsService.appendRow(options.name, dataToImport[i]);
+              if ((i + 1) % 10 === 0) {
+                Logger.loading(`Imported ${i + 1}/${dataToImport.length} rows...`);
+              }
+            }
+          }
+        } else {
+          // Normal import: write header row first, then append data rows
+          if (data.length > 0) {
+            // Write first row (headers) using writeCellRange
+            const headerRange = `A1:${String.fromCharCode(65 + data[0].length - 1)}1`;
+            await sheetsService.writeCellRange(options.name, headerRange, [data[0]]);
 
-        // Import remaining rows one by one
-        for (let i = startIndex; i < dataToImport.length; i++) {
-          await sheetsService.appendRow(options.tab, dataToImport[i]);
-          if ((i + 1) % 10 === 0) {
-            Logger.loading(`Imported ${i + 1}/${dataToImport.length} rows...`);
+            // Import remaining rows one by one
+            for (let i = 1; i < data.length; i++) {
+              await sheetsService.appendRow(options.name, data[i]);
+              if ((i + 1) % 10 === 0) {
+                Logger.loading(`Imported ${i + 1}/${data.length} rows...`);
+              }
+            }
           }
         }
 
-        Logger.success(`Successfully imported ${dataToImport.length} rows to '${options.tab}'`);
+        Logger.success(`Successfully imported ${dataToImport.length} rows to '${options.name}'`);
       } catch (error) {
         Logger.error('Failed to import CSV', error);
         process.exit(1);

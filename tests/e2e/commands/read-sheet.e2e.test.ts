@@ -17,7 +17,7 @@ describe('Read Sheet E2E', () => {
 
   it('should read a sheet tab content', async () => {
     // First list tabs to get a tab name
-    const listTabsResult = await execCommand('npm run dev -- spreadsheet list-tabs', undefined, 15000, testHomeDir);
+    const listTabsResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
     expect(listTabsResult.exitCode).toBe(0);
 
     // Extract first tab name from output (assuming format contains tab names)
@@ -31,7 +31,7 @@ describe('Read Sheet E2E', () => {
 
     // Ensure tab has content before reading
     await execCommand(
-      `npm run dev -- sheet write-cell -t "${tabName}" -c A1 -v "Test Content"`,
+      `npm run dev -- sheet write-cell -n "${tabName}" -c A1 -v "Test Content"`,
       undefined,
       15000,
       testHomeDir
@@ -39,7 +39,7 @@ describe('Read Sheet E2E', () => {
 
     // Read the tab content - using -t flag without quotes in args
     const readResult = await execCommand(
-      `npm run dev -- sheet read-sheet -t "${tabName}"`,
+      `npm run dev -- sheet read-sheet -n "${tabName}"`,
       undefined,
       15000,
       testHomeDir
@@ -51,7 +51,7 @@ describe('Read Sheet E2E', () => {
 
   it('should handle non-existent tab gracefully', async () => {
     const readResult = await execCommand(
-      'npm run dev -- sheet read-sheet -t "NonExistentTab123"',
+      'npm run dev -- sheet read-sheet -n "NonExistentTab123"',
       undefined,
       15000,
       testHomeDir

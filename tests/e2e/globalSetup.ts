@@ -60,19 +60,19 @@ export async function setup() {
 
     console.log('  ✓ Created test configuration');
 
-    // Create test tab with sample data
-    const testTabName = `E2E-Test-Tab-${Date.now()}`;
-    const addTabResult = await execCommand(`npm run dev -- sheet add-tab -t "${testTabName}"`, undefined, 15000, testHomeDir);
+    // Create test sheet with sample data
+    const testTabName = `E2E-Test-Sheet-${Date.now()}`;
+    const addSheetResult = await execCommand(`npm run dev -- sheet add-sheet -n "${testTabName}"`, undefined, 15000, testHomeDir);
 
-    if (addTabResult.exitCode !== 0) {
-      throw new Error(`Failed to create test tab: ${addTabResult.stderr}`);
+    if (addSheetResult.exitCode !== 0) {
+      throw new Error(`Failed to create test sheet: ${addSheetResult.stderr}`);
     }
 
-    console.log('  ✓ Created test tab');
+    console.log('  ✓ Created test sheet');
 
-    // Add some test data to the tab (A1:C3 = 3 rows x 3 columns)
+    // Add some test data to the sheet (A1:C3 = 3 rows x 3 columns)
     const writeDataResult = await execCommand(
-      `npm run dev -- sheet write-cell -t "${testTabName}" -r A1:C3 -v "Name,Age,City;John,30,NYC;Jane,25,LA"`,
+      `npm run dev -- sheet write-cell -n "${testTabName}" -r A1:C3 -v "Name,Age,City;John,30,NYC;Jane,25,LA"`,
       undefined,
       15000,
       testHomeDir
@@ -82,7 +82,7 @@ export async function setup() {
       console.log('  ⚠️  Warning: Failed to add test data (non-critical)');
       console.log(`     Error: ${writeDataResult.stderr || writeDataResult.stdout}`);
     } else {
-      console.log('  ✓ Added test data to tab');
+      console.log('  ✓ Added test data to sheet');
     }
 
     // Save fixtures
@@ -126,19 +126,19 @@ export async function teardown() {
 
     const { testTabName, testHomeDir } = fixtures;
 
-    // Delete test tab
+    // Delete test sheet
     if (testTabName) {
       const deleteResult = await execCommand(
-        `npm run dev -- sheet remove-tab -t "${testTabName}"`,
+        `npm run dev -- sheet remove-sheet -n "${testTabName}"`,
         undefined,
         15000,
         testHomeDir
       );
 
       if (deleteResult.exitCode === 0) {
-        console.log('  ✓ Deleted test tab');
+        console.log('  ✓ Deleted test sheet');
       } else {
-        console.log('  ⚠️  Could not delete test tab (may not exist)');
+        console.log('  ⚠️  Could not delete test sheet (may not exist)');
       }
     }
 
@@ -154,7 +154,7 @@ export async function teardown() {
     console.log('✅ Global fixtures cleaned up successfully\n');
   } catch (error) {
     console.error('❌ Failed to clean up global fixtures:', error);
-    console.error('You may need to manually delete the test tab from Google Sheets');
+    console.error('You may need to manually delete the test sheet from Google Sheets');
   }
 
   console.log('🧹 E2E tests completed\n');

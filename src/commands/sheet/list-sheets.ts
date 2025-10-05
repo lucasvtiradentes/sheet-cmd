@@ -1,20 +1,20 @@
 import { Command } from 'commander';
 
-import { ConfigManager } from '../../../lib/config-manager.js';
-import { GoogleSheetsService } from '../../../lib/google-sheets.service.js';
-import { Logger } from '../../../lib/logger.js';
+import { ConfigManager } from '../../lib/config-manager.js';
+import { GoogleSheetsService } from '../../lib/google-sheets.service.js';
+import { Logger } from '../../lib/logger.js';
 
-export function createRemoveTabCommand(): Command {
-  return new Command('remove-tab')
-    .description('Remove a tab/sheet from the spreadsheet')
-    .requiredOption('-t, --tab <name>', 'Tab/sheet name to remove')
+export function createListSheetsCommand(): Command {
+  return new Command('list-sheets')
+    .description('List all sheets in a spreadsheet')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: { tab: string; spreadsheet?: string }) => {
+    .action(async (options: { spreadsheet?: string }) => {
       try {
         const configManager = new ConfigManager();
 
         let spreadsheetName = options.spreadsheet;
 
+        // If no spreadsheet specified, use active one
         if (!spreadsheetName) {
           const activeSpreadsheet = configManager.getActiveSpreadsheet();
           if (!activeSpreadsheet) {
@@ -38,12 +38,17 @@ export function createRemoveTabCommand(): Command {
           privateKey: spreadsheet.private_key
         });
 
-        Logger.loading(`Removing tab '${options.tab}'...`);
-        await sheetsService.removeSheet(options.tab);
+        Logger.loading('Fetching spreadsheet info...');
+        const info = await sheetsService.getSheetInfo();
 
-        Logger.success(`Tab '${options.tab}' removed successfully`);
+        Logger.success(`Connected to spreadsheet: ${info.title}`);
+        Logger.bold(`\n📋 Sheets (${info.sheets.length}):\n`);
+
+        info.sheets.forEach((sheet) => {
+          Logger.plain(`  ${sheet.index + 1}. ${sheet.title}`);
+        });
       } catch (error) {
-        Logger.error('Failed to remove tab', error);
+        Logger.error('Failed to list sheets', error);
         process.exit(1);
       }
     });

@@ -14,9 +14,7 @@
 - **Active spreadsheet system** - Set once, use everywhere (no need for -s flag)
 - **Complete tab management** - Create, rename, copy, and remove tabs
 - **Data operations** - Read, write, append rows with multiple output formats
-- **Formula preservation** - Backup/restore with formulas intact (CSV-raw format)
 - **Import/Export** - CSV import and export to JSON/CSV formats
-- **Backup & Restore** - Full or partial backups with formula preservation
 - **Secure credential management** - All credentials stored locally on your machine
 - **LLM-friendly** - Designed for AI tool integrations like Claude Code
 - **Shell completion** - Auto-completion for zsh and bash
@@ -33,7 +31,7 @@ Because I want to enable LLMs like [Claude Code](https://www.anthropic.com/claud
 1. **Get your Google Service Account credentials** from [Google Cloud Console](https://console.cloud.google.com/)
 2. **Add your spreadsheet**: `sheet-cmd spreadsheet add` (Interactive setup)
 3. **Set as active**: `sheet-cmd spreadsheet switch my-sheet`
-4. **List tabs**: `sheet-cmd sheet list-tabs`
+4. **List tabs**: `sheet-cmd sheet list-sheets`
 
 ## :bulb: Usage
 
@@ -66,57 +64,45 @@ sheet-cmd spreadsheet remove [name]       # Remove spreadsheet
 
 All sheet commands use the active spreadsheet if `-s` flag is not specified.
 
-#### Tab Management
+#### Sheet Management
 
 ```bash
-sheet-cmd sheet list-tabs                 # List all tabs
-sheet-cmd sheet add-tab -t <name>         # Add a new tab
-sheet-cmd sheet remove-tab -t <name>      # Remove a tab
-sheet-cmd sheet rename-tab -t <old> -n <new>  # Rename a tab
-sheet-cmd sheet copy-tab -t <name> --to <new>  # Copy a tab
+sheet-cmd sheet list-sheets                 # List all sheets
+sheet-cmd sheet add-sheet -n <name>         # Add a new sheet
+sheet-cmd sheet remove-sheet -n <name>      # Remove a sheet
+sheet-cmd sheet rename-sheet -n <old> --new-name <new>  # Rename a sheet
+sheet-cmd sheet copy-sheet -n <name> --to <new>  # Copy a sheet
 ```
 
 #### Data Operations
 
 ```bash
 # Read sheet content
-sheet-cmd sheet read-sheet -t <name>                    # Read in markdown format
-sheet-cmd sheet read-sheet -t <name> -f csv             # Read in CSV format
-sheet-cmd sheet read-sheet -t <name> -f csv-raw         # Read with formulas (CSV)
-sheet-cmd sheet read-sheet -t <name> -o output.md       # Save to file
+sheet-cmd sheet read-sheet -n <name>                    # Read in markdown format
+sheet-cmd sheet read-sheet -n <name> -o csv             # Read in CSV format
+sheet-cmd sheet read-sheet -n <name> -f                 # Read with formulas
+sheet-cmd sheet read-sheet -n <name> -e output.md       # Save to file
 
 # Write to cells
-sheet-cmd sheet write-cell -t <name> -c A1 -v "Hello"   # Write to single cell
-sheet-cmd sheet write-cell -t <name> -r A1:B2 -v "val1, val2; val3, val4"  # Write to range
+sheet-cmd sheet write-cell -n <name> -c A1 -v "Hello"   # Write to single cell
+sheet-cmd sheet write-cell -n <name> -r A1:B2 -v "val1, val2; val3, val4"  # Write to range
 
 # Append rows
-sheet-cmd sheet append-row -t <name> -v "col1, col2, col3"  # Append new row
+sheet-cmd sheet append-row -n <name> -v "col1, col2, col3"  # Append new row
 ```
 
 #### Import/Export
 
 ```bash
 # Import CSV
-sheet-cmd sheet import-csv -t <name> -f data.csv        # Import CSV
-sheet-cmd sheet import-csv -t <name> -f data.csv --skip-header  # Skip first row
+sheet-cmd sheet import-csv -n <name> -f data.csv        # Import CSV
+sheet-cmd sheet import-csv -n <name> -f data.csv --skip-header  # Skip first row
+sheet-cmd sheet import-csv -n <name> -f data.csv --clear  # Clear existing data before importing
 
 # Export data
-sheet-cmd sheet export -t <name> -f json -o output.json # Export to JSON
-sheet-cmd sheet export -t <name> -f csv -o output.csv   # Export to CSV
-sheet-cmd sheet export -t <name> -r B2:I25 -f csv       # Export range to CSV
-```
-
-#### Backup & Restore
-
-```bash
-# Backup (saves in CSV format with formulas preserved)
-sheet-cmd sheet backup -o ./backup/                     # Backup all tabs
-sheet-cmd sheet backup -o ./backup/ -t monthly          # Backup specific tab
-
-# Restore (preserves formulas)
-sheet-cmd sheet restore -i ./backup/2025-10-03T04-40-32/  # Restore all tabs
-sheet-cmd sheet restore -i ./backup/2025-10-03T04-40-32/ -t monthly  # Restore specific tab
-sheet-cmd sheet restore -i ./backup/2025-10-03T04-40-32/ --create-tabs  # Create tabs if needed
+sheet-cmd sheet export -n <name> -f json -o output.json # Export to JSON
+sheet-cmd sheet export -n <name> -f csv -o output.csv   # Export to CSV
+sheet-cmd sheet export -n <name> -r B2:I25 -f csv       # Export range to CSV
 ```
 
 ## :gear: Shell Completion
@@ -141,7 +127,7 @@ source ~/.bashrc
 Now you can use tab completion:
 - `sheet-cmd <TAB>` → shows: spreadsheet, sheet, update, completion
 - `sheet-cmd spreadsheet <TAB>` → shows: add, list, switch, active, remove
-- `sheet-cmd sheet <TAB>` → shows: list-tabs, read-sheet, add-tab, remove-tab, rename-tab, copy-tab, write-cell, append-row, import-csv, export, backup, restore
+- `sheet-cmd sheet <TAB>` → shows: list-sheets, read-sheet, add-sheet, remove-sheet, rename-sheet, copy-sheet, write-cell, append-row, import-csv, export
 
 ## :package: Setting Up Google Service Account
 

@@ -19,7 +19,7 @@ describe('Data Operations E2E', () => {
 
   it('should write to a single cell', async () => {
     const writeResult = await execCommand(
-      `npm run dev -- sheet write-cell -t "${testTabName}" -c A1 -v "Test Value"`,
+      `npm run dev -- sheet write-cell -n "${testTabName}" -c A1 -v "Test Value"`,
       undefined,
       15000,
       testHomeDir
@@ -32,7 +32,7 @@ describe('Data Operations E2E', () => {
   it('should write to a range of cells', async () => {
     // Write a larger range with more realistic data (5 rows x 4 columns)
     const writeResult = await execCommand(
-      `npm run dev -- sheet write-cell -t "${testTabName}" -r A1:D5 -v "Product,Price,Quantity,Total;Laptop,999.99,2,1999.98;Mouse,29.99,5,149.95;Keyboard,79.99,3,239.97;Monitor,299.99,1,299.99"`,
+      `npm run dev -- sheet write-cell -n "${testTabName}" -r A1:D5 -v "Product,Price,Quantity,Total;Laptop,999.99,2,1999.98;Mouse,29.99,5,149.95;Keyboard,79.99,3,239.97;Monitor,299.99,1,299.99"`,
       undefined,
       15000,
       testHomeDir
@@ -44,7 +44,7 @@ describe('Data Operations E2E', () => {
 
   it('should handle dimension mismatch error', async () => {
     const writeResult = await execCommand(
-      `npm run dev -- sheet write-cell -t "${testTabName}" -r A1:C3 -v "value1,value2"`,
+      `npm run dev -- sheet write-cell -n "${testTabName}" -r A1:C3 -v "value1,value2"`,
       undefined,
       15000,
       testHomeDir
@@ -58,7 +58,7 @@ describe('Data Operations E2E', () => {
   it('should append multiple rows', async () => {
     // Append first row
     const appendResult1 = await execCommand(
-      `npm run dev -- sheet append-row -t "${testTabName}" -v "Scanner,149.99,2,299.98"`,
+      `npm run dev -- sheet append-row -n "${testTabName}" -v "Scanner,149.99,2,299.98"`,
       undefined,
       15000,
       testHomeDir
@@ -67,7 +67,7 @@ describe('Data Operations E2E', () => {
 
     // Append second row
     const appendResult2 = await execCommand(
-      `npm run dev -- sheet append-row -t "${testTabName}" -v "Webcam,89.99,4,359.96"`,
+      `npm run dev -- sheet append-row -n "${testTabName}" -v "Webcam,89.99,4,359.96"`,
       undefined,
       15000,
       testHomeDir
@@ -76,7 +76,7 @@ describe('Data Operations E2E', () => {
 
     // Append third row
     const appendResult3 = await execCommand(
-      `npm run dev -- sheet append-row -t "${testTabName}" -v "Headset,59.99,3,179.97"`,
+      `npm run dev -- sheet append-row -n "${testTabName}" -v "Headset,59.99,3,179.97"`,
       undefined,
       15000,
       testHomeDir
@@ -88,7 +88,7 @@ describe('Data Operations E2E', () => {
   it('should read sheet content in different formats', async () => {
     // Test markdown format (default with -o flag)
     const markdownResult = await execCommand(
-      `npm run dev -- sheet read-sheet -t "${testTabName}" -o markdown`,
+      `npm run dev -- sheet read-sheet -n "${testTabName}" -o markdown`,
       undefined,
       15000,
       testHomeDir
@@ -98,7 +98,7 @@ describe('Data Operations E2E', () => {
 
     // Test CSV format
     const csvResult = await execCommand(
-      `npm run dev -- sheet read-sheet -t "${testTabName}" -o csv`,
+      `npm run dev -- sheet read-sheet -n "${testTabName}" -o csv`,
       undefined,
       15000,
       testHomeDir
@@ -108,7 +108,7 @@ describe('Data Operations E2E', () => {
 
   it('should handle write operations with missing flags', async () => {
     const writeResult = await execCommand(
-      `npm run dev -- sheet write-cell -t "${testTabName}" -v "value"`,
+      `npm run dev -- sheet write-cell -n "${testTabName}" -v "value"`,
       undefined,
       15000,
       testHomeDir

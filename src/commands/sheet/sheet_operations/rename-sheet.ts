@@ -1,20 +1,21 @@
 import { Command } from 'commander';
 
-import { ConfigManager } from '../../lib/config-manager.js';
-import { GoogleSheetsService } from '../../lib/google-sheets.service.js';
-import { Logger } from '../../lib/logger.js';
+import { ConfigManager } from '../../../lib/config-manager.js';
+import { GoogleSheetsService } from '../../../lib/google-sheets.service.js';
+import { Logger } from '../../../lib/logger.js';
 
-export function createListTabsCommand(): Command {
-  return new Command('list-tabs')
-    .description('List all tabs/sheets in a spreadsheet')
+export function createRenameSheetCommand(): Command {
+  return new Command('rename-sheet')
+    .description('Rename a sheet in the spreadsheet')
+    .requiredOption('-n, --name <name>', 'Current sheet name')
+    .requiredOption('--new-name <name>', 'New sheet name')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: { spreadsheet?: string }) => {
+    .action(async (options: { name: string; newName: string; spreadsheet?: string }) => {
       try {
         const configManager = new ConfigManager();
 
         let spreadsheetName = options.spreadsheet;
 
-        // If no spreadsheet specified, use active one
         if (!spreadsheetName) {
           const activeSpreadsheet = configManager.getActiveSpreadsheet();
           if (!activeSpreadsheet) {
@@ -38,17 +39,12 @@ export function createListTabsCommand(): Command {
           privateKey: spreadsheet.private_key
         });
 
-        Logger.loading('Fetching spreadsheet info...');
-        const info = await sheetsService.getSheetInfo();
+        Logger.loading(`Renaming sheet '${options.name}' to '${options.newName}'...`);
+        await sheetsService.renameSheet(options.name, options.newName);
 
-        Logger.success(`Connected to spreadsheet: ${info.title}`);
-        Logger.bold(`\n📋 Tabs (${info.sheets.length}):\n`);
-
-        info.sheets.forEach((sheet) => {
-          Logger.plain(`  ${sheet.index + 1}. ${sheet.title}`);
-        });
+        Logger.success(`Sheet '${options.name}' renamed to '${options.newName}' successfully`);
       } catch (error) {
-        Logger.error('Failed to list tabs', error);
+        Logger.error('Failed to rename sheet', error);
         process.exit(1);
       }
     });

@@ -11,13 +11,13 @@ type ExportFormat = 'json' | 'csv';
 export function createExportCommand(): Command {
   return new Command('export')
     .description('Export sheet data to JSON or CSV format')
-    .requiredOption('-t, --tab <name>', 'Tab/sheet name to export')
+    .requiredOption('-n, --name <name>', 'Sheet name to export')
     .option('-r, --range <range>', 'Cell range to export (e.g., B2:I25). If not specified, exports all data')
     .option('-f, --format <type>', 'Output format: json, csv (default: json)', 'json')
     .option('-o, --output <file>', 'Output file path. If not specified, prints to console')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
     .action(async (options: {
-      tab: string;
+      name: string;
       range?: string;
       format: ExportFormat;
       output?: string;
@@ -57,13 +57,13 @@ export function createExportCommand(): Command {
           privateKey: spreadsheet.private_key
         });
 
-        Logger.loading(`Exporting data from '${options.tab}'${options.range ? ` (range: ${options.range})` : ''}...`);
+        Logger.loading(`Exporting data from '${options.name}'${options.range ? ` (range: ${options.range})` : ''}...`);
 
         let data: string[][];
         if (options.range) {
-          data = await sheetsService.getSheetDataRange(options.tab, options.range);
+          data = await sheetsService.getSheetDataRange(options.name, options.range);
         } else {
-          data = await sheetsService.getSheetData(options.tab);
+          data = await sheetsService.getSheetData(options.name);
         }
 
         if (data.length === 0) {

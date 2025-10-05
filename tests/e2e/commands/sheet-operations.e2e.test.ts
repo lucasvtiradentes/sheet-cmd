@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { loadGlobalFixtures } from '../global-fixtures';
 import { execCommand } from '../test-utils';
 
-describe('Tab Operations E2E', () => {
+describe('Sheet Operations E2E', () => {
   let testHomeDir: string;
   const uniqueTabName = `Test-Tab-${Date.now()}`;
 
@@ -17,14 +17,14 @@ describe('Tab Operations E2E', () => {
   });
 
   it('should add a new tab', async () => {
-    const addResult = await execCommand(`npm run dev -- sheet add-tab -t "${uniqueTabName}"`, undefined, 15000, testHomeDir);
+    const addResult = await execCommand(`npm run dev -- sheet add-sheet -n "${uniqueTabName}"`, undefined, 15000, testHomeDir);
 
     expect(addResult.exitCode).toBe(0);
     expect(addResult.stdout.toLowerCase()).toMatch(/created|success/);
   }, 30000);
 
   it('should list tabs including the newly created one', async () => {
-    const listResult = await execCommand('npm run dev -- spreadsheet list-tabs', undefined, 15000, testHomeDir);
+    const listResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
 
     expect(listResult.exitCode).toBe(0);
     expect(listResult.stdout).toContain(uniqueTabName);
@@ -33,7 +33,7 @@ describe('Tab Operations E2E', () => {
   it('should rename a tab', async () => {
     const renamedTabName = `${uniqueTabName}-Renamed`;
     const renameResult = await execCommand(
-      `npm run dev -- sheet rename-tab -t "${uniqueTabName}" -n "${renamedTabName}"`,
+      `npm run dev -- sheet rename-sheet -n "${uniqueTabName}" --new-name "${renamedTabName}"`,
       undefined,
       15000,
       testHomeDir
@@ -45,7 +45,7 @@ describe('Tab Operations E2E', () => {
     // Verify the rename - wait a bit for Google Sheets to update
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const listResult = await execCommand('npm run dev -- spreadsheet list-tabs', undefined, 15000, testHomeDir);
+    const listResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
     expect(listResult.stdout).toContain(renamedTabName);
   }, 45000);
 
@@ -54,7 +54,7 @@ describe('Tab Operations E2E', () => {
     const copiedTabName = `${uniqueTabName}-Copy`;
 
     const copyResult = await execCommand(
-      `npm run dev -- sheet copy-tab -t "${renamedTabName}" --to "${copiedTabName}"`,
+      `npm run dev -- sheet copy-sheet -n "${renamedTabName}" --to "${copiedTabName}"`,
       undefined,
       15000,
       testHomeDir
@@ -64,7 +64,7 @@ describe('Tab Operations E2E', () => {
     expect(copyResult.stdout.toLowerCase()).toMatch(/copied|success/);
 
     // Verify the copy exists
-    const listResult = await execCommand('npm run dev -- spreadsheet list-tabs', undefined, 15000, testHomeDir);
+    const listResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
     expect(listResult.stdout).toContain(copiedTabName);
   }, 45000);
 
@@ -74,7 +74,7 @@ describe('Tab Operations E2E', () => {
 
     // Remove the renamed tab
     const removeResult1 = await execCommand(
-      `npm run dev -- sheet remove-tab -t "${renamedTabName}"`,
+      `npm run dev -- sheet remove-sheet -n "${renamedTabName}"`,
       undefined,
       15000,
       testHomeDir
@@ -83,7 +83,7 @@ describe('Tab Operations E2E', () => {
 
     // Remove the copied tab
     const removeResult2 = await execCommand(
-      `npm run dev -- sheet remove-tab -t "${copiedTabName}"`,
+      `npm run dev -- sheet remove-sheet -n "${copiedTabName}"`,
       undefined,
       15000,
       testHomeDir
@@ -91,7 +91,7 @@ describe('Tab Operations E2E', () => {
     expect(removeResult2.exitCode).toBe(0);
 
     // Verify both are gone
-    const listResult = await execCommand('npm run dev -- spreadsheet list-tabs', undefined, 15000, testHomeDir);
+    const listResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
     expect(listResult.stdout).not.toContain(renamedTabName);
     expect(listResult.stdout).not.toContain(copiedTabName);
   }, 60000);
@@ -100,7 +100,7 @@ describe('Tab Operations E2E', () => {
     const nonExistentTab = 'NonExistentTab123456';
 
     const renameResult = await execCommand(
-      `npm run dev -- sheet rename-tab -t "${nonExistentTab}" -n "NewName"`,
+      `npm run dev -- sheet rename-sheet -n "${nonExistentTab}" --new-name "NewName"`,
       undefined,
       15000,
       testHomeDir

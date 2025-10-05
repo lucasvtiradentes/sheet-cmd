@@ -10,14 +10,14 @@ type OutputFormat = 'markdown' | 'csv';
 
 export function createReadSheetCommand(): Command {
   return new Command('read-sheet')
-    .description('Read the complete content of a sheet tab')
-    .requiredOption('-t, --tab <name>', 'Tab/sheet name to read')
+    .description('Read the complete content of a sheet')
+    .requiredOption('-n, --name <name>', 'Sheet name to read')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
     .option('-o, --output <type>', 'Output format: markdown, csv (default: markdown)', 'markdown')
     .option('-f, --formulas', 'Include formulas instead of calculated values')
     .option('-e, --export <file>', 'Export output to file instead of displaying')
     .action(async (options: {
-      tab: string;
+      name: string;
       spreadsheet?: string;
       output: OutputFormat;
       formulas?: boolean;
@@ -57,9 +57,9 @@ export function createReadSheetCommand(): Command {
           privateKey: spreadsheet.private_key
         });
 
-        Logger.loading(`Reading sheet '${options.tab}'...`);
+        Logger.loading(`Reading sheet '${options.name}'...`);
         const includeFormulas = options.formulas ?? false;
-        const data = await sheetsService.getSheetData(options.tab, includeFormulas);
+        const data = await sheetsService.getSheetData(options.name, includeFormulas);
 
         if (data.length === 0) {
           Logger.warning('Sheet is empty');
@@ -77,7 +77,7 @@ export function createReadSheetCommand(): Command {
           writeFileSync(options.export, output, 'utf-8');
           Logger.success(`Content exported to ${options.export}`);
         } else {
-          Logger.success(`Content of sheet '${options.tab}':\n`);
+          Logger.success(`Content of sheet '${options.name}':\n`);
           Logger.plain(output);
         }
       } catch (error) {

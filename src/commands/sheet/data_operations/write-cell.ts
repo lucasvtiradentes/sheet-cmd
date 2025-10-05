@@ -8,13 +8,13 @@ import { Logger } from '../../../lib/logger.js';
 export function createWriteCellCommand(): Command {
   return new Command('write-cell')
     .description('Write to a specific cell or range of cells')
-    .requiredOption('-t, --tab <name>', 'Tab/sheet name')
+    .requiredOption('-n, --name <name>', 'Sheet name')
     .option('-c, --cell <cell>', 'Single cell (e.g., A1)')
     .option('-r, --range <range>', 'Cell range (e.g., A1:B2)')
     .requiredOption('-v, --value <value>', 'Value to write (for range: use comma for columns, semicolon for rows)')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
     .action(async (options: {
-      tab: string;
+      name: string;
       cell?: string;
       range?: string;
       value: string;
@@ -60,7 +60,7 @@ export function createWriteCellCommand(): Command {
 
         if (options.cell) {
           Logger.loading(`Writing to cell ${options.cell}...`);
-          await sheetsService.writeCell(options.tab, options.cell, options.value);
+          await sheetsService.writeCell(options.name, options.cell, options.value);
           Logger.success(`Cell ${options.cell} updated successfully`);
         } else if (options.range) {
           // Parse value: semicolon separates rows, comma separates columns
@@ -106,7 +106,7 @@ export function createWriteCellCommand(): Command {
           }
 
           Logger.loading(`Writing to range ${options.range}...`);
-          await sheetsService.writeCellRange(options.tab, options.range, values);
+          await sheetsService.writeCellRange(options.name, options.range, values);
           Logger.success(`Range ${options.range} updated successfully`);
         }
       } catch (error) {

@@ -35,26 +35,23 @@ Commands follow a hierarchical pattern using Commander.js:
 #### Sheet Operations (`sheet-cmd sheet`)
 All sheet commands use the active spreadsheet if `-s` flag is not specified.
 
-**Tab Management:**
-- `list-tabs` - List all tabs/sheets in a spreadsheet
-- `add-tab -t <name>` - Add a new tab/sheet
-- `remove-tab -t <name>` - Remove a tab/sheet
-- `rename-tab -t <old> -n <new>` - Rename a tab/sheet
-- `copy-tab -t <name> --to <new>` - Copy a tab to a new tab
+**Sheet Management:**
+- `list-sheets` - List all sheets in a spreadsheet
+- `add-sheet -n <name>` - Add a new sheet
+- `remove-sheet -n <name>` - Remove a sheet
+- `rename-sheet -n <old> --new-name <new>` - Rename a sheet
+- `copy-sheet -n <name> --to <new>` - Copy a sheet to a new sheet
 
 **Data Operations:**
-- `read-sheet -t <name> [-f format] [-o file]` - Read sheet content (formats: markdown, csv, csv-raw)
-- `write-cell -t <name> -c <cell> -v <value>` - Write to a single cell
-- `write-cell -t <name> -r <range> -v <values>` - Write to a range (use `,` for columns, `;` for rows)
-- `append-row -t <name> -v <values>` - Append a row to the end
+- `read-sheet -n <name> [-f format] [-o file]` - Read sheet content (formats: markdown, csv, csv-raw)
+- `write-cell -n <name> -c <cell> -v <value>` - Write to a single cell
+- `write-cell -n <name> -r <range> -v <values>` - Write to a range (use `,` for columns, `;` for rows)
+- `append-row -n <name> -v <values>` - Append a row to the end
 
 **Import/Export:**
-- `import-csv -t <name> -f <file> [--skip-header]` - Import CSV file to a tab
-- `export -t <name> [-r range] -f <format> [-o file]` - Export to JSON or CSV
+- `import-csv -n <name> -f <file> [--skip-header] [--clear]` - Import CSV file to a sheet
+- `export -n <name> [-r range] -f <format> [-o file]` - Export to JSON or CSV
 
-**Backup/Restore:**
-- `backup -o <dir> [-t tab]` - Backup all tabs (or specific tab) in CSV format with formulas
-- `restore -i <dir> [-t tab] [--create-tabs]` - Restore from backup (preserves formulas)
 
 #### Utility Commands
 - `sheet-cmd update` - Self-update functionality
@@ -135,10 +132,10 @@ The `GoogleSheetsService` provides:
 - `writeCellRange(sheetName, range, values[][])` - Write to a range of cells (preserves formulas)
 - `appendRow(sheetName, values[])` - Append a new row to the end of a sheet
 
-**Tab Management:**
-- `addSheet(sheetName)` - Create a new tab/sheet
-- `removeSheet(sheetName)` - Delete a tab/sheet
-- `renameSheet(oldName, newName)` - Rename a tab/sheet
-- `copySheet(sheetName, newSheetName)` - Duplicate a tab/sheet
+**Sheet Management:**
+- `addSheet(sheetName)` - Create a new sheet
+- `removeSheet(sheetName)` - Delete a sheet
+- `renameSheet(oldName, newName)` - Rename a sheet
+- `copySheet(sheetName, newSheetName)` - Duplicate a sheet
 
 When extending the service, maintain the existing patterns and error handling.

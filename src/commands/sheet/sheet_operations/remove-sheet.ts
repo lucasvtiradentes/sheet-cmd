@@ -4,13 +4,12 @@ import { ConfigManager } from '../../../lib/config-manager.js';
 import { GoogleSheetsService } from '../../../lib/google-sheets.service.js';
 import { Logger } from '../../../lib/logger.js';
 
-export function createRenameTabCommand(): Command {
-  return new Command('rename-tab')
-    .description('Rename a tab/sheet in the spreadsheet')
-    .requiredOption('-t, --tab <name>', 'Current tab/sheet name')
-    .requiredOption('-n, --new-name <name>', 'New tab/sheet name')
+export function createRemoveSheetCommand(): Command {
+  return new Command('remove-sheet')
+    .description('Remove a sheet from the spreadsheet')
+    .requiredOption('-n, --name <name>', 'Sheet name to remove')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: { tab: string; newName: string; spreadsheet?: string }) => {
+    .action(async (options: { name: string; spreadsheet?: string }) => {
       try {
         const configManager = new ConfigManager();
 
@@ -39,12 +38,12 @@ export function createRenameTabCommand(): Command {
           privateKey: spreadsheet.private_key
         });
 
-        Logger.loading(`Renaming tab '${options.tab}' to '${options.newName}'...`);
-        await sheetsService.renameSheet(options.tab, options.newName);
+        Logger.loading(`Removing sheet '${options.name}'...`);
+        await sheetsService.removeSheet(options.name);
 
-        Logger.success(`Tab '${options.tab}' renamed to '${options.newName}' successfully`);
+        Logger.success(`Sheet '${options.name}' removed successfully`);
       } catch (error) {
-        Logger.error('Failed to rename tab', error);
+        Logger.error('Failed to remove sheet', error);
         process.exit(1);
       }
     });

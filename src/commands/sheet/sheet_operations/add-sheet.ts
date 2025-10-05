@@ -4,12 +4,12 @@ import { ConfigManager } from '../../../lib/config-manager.js';
 import { GoogleSheetsService } from '../../../lib/google-sheets.service.js';
 import { Logger } from '../../../lib/logger.js';
 
-export function createAddTabCommand(): Command {
-  return new Command('add-tab')
-    .description('Add a new tab/sheet to the spreadsheet')
-    .requiredOption('-t, --tab <name>', 'Tab/sheet name to create')
+export function createAddSheetCommand(): Command {
+  return new Command('add-sheet')
+    .description('Add a new sheet to the spreadsheet')
+    .requiredOption('-n, --name <name>', 'Sheet name to create')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: { tab: string; spreadsheet?: string }) => {
+    .action(async (options: { name: string; spreadsheet?: string }) => {
       try {
         const configManager = new ConfigManager();
 
@@ -38,12 +38,12 @@ export function createAddTabCommand(): Command {
           privateKey: spreadsheet.private_key
         });
 
-        Logger.loading(`Creating tab '${options.tab}'...`);
-        await sheetsService.addSheet(options.tab);
+        Logger.loading(`Creating sheet '${options.name}'...`);
+        await sheetsService.addSheet(options.name);
 
-        Logger.success(`Tab '${options.tab}' created successfully`);
+        Logger.success(`Sheet '${options.name}' created successfully`);
       } catch (error) {
-        Logger.error('Failed to add tab', error);
+        Logger.error('Failed to add sheet', error);
         process.exit(1);
       }
     });
