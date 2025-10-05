@@ -1,138 +1,18 @@
-import { spawn } from 'child_process';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-
-interface CommandResult {
-  stdout: string;
-  stderr: string;
-  exitCode: number;
-}
-
-async function execCommand(command: string, input?: string, timeout = 30000, homeDir?: string): Promise<CommandResult> {
-  return new Promise((resolve, reject) => {
-    const [cmd, ...args] = command.split(' ');
-    const child = spawn(cmd, args, {
-      cwd: path.resolve(__dirname, '../../..'),
-      env: {
-        ...process.env,
-        NODE_ENV: 'test',
-        ...(homeDir ? { HOME: homeDir } : {}),
-        CI: 'true',
-        FORCE_TTY: 'false',
-        FORCE_STDIN: 'true'
-      },
-      stdio: ['pipe', 'pipe', 'pipe']
-    });
-
-    let stdout = '';
-    let stderr = '';
-    let isResolved = false;
-
-    const timeoutId = setTimeout(() => {
-      if (!isResolved) {
-        child.kill('SIGTERM');
-        reject(new Error(`Command timed out after ${timeout}ms`));
-      }
-    }, timeout);
-
-    if (input && child.stdin) {
-      const lines = input.split('\n');
-      let index = 0;
-
-      const writeNext = () => {
-        if (index < lines.length && child.stdin && !child.stdin.destroyed) {
-          child.stdin.write(`${lines[index]}\n`);
-          index++;
-          if (index < lines.length) {
-            setTimeout(writeNext, 500);
-          }
-        }
-      };
-
-      setTimeout(writeNext, 1000);
-    }
-
-    child.stdout?.on('data', (data) => {
-      stdout += data.toString();
-    });
-
-    child.stderr?.on('data', (data) => {
-      stderr += data.toString();
-    });
-
-    child.on('close', (code) => {
-      if (!isResolved) {
-        isResolved = true;
-        clearTimeout(timeoutId);
-        resolve({
-          stdout,
-          stderr,
-          exitCode: code || 0
-        });
-      }
-    });
-
-    child.on('error', (error) => {
-      if (!isResolved) {
-        isResolved = true;
-        clearTimeout(timeoutId);
-        reject(error);
-      }
-    });
-  });
-}
+import { beforeEach, describe, expect, it } from 'vitest';
+import { loadGlobalFixtures } from '../global-fixtures';
+import { execCommand } from '../test-utils';
 
 describe('Sheet Operations E2E', () => {
-  const testHomeDir = path.join(os.tmpdir(), `sheet-cmd-e2e-${Date.now()}`);
-  const testConfigDir = path.join(testHomeDir, '.config', 'sheet-cmd');
+  let testHomeDir: string;
 
   beforeEach(async () => {
-    if (fs.existsSync(testHomeDir)) {
-      fs.rmSync(testHomeDir, { recursive: true, force: true });
+    const fixtures = loadGlobalFixtures();
+
+    if (!fixtures) {
+      throw new Error('Global fixtures not available. E2E tests require global setup.');
     }
 
-    fs.mkdirSync(testConfigDir, { recursive: true });
-
-    const userMetadataPath = path.join(testConfigDir, 'user_metadata.json');
-    const configPath = path.join(testConfigDir, 'config.json');
-
-    const spreadsheetId = process.env.SPREADSHEET_ID_E2E;
-    const serviceAccountEmail = process.env.SERVICE_ACCOUNT_EMAIL_E2E;
-    const privateKey = process.env.PRIVATE_KEY_E2E;
-
-    fs.writeFileSync(
-      userMetadataPath,
-      JSON.stringify({
-        config_path: configPath,
-        active_spreadsheet: 'test-sheet'
-      })
-    );
-
-    fs.writeFileSync(
-      configPath,
-      JSON.stringify(
-        {
-          spreadsheets: {
-            'test-sheet': {
-              name: 'test-sheet',
-              spreadsheet_id: spreadsheetId,
-              service_account_email: serviceAccountEmail,
-              private_key: privateKey
-            }
-          }
-        },
-        null,
-        2
-      )
-    );
-  });
-
-  afterEach(() => {
-    if (fs.existsSync(testHomeDir)) {
-      fs.rmSync(testHomeDir, { recursive: true, force: true });
-    }
+    testHomeDir = fixtures.testHomeDir;
   });
 
   it('should list tabs from the test spreadsheet', async () => {
