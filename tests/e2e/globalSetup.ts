@@ -70,9 +70,9 @@ export async function setup() {
 
     console.log('  ✓ Created test tab');
 
-    // Add some test data to the tab
+    // Add some test data to the tab (A1:C3 = 3 rows x 3 columns)
     const writeDataResult = await execCommand(
-      `npm run dev -- sheet write-cell -t "${testTabName}" -r A1:C2 -v "Name,Age,City;John,30,NYC;Jane,25,LA"`,
+      `npm run dev -- sheet write-cell -t "${testTabName}" -r A1:C3 -v "Name,Age,City;John,30,NYC;Jane,25,LA"`,
       undefined,
       15000,
       testHomeDir
@@ -80,6 +80,7 @@ export async function setup() {
 
     if (writeDataResult.exitCode !== 0) {
       console.log('  ⚠️  Warning: Failed to add test data (non-critical)');
+      console.log(`     Error: ${writeDataResult.stderr || writeDataResult.stdout}`);
     } else {
       console.log('  ✓ Added test data to tab');
     }
