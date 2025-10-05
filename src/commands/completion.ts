@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import chalk from 'chalk';
 import { Command } from 'commander';
 
+import { ConfigManager } from '../lib/config-manager.js';
 import { Logger } from '../lib/logger.js';
 
 const ZSH_COMPLETION_SCRIPT = `#compdef sheet-cmd
@@ -334,6 +335,10 @@ export function createCompletionCommand(): Command {
             Logger.info('💡 Please switch to a supported shell to use autocompletion');
             process.exit(1);
         }
+
+        // Mark completion as installed
+        const configManager = new ConfigManager();
+        configManager.markCompletionInstalled();
       } catch (error) {
         Logger.error('Failed to install completion', error);
         process.exit(1);
@@ -457,4 +462,112 @@ async function installBashCompletion(): Promise<void> {
   Logger.info('');
   Logger.info('Then restart your shell or run:');
   Logger.info(chalk.cyan('  source ~/.bashrc'));
+}
+
+/**
+ * Reinstall completion silently (used after update) - only if already installed
+ */
+export async function reinstallCompletionSilently(): Promise<boolean> {
+  const configManager = new ConfigManager();
+
+  // Only reinstall if user had previously installed completions
+  if (!configManager.isCompletionInstalled()) {
+    return false;
+  }
+
+  const shell = detectShell();
+
+  try {
+    switch (shell) {
+      case 'zsh':
+        await installZshCompletionSilent();
+        // Remove ZSH completion cache to force reload
+        await clearZshCompletionCache();
+        return true;
+      case 'bash':
+        await installBashCompletionSilent();
+        return true;
+      default:
+        return false;
+    }
+  } catch {
+    return false;
+  }
+}
+
+async function installZshCompletionSilent(): Promise<void> {
+  const homeDir = homedir();
+
+  const possibleDirs = [
+    join(homeDir, '.oh-my-zsh', 'completions'),
+    join(homeDir, '.zsh', 'completions'),
+    join(homeDir, '.config', 'zsh', 'completions'),
+    join(homeDir, '.local', 'share', 'zsh', 'site-functions'),
+    '/usr/local/share/zsh/site-functions'
+  ];
+
+  let targetDir: string | null = null;
+
+  for (const dir of possibleDirs) {
+    if (existsSync(dir)) {
+      try {
+        accessSync(dir, constants.W_OK);
+        targetDir = dir;
+        break;
+      } catch {/* continue */}
+    }
+  }
+
+  if (!targetDir) {
+    targetDir = join(homeDir, '.zsh', 'completions');
+    mkdirSync(targetDir, { recursive: true });
+  }
+
+  const completionFile = join(targetDir, '_sheet-cmd');
+  writeFileSync(completionFile, ZSH_COMPLETION_SCRIPT);
+}
+
+async function installBashCompletionSilent(): Promise<void> {
+  const homeDir = homedir();
+
+  const possibleDirs = [
+    join(homeDir, '.bash_completion.d'),
+    join(homeDir, '.local', 'share', 'bash-completion', 'completions'),
+    '/usr/local/etc/bash_completion.d',
+    '/etc/bash_completion.d'
+  ];
+
+  let targetDir: string | null = null;
+
+  for (const dir of possibleDirs) {
+    if (existsSync(dir)) {
+      try {
+        accessSync(dir, constants.W_OK);
+        targetDir = dir;
+        break;
+      } catch {/* continue */}
+    }
+  }
+
+  if (!targetDir) {
+    targetDir = join(homeDir, '.bash_completion.d');
+    mkdirSync(targetDir, { recursive: true });
+  }
+
+  const completionFile = join(targetDir, 'sheet-cmd');
+  writeFileSync(completionFile, BASH_COMPLETION_SCRIPT);
+}
+
+async function clearZshCompletionCache(): Promise<void> {
+  const homeDir = homedir();
+  const zshCacheFile = join(homeDir, '.zcompdump');
+
+  try {
+    if (existsSync(zshCacheFile)) {
+      const fs = await import('fs');
+      fs.unlinkSync(zshCacheFile);
+    }
+  } catch {
+    // Ignore errors - cache clearing is optional
+  }
 }

@@ -3,7 +3,7 @@
   <img width="64" src=".github/image/sheet.png" alt="Google Sheets logo">
 </a>
 <h2>Sheet cmd</h2>
-<p>A CLI tool to interact with Google Sheets - perfect for LLM integrations</p>
+<p>A CLI tool to interact with Google Sheets</p>
 <p>
   <a href="https://www.npmjs.com/package/sheet-cmd"><img src="https://img.shields.io/npm/v/sheet-cmd.svg" alt="npm version"></a>
   <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>

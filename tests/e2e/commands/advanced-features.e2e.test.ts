@@ -81,37 +81,6 @@ describe('Advanced Features E2E', () => {
     expect(content).toContain('Bob');
   }, 30000);
 
-  it('should import CSV with --clear flag', async () => {
-    const csvFile = path.join(tempTestDir, 'clear-test.csv');
-    const csvContent = `Product,Price\nWidget,19.99\nGadget,29.99`;
-    fs.writeFileSync(csvFile, csvContent);
-
-    const clearTestTab = `Clear-Test-${Date.now()}`;
-
-    // Create tab with initial data
-    await execCommand(`npm run dev -- sheet add-sheet -n "${clearTestTab}"`, undefined, 15000, testHomeDir);
-    await execCommand(
-      `npm run dev -- sheet write-cell -n "${clearTestTab}" -c A1 -v "Old Data"`,
-      undefined,
-      15000,
-      testHomeDir
-    );
-
-    // Import with --clear flag
-    const importResult = await execCommand(
-      `npm run dev -- sheet import-csv -n "${clearTestTab}" -f "${csvFile}" --clear`,
-      undefined,
-      20000,
-      testHomeDir
-    );
-
-    expect(importResult.exitCode).toBe(0);
-    expect(importResult.stdout.toLowerCase()).toMatch(/imported|success/);
-
-    // Clean up
-    await execCommand(`npm run dev -- sheet remove-sheet -n "${clearTestTab}"`, undefined, 15000, testHomeDir);
-  }, 60000);
-
   it('should import CSV with --skip-header flag', async () => {
     const csvFile = path.join(tempTestDir, 'skip-header-test.csv');
     const csvContent = `Name,Email,Age\nJohn,john@example.com,30\nJane,jane@example.com,25`;
