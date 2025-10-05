@@ -1,5 +1,11 @@
 # sheet-cmd
 
+## 1.0.5
+
+### Patch Changes
+
+- 308cf73: fix completion
+
 ## 1.0.4
 
 ### Patch Changes
