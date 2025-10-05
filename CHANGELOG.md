@@ -1,5 +1,11 @@
 # sheet-cmd
 
+## 1.0.4
+
+### Patch Changes
+
+- 3f34fb0: add e2e tests
+
 ## 1.0.3
 
 ### Patch Changes
