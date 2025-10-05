@@ -1,6 +1,6 @@
 {
   "name": "sheet-cmd",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "packageManager": "npm@10.9.0",
   "description": "A CLI tool to interact with Google Sheets - perfect for LLM integrations",
   "type": "module",
