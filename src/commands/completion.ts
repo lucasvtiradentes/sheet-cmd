@@ -156,7 +156,6 @@ _sheet_cmd_sheet() {
                         '-f[CSV file]:file:_files' \\
                         '--file[CSV file]:file:_files' \\
                         '--skip-header[Skip header row]' \\
-                        '--clear[Clear existing data before importing]' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
@@ -286,7 +285,7 @@ _sheet_cmd_completion() {
                         ;;
                     import-csv)
                         if [[ \\$cur == -* ]]; then
-                            COMPREPLY=(\\$(compgen -W "-n --name -f --file --skip-header --clear -s --spreadsheet" -- "\\$cur"))
+                            COMPREPLY=(\\$(compgen -W "-n --name -f --file --skip-header -s --spreadsheet" -- "\\$cur"))
                         elif [[ \\$prev == "-f" || \\$prev == "--file" ]]; then
                             COMPREPLY=(\\$(compgen -f -- "\\$cur"))
                         fi

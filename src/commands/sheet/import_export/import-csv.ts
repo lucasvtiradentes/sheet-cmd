@@ -1,9 +1,8 @@
 import { readFileSync } from 'fs';
 import { Command } from 'commander';
 
-import { ConfigManager } from '../../../lib/config-manager.js';
+import { getGoogleSheetsService } from '../../../lib/command-helpers.js';
 import { parseCSV } from '../../../lib/csv-parser.js';
-import { GoogleSheetsService } from '../../../lib/google-sheets.service.js';
 import { Logger } from '../../../lib/logger.js';
 
 export function createImportCsvCommand(): Command {
@@ -12,42 +11,15 @@ export function createImportCsvCommand(): Command {
     .requiredOption('-n, --name <name>', 'Sheet name')
     .requiredOption('-f, --file <path>', 'CSV file path')
     .option('--skip-header', 'Skip the first row (header) when importing')
-    .option('--clear', 'Clear existing data before importing')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
     .action(async (options: {
       name: string;
       file: string;
       skipHeader?: boolean;
-      clear?: boolean;
       spreadsheet?: string
     }) => {
       try {
-        const configManager = new ConfigManager();
-
-        let spreadsheetName = options.spreadsheet;
-
-        if (!spreadsheetName) {
-          const activeSpreadsheet = configManager.getActiveSpreadsheet();
-          if (!activeSpreadsheet) {
-            Logger.error('No spreadsheet specified and no active spreadsheet set.');
-            Logger.info('Use --spreadsheet flag or run: sheet-cmd spreadsheet switch <name>');
-            process.exit(1);
-          }
-          spreadsheetName = activeSpreadsheet.name;
-        }
-
-        const spreadsheet = configManager.getSpreadsheet(spreadsheetName);
-
-        if (!spreadsheet) {
-          Logger.error(`Spreadsheet '${spreadsheetName}' not found. Use "sheet-cmd spreadsheet add" to add one.`);
-          process.exit(1);
-        }
-
-        const sheetsService = new GoogleSheetsService({
-          spreadsheetId: spreadsheet.spreadsheet_id,
-          serviceAccountEmail: spreadsheet.service_account_email,
-          privateKey: spreadsheet.private_key
-        });
+        const sheetsService = await getGoogleSheetsService(options.spreadsheet);
 
         // Read and parse CSV
         Logger.loading(`Reading CSV file '${options.file}'...`);

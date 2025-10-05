@@ -154,23 +154,6 @@ export class ConfigManager {
     }));
   }
 
-  updateSpreadsheetCredentials(
-    name: string,
-    updates: Partial<Omit<SpreadsheetCredentials, 'name'>>
-  ): void {
-    const config = this.loadConfig();
-
-    if (!config.spreadsheets[name]) {
-      throw new Error(`Spreadsheet '${name}' not found`);
-    }
-
-    config.spreadsheets[name] = {
-      ...config.spreadsheets[name],
-      ...updates
-    };
-    this.saveConfig();
-  }
-
   // Active spreadsheet management
 
   setActiveSpreadsheet(name: string): void {

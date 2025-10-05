@@ -49,7 +49,7 @@ All sheet commands use the active spreadsheet if `-s` flag is not specified.
 - `append-row -n <name> -v <values>` - Append a row to the end
 
 **Import/Export:**
-- `import-csv -n <name> -f <file> [--skip-header] [--clear]` - Import CSV file to a sheet
+- `import-csv -n <name> -f <file> [--skip-header]` - Import CSV file to a sheet
 - `export -n <name> [-r range] -f <format> [-o file]` - Export to JSON or CSV
 
 
@@ -103,18 +103,37 @@ The `GoogleSheetsService` wraps the `google-spreadsheet` library:
 - Security is critical - credentials are stored locally and never exposed
 - The tool is designed to be LLM-friendly with clear, structured outputs
 
+## Command Helpers
+
+To avoid code duplication, use the shared helper function when creating sheet commands:
+
+```typescript
+import { getGoogleSheetsService } from '../../lib/command-helpers.js';
+
+// Instead of repeating ConfigManager and service initialization logic:
+const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+```
+
+This helper:
+- Loads config manager
+- Resolves active spreadsheet if none specified
+- Validates spreadsheet exists
+- Creates and returns GoogleSheetsService instance
+- Handles all error messages and exits
+
 ## Adding New Commands
 
 When adding a new command:
 
 1. Create a new file in `src/commands/sheet/` or `src/commands/spreadsheet/`
 2. Implement the command using Commander.js following existing patterns
-3. Export a factory function (e.g., `createYourCommand()`)
-4. Add the command to the appropriate index file
-5. Update shell completion scripts in `src/commands/completion.ts`
-6. Update help text in `src/cli.ts`
-7. Test with `npm run dev -- your-command`
-8. Build and verify with `npm run build`
+3. **Use `getGoogleSheetsService()` helper to eliminate boilerplate**
+4. Export a factory function (e.g., `createYourCommand()`)
+5. Add the command to the appropriate index file
+6. Update shell completion scripts in `src/commands/completion.ts`
+7. Update help text in `src/commands/help-text.ts`
+8. Test with `npm run dev -- your-command`
+9. Build and verify with `npm run build`
 
 ## Google Sheets Service
 
