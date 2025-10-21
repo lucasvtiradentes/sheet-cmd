@@ -33,3 +33,34 @@ export async function getGoogleSheetsService(): Promise<GoogleSheetsService> {
     oauthCredentials: refreshedCredentials
   });
 }
+
+export function getActiveSheetName(sheetName?: string): string {
+  if (sheetName) {
+    return sheetName;
+  }
+
+  const configManager = new ConfigManager();
+  const activeAccount = configManager.getActiveAccount();
+
+  if (!activeAccount) {
+    Logger.error('No active account set.');
+    Logger.info('Use: sheet-cmd account add');
+    process.exit(1);
+  }
+
+  const activeSpreadsheetName = configManager.getActiveSpreadsheetName(activeAccount.email);
+  if (!activeSpreadsheetName) {
+    Logger.error('No active spreadsheet set.');
+    Logger.info('Use: sheet-cmd spreadsheet select <name>');
+    process.exit(1);
+  }
+
+  const activeSheetName = configManager.getActiveSheetName(activeAccount.email, activeSpreadsheetName);
+  if (!activeSheetName) {
+    Logger.error('No active sheet set.');
+    Logger.info('Use: sheet-cmd sheet select');
+    process.exit(1);
+  }
+
+  return activeSheetName;
+}

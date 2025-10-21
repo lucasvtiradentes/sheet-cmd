@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
 import type { SheetRenameOptions } from '../../../definitions/command-types.js';
 import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
@@ -12,11 +12,12 @@ export function createRenameCommand(): Command {
     async (options: SheetRenameOptions) => {
       try {
         const sheetsService = await getGoogleSheetsService();
+        const sheetName = getActiveSheetName(options.name);
 
-        Logger.loading(`Renaming sheet '${options.name}' to '${options.newName}'...`);
-        await sheetsService.renameSheet(options.name, options.newName);
+        Logger.loading(`Renaming sheet '${sheetName}' to '${options.newName}'...`);
+        await sheetsService.renameSheet(sheetName, options.newName);
 
-        Logger.success(`Sheet '${options.name}' renamed to '${options.newName}' successfully`);
+        Logger.success(`Sheet '${sheetName}' renamed to '${options.newName}' successfully`);
       } catch (error) {
         Logger.error('Failed to rename sheet', error);
         process.exit(1);

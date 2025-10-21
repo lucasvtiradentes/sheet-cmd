@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
 import type { SheetAppendOptions } from '../../../definitions/command-types.js';
 import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
@@ -12,13 +12,14 @@ export function createAppendCommand(): Command {
     async (options: SheetAppendOptions) => {
       try {
         const sheetsService = await getGoogleSheetsService();
+        const sheetName = getActiveSheetName(options.name);
 
         const values = options.values.split(',').map((v) => v.trim());
 
-        Logger.loading(`Appending row to '${options.name}'...`);
-        await sheetsService.appendRow(options.name, values);
+        Logger.loading(`Appending row to '${sheetName}'...`);
+        await sheetsService.appendRow(sheetName, values);
 
-        Logger.success(`Row appended to '${options.name}' successfully`);
+        Logger.success(`Row appended to '${sheetName}' successfully`);
       } catch (error) {
         Logger.error('Failed to append row', error);
         process.exit(1);

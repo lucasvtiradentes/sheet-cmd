@@ -40,9 +40,13 @@ type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) exten
 
 export type SheetListOptions = Record<string, never>;
 
+export type SheetSelectOptions = {
+  name?: string;
+};
+
 export type SheetReadOptions = {
-  name: string;
-  output: 'markdown' | 'csv';
+  name?: string;
+  output?: 'markdown' | 'csv';
   formulas?: boolean;
   export?: string;
 };
@@ -52,40 +56,40 @@ export type SheetAddOptions = {
 };
 
 export type SheetRemoveOptions = {
-  name: string;
+  name?: string;
 };
 
 export type SheetRenameOptions = {
-  name: string;
+  name?: string;
   newName: string;
 };
 
 export type SheetCopyOptions = {
-  name: string;
+  name?: string;
   to: string;
 };
 
 export type SheetWriteOptions = {
-  name: string;
+  name?: string;
   cell?: string;
   range?: string;
   value: string;
 };
 
 export type SheetAppendOptions = {
-  name: string;
+  name?: string;
   value: string;
   values: string;
 };
 
 export type SheetImportOptions = {
-  name: string;
+  name?: string;
   file: string;
   skipHeader?: boolean;
 };
 
 export type SheetExportOptions = {
-  name: string;
+  name?: string;
   range?: string;
   format: 'json' | 'csv';
   output?: string;

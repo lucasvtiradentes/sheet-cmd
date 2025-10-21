@@ -302,6 +302,12 @@ sheet-cmd spreadsheet remove
 sheet-cmd sheet list
 ```
 
+**select** - Select a sheet (sets as active)
+
+```bash
+sheet-cmd sheet select
+```
+
 **read** - Read the complete content of a sheet
 
 ```bash

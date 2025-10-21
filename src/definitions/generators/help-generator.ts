@@ -3,11 +3,14 @@ import { APP_INFO, GOOGLE_CLOUD_CONSOLE_URLS } from '../../config/constants.js';
 import { COMMANDS_SCHEMA } from '../commands.js';
 import type { Command, SubCommand } from '../types.js';
 
-function formatFlag(flag: { name: string; description?: string; type?: string }): string {
+function formatFlag(flag: { name: string; description?: string; type?: string; required?: boolean }): string {
+  const requiredMarker = flag.required ? '*' : '';
+  const flagName = `${flag.name}${requiredMarker}`;
+
   if (flag.name.startsWith('--') || flag.name.startsWith('-')) {
-    return `      ${flag.name.padEnd(25)} ${flag.description || ''}`;
+    return `      ${flagName.padEnd(26)} ${flag.description || ''}`;
   }
-  return `    ${flag.name.padEnd(27)} ${flag.description || ''}`;
+  return `    ${flagName.padEnd(28)} ${flag.description || ''}`;
 }
 
 function formatSubCommand(sub: SubCommand, indent = 4): string {
@@ -80,6 +83,8 @@ ${chalk.bold('USAGE')}
 
 ${chalk.bold('COMMANDS')}
 ${commandsSection}
+${chalk.dim('* = required flag')}
+
 ${chalk.bold('EXAMPLES')}
 ${examplesSection}
 

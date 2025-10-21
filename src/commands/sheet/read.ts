@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { writeFileSync } from 'fs';
-import { getGoogleSheetsService } from '../../core/command-helpers.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../core/command-helpers.js';
 import { createSubCommandFromSchema } from '../../definitions/command-builder.js';
 import type { SheetReadOptions } from '../../definitions/command-types.js';
 import { CommandNames, SubCommandNames } from '../../definitions/types.js';
@@ -15,17 +15,19 @@ export function createReadCommand(): Command {
     SubCommandNames.SHEET_READ,
     async (options: SheetReadOptions) => {
       try {
+        const outputFormat = options.output ?? 'markdown';
         const validFormats: OutputFormat[] = ['markdown', 'csv'];
-        if (!validFormats.includes(options.output)) {
-          Logger.error(`Invalid output format '${options.output}'. Valid formats: ${validFormats.join(', ')}`);
+        if (!validFormats.includes(outputFormat)) {
+          Logger.error(`Invalid output format '${outputFormat}'. Valid formats: ${validFormats.join(', ')}`);
           process.exit(1);
         }
 
         const sheetsService = await getGoogleSheetsService();
+        const sheetName = getActiveSheetName(options.name);
 
-        Logger.loading(`Reading sheet '${options.name}'...`);
+        Logger.loading(`Reading sheet '${sheetName}'...`);
         const includeFormulas = options.formulas ?? false;
-        const data = await sheetsService.getSheetData(options.name, includeFormulas);
+        const data = await sheetsService.getSheetData(sheetName, includeFormulas);
 
         if (data.length === 0) {
           Logger.warning('Sheet is empty');
@@ -33,7 +35,7 @@ export function createReadCommand(): Command {
         }
 
         let output: string;
-        if (options.output === 'markdown') {
+        if (outputFormat === 'markdown') {
           output = formatAsMarkdown(data);
         } else {
           output = formatAsCSV(data);
@@ -43,7 +45,7 @@ export function createReadCommand(): Command {
           writeFileSync(options.export, output, 'utf-8');
           Logger.success(`Content exported to ${options.export}`);
         } else {
-          Logger.success(`Content of sheet '${options.name}':\n`);
+          Logger.success(`Content of sheet '${sheetName}':\n`);
           Logger.plain(output);
         }
       } catch (error) {

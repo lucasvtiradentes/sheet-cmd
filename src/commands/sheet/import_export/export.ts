@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { writeFileSync } from 'fs';
-import { getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
 import type { SheetExportOptions } from '../../../definitions/command-types.js';
 import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
@@ -22,14 +22,15 @@ export function createExportCommand(): Command {
         }
 
         const sheetsService = await getGoogleSheetsService();
+        const sheetName = getActiveSheetName(options.name);
 
-        Logger.loading(`Exporting data from '${options.name}'${options.range ? ` (range: ${options.range})` : ''}...`);
+        Logger.loading(`Exporting data from '${sheetName}'${options.range ? ` (range: ${options.range})` : ''}...`);
 
         let data: string[][];
         if (options.range) {
-          data = await sheetsService.getSheetDataRange(options.name, options.range);
+          data = await sheetsService.getSheetDataRange(sheetName, options.range);
         } else {
-          data = await sheetsService.getSheetData(options.name);
+          data = await sheetsService.getSheetData(sheetName);
         }
 
         if (data.length === 0) {

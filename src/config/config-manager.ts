@@ -335,6 +335,39 @@ export class ConfigManager {
     return account?.activeSpreadsheet || null;
   }
 
+  setActiveSheet(email: string, spreadsheetName: string, sheetName: string): void {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    const account = this.userMetadata.accounts[email];
+    if (!account) {
+      throw new Error(`Account '${email}' not found`);
+    }
+
+    const spreadsheet = account.spreadsheets[spreadsheetName];
+    if (!spreadsheet) {
+      throw new Error(`Spreadsheet '${spreadsheetName}' not found for account '${email}'`);
+    }
+
+    spreadsheet.activeSheet = sheetName;
+    this.saveUserMetadata();
+  }
+
+  getActiveSheetName(email: string, spreadsheetName: string): string | null {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    const account = this.userMetadata.accounts[email];
+    if (!account) {
+      return null;
+    }
+
+    const spreadsheet = account.spreadsheets[spreadsheetName];
+    return spreadsheet?.activeSheet || null;
+  }
+
   markCompletionInstalled(): void {
     const config = this.loadConfig();
     if (!config.settings) {

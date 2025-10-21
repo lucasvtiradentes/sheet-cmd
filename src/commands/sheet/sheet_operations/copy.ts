@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
 import type { SheetCopyOptions } from '../../../definitions/command-types.js';
 import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
@@ -12,11 +12,12 @@ export function createCopyCommand(): Command {
     async (options: SheetCopyOptions) => {
       try {
         const sheetsService = await getGoogleSheetsService();
+        const sheetName = getActiveSheetName(options.name);
 
-        Logger.loading(`Copying sheet '${options.name}' to '${options.to}'...`);
-        await sheetsService.copySheet(options.name, options.to);
+        Logger.loading(`Copying sheet '${sheetName}' to '${options.to}'...`);
+        await sheetsService.copySheet(sheetName, options.to);
 
-        Logger.success(`Sheet '${options.name}' copied to '${options.to}' successfully`);
+        Logger.success(`Sheet '${sheetName}' copied to '${options.to}' successfully`);
       } catch (error) {
         Logger.error('Failed to copy sheet', error);
         process.exit(1);

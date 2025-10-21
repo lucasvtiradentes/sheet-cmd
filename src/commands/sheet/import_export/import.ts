@@ -1,6 +1,6 @@
 import { Command } from 'commander';
 import { readFileSync } from 'fs';
-import { getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
 import type { SheetImportOptions } from '../../../definitions/command-types.js';
 import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
@@ -14,6 +14,7 @@ export function createImportCommand(): Command {
     async (options: SheetImportOptions) => {
       try {
         const sheetsService = await getGoogleSheetsService();
+        const sheetName = getActiveSheetName(options.name);
 
         Logger.loading(`Reading CSV file '${options.file}'...`);
         const csvContent = readFileSync(options.file, 'utf-8');
@@ -31,15 +32,15 @@ export function createImportCommand(): Command {
           process.exit(0);
         }
 
-        Logger.loading(`Importing ${dataToImport.length} rows to '${options.name}'...`);
+        Logger.loading(`Importing ${dataToImport.length} rows to '${sheetName}'...`);
 
         if (options.skipHeader) {
           if (dataToImport.length > 0) {
             const firstRowRange = `A1:${String.fromCharCode(65 + dataToImport[0].length - 1)}1`;
-            await sheetsService.writeCellRange(options.name, firstRowRange, [dataToImport[0]]);
+            await sheetsService.writeCellRange(sheetName, firstRowRange, [dataToImport[0]]);
 
             for (let i = 1; i < dataToImport.length; i++) {
-              await sheetsService.appendRow(options.name, dataToImport[i]);
+              await sheetsService.appendRow(sheetName, dataToImport[i]);
               if ((i + 1) % 10 === 0) {
                 Logger.loading(`Imported ${i + 1}/${dataToImport.length} rows...`);
               }
@@ -48,10 +49,10 @@ export function createImportCommand(): Command {
         } else {
           if (data.length > 0) {
             const headerRange = `A1:${String.fromCharCode(65 + data[0].length - 1)}1`;
-            await sheetsService.writeCellRange(options.name, headerRange, [data[0]]);
+            await sheetsService.writeCellRange(sheetName, headerRange, [data[0]]);
 
             for (let i = 1; i < data.length; i++) {
-              await sheetsService.appendRow(options.name, data[i]);
+              await sheetsService.appendRow(sheetName, data[i]);
               if ((i + 1) % 10 === 0) {
                 Logger.loading(`Imported ${i + 1}/${data.length} rows...`);
               }
@@ -59,7 +60,7 @@ export function createImportCommand(): Command {
           }
         }
 
-        Logger.success(`Successfully imported ${dataToImport.length} rows to '${options.name}'`);
+        Logger.success(`Successfully imported ${dataToImport.length} rows to '${sheetName}'`);
       } catch (error) {
         Logger.error('Failed to import CSV', error);
         process.exit(1);

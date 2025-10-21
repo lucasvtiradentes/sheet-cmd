@@ -54,6 +54,7 @@ export const SubCommandNames = {
   SPREADSHEET_REMOVE: 'remove',
 
   SHEET_LIST: 'list',
+  SHEET_SELECT: 'select',
   SHEET_READ: 'read',
   SHEET_ADD: 'add',
   SHEET_REMOVE: 'remove',

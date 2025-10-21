@@ -11,15 +11,27 @@ export const sheetCommandDefinition: Command = {
       examples: [`${APP_INFO.name} sheet list`]
     },
     {
+      name: SubCommandNames.SHEET_SELECT,
+      description: 'Select a sheet (sets as active)',
+      flags: [
+        {
+          name: '--name',
+          alias: '-n',
+          description: 'Tab name (skips interactive selection)',
+          type: 'string'
+        }
+      ],
+      examples: [`${APP_INFO.name} sheet select`]
+    },
+    {
       name: SubCommandNames.SHEET_READ,
       description: 'Read the complete content of a sheet',
       flags: [
         {
           name: '--name',
           alias: '-n',
-          description: 'Tab name',
-          type: 'string',
-          required: true
+          description: 'Tab name (uses active if not provided)',
+          type: 'string'
         },
         {
           name: '--output',
@@ -68,9 +80,8 @@ export const sheetCommandDefinition: Command = {
         {
           name: '--name',
           alias: '-n',
-          description: 'Tab name',
-          type: 'string',
-          required: true
+          description: 'Tab name (uses active if not provided)',
+          type: 'string'
         }
       ],
       examples: [`${APP_INFO.name} sheet remove -n "OldSheet"`]
@@ -82,9 +93,8 @@ export const sheetCommandDefinition: Command = {
         {
           name: '--name',
           alias: '-n',
-          description: 'Current tab name',
-          type: 'string',
-          required: true
+          description: 'Current tab name (uses active if not provided)',
+          type: 'string'
         },
         {
           name: '--new-name',
@@ -102,9 +112,8 @@ export const sheetCommandDefinition: Command = {
         {
           name: '--name',
           alias: '-n',
-          description: 'Source tab name',
-          type: 'string',
-          required: true
+          description: 'Source tab name (uses active if not provided)',
+          type: 'string'
         },
         {
           name: '--to',
@@ -122,9 +131,8 @@ export const sheetCommandDefinition: Command = {
         {
           name: '--name',
           alias: '-n',
-          description: 'Tab name',
-          type: 'string',
-          required: true
+          description: 'Tab name (uses active if not provided)',
+          type: 'string'
         },
         {
           name: '--cell',
@@ -158,9 +166,8 @@ export const sheetCommandDefinition: Command = {
         {
           name: '--name',
           alias: '-n',
-          description: 'Tab name',
-          type: 'string',
-          required: true
+          description: 'Tab name (uses active if not provided)',
+          type: 'string'
         },
         {
           name: '--value',
@@ -179,9 +186,8 @@ export const sheetCommandDefinition: Command = {
         {
           name: '--name',
           alias: '-n',
-          description: 'Tab name',
-          type: 'string',
-          required: true
+          description: 'Tab name (uses active if not provided)',
+          type: 'string'
         },
         {
           name: '--file',
@@ -208,9 +214,8 @@ export const sheetCommandDefinition: Command = {
         {
           name: '--name',
           alias: '-n',
-          description: 'Tab name',
-          type: 'string',
-          required: true
+          description: 'Tab name (uses active if not provided)',
+          type: 'string'
         },
         {
           name: '--range',

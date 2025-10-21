@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
 import type { SheetWriteOptions } from '../../../definitions/command-types.js';
 import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
@@ -23,10 +23,11 @@ export function createWriteCommand(): Command {
         }
 
         const sheetsService = await getGoogleSheetsService();
+        const sheetName = getActiveSheetName(options.name);
 
         if (options.cell) {
           Logger.loading(`Writing to cell ${options.cell}...`);
-          await sheetsService.writeCell(options.name, options.cell, options.value);
+          await sheetsService.writeCell(sheetName, options.cell, options.value);
           Logger.success(`Cell ${options.cell} updated successfully`);
         } else if (options.range) {
           const rows = options.value.split(';').map((row) => row.trim());
@@ -63,7 +64,7 @@ export function createWriteCommand(): Command {
           }
 
           Logger.loading(`Writing to range ${options.range}...`);
-          await sheetsService.writeCellRange(options.name, options.range, values);
+          await sheetsService.writeCellRange(sheetName, options.range, values);
           Logger.success(`Range ${options.range} updated successfully`);
         }
       } catch (error) {

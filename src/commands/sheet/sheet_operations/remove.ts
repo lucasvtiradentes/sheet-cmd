@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import { getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
 import type { SheetRemoveOptions } from '../../../definitions/command-types.js';
 import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
@@ -12,11 +12,12 @@ export function createRemoveCommand(): Command {
     async (options: SheetRemoveOptions) => {
       try {
         const sheetsService = await getGoogleSheetsService();
+        const sheetName = getActiveSheetName(options.name);
 
-        Logger.loading(`Removing sheet '${options.name}'...`);
-        await sheetsService.removeSheet(options.name);
+        Logger.loading(`Removing sheet '${sheetName}'...`);
+        await sheetsService.removeSheet(sheetName);
 
-        Logger.success(`Sheet '${options.name}' removed successfully`);
+        Logger.success(`Sheet '${sheetName}' removed successfully`);
       } catch (error) {
         Logger.error('Failed to remove sheet', error);
         process.exit(1);

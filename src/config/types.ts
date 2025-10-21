@@ -9,7 +9,8 @@ export const oauthCredentialsSchema = z.object({
 });
 
 export const spreadsheetConfigSchema = z.object({
-  spreadsheet_id: z.string()
+  spreadsheet_id: z.string(),
+  activeSheet: z.string().optional()
 });
 
 export const accountSchema = z.object({

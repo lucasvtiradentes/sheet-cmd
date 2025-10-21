@@ -11,11 +11,13 @@ import { createAddCommand } from './sheet_operations/add.js';
 import { createCopyCommand } from './sheet_operations/copy.js';
 import { createRemoveCommand } from './sheet_operations/remove.js';
 import { createRenameCommand } from './sheet_operations/rename.js';
+import { createSelectCommand } from './sheet_operations/select.js';
 
 export function createSheetCommand(): Command {
   const sheet = createCommandFromSchema(CommandNames.SHEET);
 
   sheet.addCommand(createListCommand());
+  sheet.addCommand(createSelectCommand());
   sheet.addCommand(createReadCommand());
   sheet.addCommand(createAddCommand());
   sheet.addCommand(createRemoveCommand());
