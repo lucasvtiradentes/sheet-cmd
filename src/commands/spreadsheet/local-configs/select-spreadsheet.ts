@@ -6,8 +6,8 @@ import { Logger } from '../../../utils/logger.js';
 
 export function createSelectSpreadsheetCommand(): Command {
   return new Command('select')
-    .description('Select a different spreadsheet (sets it as active for the current account)')
-    .argument('[name]', 'Name of the spreadsheet to select')
+    .description('Select a different spreadsheet (interactive - sets it as active for the current account)')
+    .argument('[name]', 'Name of the spreadsheet to select (optional - interactive if not provided)')
     .action(async (name?: string) => {
       try {
         const configManager = new ConfigManager();

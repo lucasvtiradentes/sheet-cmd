@@ -66,8 +66,8 @@ sheet-cmd update                    # Update to latest version
 ```bash
 sheet-cmd account add                   # Add Google account via OAuth
 sheet-cmd account list                  # List all accounts (* = active)
-sheet-cmd account select <email>        # Select active account
-sheet-cmd account remove <email>        # Remove account
+sheet-cmd account select                # Select active account (interactive)
+sheet-cmd account remove                # Remove account (interactive)
 sheet-cmd account reauth                # Re-authenticate active account
 ```
 
@@ -80,11 +80,10 @@ All spreadsheet commands use the active account.
 
 ```bash
 sheet-cmd spreadsheet add                      # Add spreadsheet (interactive - browse Google Drive)
-sheet-cmd spreadsheet add --id <spreadsheet-id> # Add spreadsheet by ID (manual entry)
 sheet-cmd spreadsheet list                     # List all spreadsheets (* = active)
-sheet-cmd spreadsheet select <name>            # Select active spreadsheet
+sheet-cmd spreadsheet select                   # Select active spreadsheet (interactive)
 sheet-cmd spreadsheet active                   # Show currently active spreadsheet
-sheet-cmd spreadsheet remove [name]            # Remove spreadsheet
+sheet-cmd spreadsheet remove                   # Remove spreadsheet (interactive)
 ```
 
 </details>
