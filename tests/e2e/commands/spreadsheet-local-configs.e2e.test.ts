@@ -31,7 +31,6 @@ describe('Spreadsheet Local Configs E2E', () => {
   }, 30000);
 
   it('should switch between spreadsheets (if multiple exist)', async () => {
-    // First check how many spreadsheets exist
     const listResult = await execCommand('npm run dev -- spreadsheet list', undefined, 15000, testHomeDir);
 
     if (!listResult.stdout.includes('e2e-test-spreadsheet')) {
@@ -39,7 +38,6 @@ describe('Spreadsheet Local Configs E2E', () => {
       return;
     }
 
-    // Try to switch to the same spreadsheet (should work)
     const switchResult = await execCommand(
       'npm run dev -- spreadsheet switch e2e-test-spreadsheet',
       undefined,

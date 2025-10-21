@@ -31,17 +31,13 @@ export function createWriteCellCommand(): Command {
           await sheetsService.writeCell(options.name, options.cell, options.value);
           Logger.success(`Cell ${options.cell} updated successfully`);
         } else if (options.range) {
-          // Parse value: semicolon separates rows, comma separates columns
-          // Example: "val1, val2; val3, val4" -> [["val1", "val2"], ["val3", "val4"]]
           const rows = options.value.split(';').map((row) => row.trim());
           const values = rows.map((row) => row.split(',').map((cell) => cell.trim()));
 
-          // Validate range dimensions match the provided values
           const rangeParts = options.range.split(':');
           if (rangeParts.length === 2) {
             const [startCell, endCell] = rangeParts;
 
-            // Extract row and column from cells (e.g., "A1" -> row=1, col=A)
             const startMatch = startCell.match(/^([A-Z]+)(\d+)$/);
             const endMatch = endCell.match(/^([A-Z]+)(\d+)$/);
 
@@ -51,15 +47,12 @@ export function createWriteCellCommand(): Command {
               const startCol = startMatch[1];
               const endCol = endMatch[1];
 
-              // Calculate expected dimensions
               const expectedRows = endRow - startRow + 1;
               const expectedCols = columnLetterToNumber(endCol) - columnLetterToNumber(startCol) + 1;
 
-              // Get actual dimensions
               const actualRows = values.length;
               const actualCols = Math.max(...values.map((row) => row.length));
 
-              // Validate dimensions
               if (actualRows !== expectedRows || actualCols !== expectedCols) {
                 Logger.error(
                   `Dimension mismatch: Range ${options.range} expects ${expectedRows}x${expectedCols} ` +

@@ -66,7 +66,6 @@ export function createUpdateCommand(): Command {
         Logger.dim(stdout);
       }
 
-      // Attempt to reinstall shell completions silently
       const completionReinstalled = await reinstallCompletionSilently();
       if (completionReinstalled) {
         Logger.dim('✨ Shell completion updated');
@@ -107,7 +106,6 @@ async function detectPackageManager(): Promise<string | null> {
     }
   }
 
-  // Default to npm if we can't determine
   return 'npm';
 }
 
@@ -115,13 +113,11 @@ async function getGlobalNpmPath(): Promise<string | null> {
   const isWindows = platform() === 'win32';
 
   try {
-    // Try to find the sheet-cmd executable
     const whereCommand = isWindows ? 'where' : 'which';
     const { stdout } = await execAsync(`${whereCommand} sheet-cmd`);
     const execPath = stdout.trim();
 
     if (execPath) {
-      // On Unix systems, this might be a symlink, so resolve it
       if (!isWindows) {
         try {
           const { stdout: realPath } = await execAsync(`readlink -f "${execPath}"`);
@@ -133,14 +129,12 @@ async function getGlobalNpmPath(): Promise<string | null> {
       return execPath;
     }
   } catch {
-    // If which/where fails, try npm list
     try {
       const { stdout } = await execAsync('npm list -g --depth=0 sheet-cmd');
       if (stdout.includes('sheet-cmd')) {
         return 'npm';
       }
     } catch {
-      // Continue to other methods
     }
   }
 

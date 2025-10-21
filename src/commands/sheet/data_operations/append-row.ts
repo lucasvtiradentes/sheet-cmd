@@ -13,7 +13,6 @@ export function createAppendRowCommand(): Command {
       try {
         const sheetsService = await getGoogleSheetsService(options.spreadsheet);
 
-        // Parse comma-separated values
         const values = options.values.split(',').map((v) => v.trim());
 
         Logger.loading(`Appending row to '${options.name}'...`);

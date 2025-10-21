@@ -61,7 +61,6 @@ export class GoogleSheetsService {
 
     await sheet.loadCells();
 
-    // Find the actual data range by finding the last row and column with content
     let lastRow = 0;
     let lastCol = 0;
 
@@ -77,7 +76,6 @@ export class GoogleSheetsService {
       }
     }
 
-    // If no data found, return empty array
     if (lastRow === 0 && lastCol === 0) {
       const firstCell = sheet.getCell(0, 0);
       const firstValue = includeFormulas && firstCell.formula ? firstCell.formula : (firstCell.formattedValue ?? '');
@@ -87,7 +85,6 @@ export class GoogleSheetsService {
       }
     }
 
-    // Build data array from 0 to lastRow and 0 to lastCol
     const data: string[][] = [];
     for (let row = 0; row <= lastRow; row++) {
       const rowData: string[] = [];
@@ -189,7 +186,6 @@ export class GoogleSheetsService {
 
     await sheet.loadCells(range);
 
-    // Parse range (e.g., "A1:B2")
     const [start, end] = range.split(':');
     const startCell = sheet.getCellByA1(start);
     const endCell = sheet.getCellByA1(end);
@@ -239,7 +235,6 @@ export class GoogleSheetsService {
 
     await sheet.loadCells(range);
 
-    // Parse range (e.g., "A1:B2")
     const [start, end] = range.split(':');
     const startCell = sheet.getCellByA1(start);
     const endCell = sheet.getCellByA1(end);

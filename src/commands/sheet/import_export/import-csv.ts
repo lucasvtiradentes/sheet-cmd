@@ -16,7 +16,6 @@ export function createImportCsvCommand(): Command {
       try {
         const sheetsService = await getGoogleSheetsService(options.spreadsheet);
 
-        // Read and parse CSV
         Logger.loading(`Reading CSV file '${options.file}'...`);
         const csvContent = readFileSync(options.file, 'utf-8');
         const data = parseCSV(csvContent);
@@ -26,7 +25,6 @@ export function createImportCsvCommand(): Command {
           process.exit(0);
         }
 
-        // Skip header if requested
         const dataToImport = options.skipHeader ? data.slice(1) : data;
 
         if (dataToImport.length === 0) {
@@ -37,14 +35,10 @@ export function createImportCsvCommand(): Command {
         Logger.loading(`Importing ${dataToImport.length} rows to '${options.name}'...`);
 
         if (options.skipHeader) {
-          // When skipping header, write all data rows starting from A1
-          // We need to write at least the first row to establish headers for appendRow to work
           if (dataToImport.length > 0) {
-            // Write first data row as if it were headers (required by Google Sheets API)
             const firstRowRange = `A1:${String.fromCharCode(65 + dataToImport[0].length - 1)}1`;
             await sheetsService.writeCellRange(options.name, firstRowRange, [dataToImport[0]]);
 
-            // Append remaining rows
             for (let i = 1; i < dataToImport.length; i++) {
               await sheetsService.appendRow(options.name, dataToImport[i]);
               if ((i + 1) % 10 === 0) {
@@ -53,13 +47,10 @@ export function createImportCsvCommand(): Command {
             }
           }
         } else {
-          // Normal import: write header row first, then append data rows
           if (data.length > 0) {
-            // Write first row (headers) using writeCellRange
             const headerRange = `A1:${String.fromCharCode(65 + data[0].length - 1)}1`;
             await sheetsService.writeCellRange(options.name, headerRange, [data[0]]);
 
-            // Import remaining rows one by one
             for (let i = 1; i < data.length; i++) {
               await sheetsService.appendRow(options.name, data[i]);
               if ((i + 1) % 10 === 0) {

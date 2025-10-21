@@ -14,7 +14,6 @@ export async function execCommand(
   homeDir?: string
 ): Promise<CommandResult> {
   return new Promise((resolve, reject) => {
-    // Parse command respecting quoted arguments
     const parts: string[] = [];
     let current = '';
     let inQuotes = false;

@@ -22,7 +22,6 @@ describe('Sheet List Sheets E2E', () => {
     expect(listSheetsResult.stdout).toContain('Sheets');
     expect(listSheetsResult.stdout).toContain('sheet-cmd-test');
 
-    // Should list at least one sheet
     expect(listSheetsResult.stdout.length).toBeGreaterThan(0);
   }, 30000);
 });

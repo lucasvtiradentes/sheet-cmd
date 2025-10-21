@@ -7,7 +7,6 @@ import { clearGlobalFixtures, loadGlobalFixtures, saveGlobalFixtures } from './g
 import { execCommand } from './test-utils';
 
 export async function setup() {
-  // Check if we should create global fixtures
   const spreadsheetId = process.env.SPREADSHEET_ID_E2E;
   const serviceAccountEmail = process.env.SERVICE_ACCOUNT_EMAIL_E2E;
   const privateKey = process.env.PRIVATE_KEY_E2E;
@@ -23,7 +22,6 @@ export async function setup() {
   const testConfigDir = path.join(testHomeDir, '.config', 'sheet-cmd');
 
   try {
-    // Setup test home directory
     fs.mkdirSync(testConfigDir, { recursive: true });
 
     const userMetadataPath = path.join(testConfigDir, 'user_metadata.json');
@@ -59,7 +57,6 @@ export async function setup() {
 
     console.log('  ✓ Created test configuration');
 
-    // Create test sheet with sample data
     const testTabName = `E2E-Test-Sheet-${Date.now()}`;
     const addSheetResult = await execCommand(
       `npm run dev -- sheet add-sheet -n "${testTabName}"`,
@@ -74,7 +71,6 @@ export async function setup() {
 
     console.log('  ✓ Created test sheet');
 
-    // Add some test data to the sheet (A1:C3 = 3 rows x 3 columns)
     const writeDataResult = await execCommand(
       `npm run dev -- sheet write-cell -n "${testTabName}" -r A1:C3 -v "Name,Age,City;John,30,NYC;Jane,25,LA"`,
       undefined,
@@ -89,7 +85,6 @@ export async function setup() {
       console.log('  ✓ Added test data to sheet');
     }
 
-    // Save fixtures
     saveGlobalFixtures({
       testTabName,
       spreadsheetName,
@@ -99,7 +94,6 @@ export async function setup() {
     console.log('✅ Global fixtures created successfully\n');
   } catch (error) {
     console.error('❌ Failed to create global fixtures:', error);
-    // Clean up partial setup
     if (fs.existsSync(testHomeDir)) {
       fs.rmSync(testHomeDir, { recursive: true, force: true });
     }
@@ -130,7 +124,6 @@ export async function teardown() {
 
     const { testTabName, testHomeDir } = fixtures;
 
-    // Delete test sheet
     if (testTabName) {
       const deleteResult = await execCommand(
         `npm run dev -- sheet remove-sheet -n "${testTabName}"`,
@@ -146,13 +139,11 @@ export async function teardown() {
       }
     }
 
-    // Clean up test home directory
     if (fs.existsSync(testHomeDir)) {
       fs.rmSync(testHomeDir, { recursive: true, force: true });
       console.log('  ✓ Cleaned up test directory');
     }
 
-    // Clear fixtures file
     clearGlobalFixtures();
 
     console.log('✅ Global fixtures cleaned up successfully\n');

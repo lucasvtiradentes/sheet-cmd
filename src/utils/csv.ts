@@ -12,15 +12,12 @@ export function parseCSV(content: string): string[][] {
 
       if (char === '"') {
         if (inQuotes && line[i + 1] === '"') {
-          // Escaped quote
           current += '"';
           i++;
         } else {
-          // Toggle quote mode
           inQuotes = !inQuotes;
         }
       } else if (char === ',' && !inQuotes) {
-        // End of field
         row.push(current.trim());
         current = '';
       } else {
@@ -28,7 +25,6 @@ export function parseCSV(content: string): string[][] {
       }
     }
 
-    // Add last field
     row.push(current.trim());
     result.push(row);
   }

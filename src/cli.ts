@@ -23,7 +23,6 @@ program.addCommand(createSheetCommand());
 program.addCommand(createUpdateCommand());
 program.addCommand(createCompletionCommand());
 
-// Global help improvements
 program.configureHelp({
   sortSubcommands: true,
   subcommandTerm: (cmd) => cmd.name()
@@ -33,10 +32,8 @@ program.on('--help', () => {
   displayHelpText();
 });
 
-// Parse arguments
 program.parse();
 
-// If no command provided, show help
 if (!process.argv.slice(2).length) {
   program.outputHelp();
 }

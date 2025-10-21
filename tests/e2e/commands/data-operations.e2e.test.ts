@@ -30,7 +30,6 @@ describe('Data Operations E2E', () => {
   }, 30000);
 
   it('should write to a range of cells', async () => {
-    // Write a larger range with more realistic data (5 rows x 4 columns)
     const writeResult = await execCommand(
       `npm run dev -- sheet write-cell -n "${testTabName}" -r A1:D5 -v "Product,Price,Quantity,Total;Laptop,999.99,2,1999.98;Mouse,29.99,5,149.95;Keyboard,79.99,3,239.97;Monitor,299.99,1,299.99"`,
       undefined,
@@ -56,7 +55,6 @@ describe('Data Operations E2E', () => {
   }, 30000);
 
   it('should append multiple rows', async () => {
-    // Append first row
     const appendResult1 = await execCommand(
       `npm run dev -- sheet append-row -n "${testTabName}" -v "Scanner,149.99,2,299.98"`,
       undefined,
@@ -65,7 +63,6 @@ describe('Data Operations E2E', () => {
     );
     expect(appendResult1.exitCode).toBe(0);
 
-    // Append second row
     const appendResult2 = await execCommand(
       `npm run dev -- sheet append-row -n "${testTabName}" -v "Webcam,89.99,4,359.96"`,
       undefined,
@@ -74,7 +71,6 @@ describe('Data Operations E2E', () => {
     );
     expect(appendResult2.exitCode).toBe(0);
 
-    // Append third row
     const appendResult3 = await execCommand(
       `npm run dev -- sheet append-row -n "${testTabName}" -v "Headset,59.99,3,179.97"`,
       undefined,
@@ -86,7 +82,6 @@ describe('Data Operations E2E', () => {
   }, 60000);
 
   it('should read sheet content in different formats', async () => {
-    // Test markdown format (default with -o flag)
     const markdownResult = await execCommand(
       `npm run dev -- sheet read-sheet -n "${testTabName}" -o markdown`,
       undefined,
@@ -96,7 +91,6 @@ describe('Data Operations E2E', () => {
     expect(markdownResult.exitCode).toBe(0);
     expect(markdownResult.stdout).toContain('Content of sheet');
 
-    // Test CSV format
     const csvResult = await execCommand(
       `npm run dev -- sheet read-sheet -n "${testTabName}" -o csv`,
       undefined,

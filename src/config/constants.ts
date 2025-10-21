@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Read version from package.json
 const packageJsonPath = path.join(__dirname, '..', 'package.json');
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
@@ -28,7 +27,6 @@ export function getUserOS(): SupportedOS {
         return 'wsl';
       }
     } catch {
-      // Ignore error and fallback to linux
     }
     return 'linux';
   }

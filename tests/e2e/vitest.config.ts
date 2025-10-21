@@ -18,7 +18,6 @@ export default defineConfig({
     env: {
       NODE_ENV: 'e2e'
     },
-    // Run E2E tests sequentially to avoid API rate limits
     pool: 'threads',
     poolOptions: {
       threads: {

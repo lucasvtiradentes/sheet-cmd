@@ -47,7 +47,6 @@ describe('Sheet Operations E2E', () => {
     expect(renameResult.exitCode).toBe(0);
     expect(renameResult.stdout.toLowerCase()).toMatch(/renamed|success/);
 
-    // Verify the rename - wait a bit for Google Sheets to update
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     const listResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
@@ -68,7 +67,6 @@ describe('Sheet Operations E2E', () => {
     expect(copyResult.exitCode).toBe(0);
     expect(copyResult.stdout.toLowerCase()).toMatch(/copied|success/);
 
-    // Verify the copy exists
     const listResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
     expect(listResult.stdout).toContain(copiedTabName);
   }, 45000);
@@ -77,7 +75,6 @@ describe('Sheet Operations E2E', () => {
     const renamedTabName = `${uniqueTabName}-Renamed`;
     const copiedTabName = `${uniqueTabName}-Copy`;
 
-    // Remove the renamed tab
     const removeResult1 = await execCommand(
       `npm run dev -- sheet remove-sheet -n "${renamedTabName}"`,
       undefined,
@@ -86,7 +83,6 @@ describe('Sheet Operations E2E', () => {
     );
     expect(removeResult1.exitCode).toBe(0);
 
-    // Remove the copied tab
     const removeResult2 = await execCommand(
       `npm run dev -- sheet remove-sheet -n "${copiedTabName}"`,
       undefined,
@@ -95,7 +91,6 @@ describe('Sheet Operations E2E', () => {
     );
     expect(removeResult2.exitCode).toBe(0);
 
-    // Verify both are gone
     const listResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
     expect(listResult.stdout).not.toContain(renamedTabName);
     expect(listResult.stdout).not.toContain(copiedTabName);
