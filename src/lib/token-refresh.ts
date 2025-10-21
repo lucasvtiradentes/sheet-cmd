@@ -15,10 +15,7 @@ export async function refreshTokenIfNeeded(credentials: OAuthCredentials): Promi
 }
 
 export async function refreshToken(credentials: OAuthCredentials): Promise<OAuthCredentials> {
-  const oauth2Client = new OAuth2Client(
-    credentials.client_id,
-    credentials.client_secret
-  );
+  const oauth2Client = new OAuth2Client(credentials.client_id, credentials.client_secret);
 
   oauth2Client.setCredentials({
     refresh_token: credentials.refresh_token

@@ -20,7 +20,9 @@ export function createRemoveAccountCommand(): Command {
 
         const spreadsheetCount = Object.keys(account.spreadsheets).length;
         if (spreadsheetCount > 0) {
-          Logger.warning(`This will remove ${spreadsheetCount} spreadsheet${spreadsheetCount !== 1 ? 's' : ''} associated with this account.`);
+          Logger.warning(
+            `This will remove ${spreadsheetCount} spreadsheet${spreadsheetCount !== 1 ? 's' : ''} associated with this account.`
+          );
         }
 
         await configManager.removeAccount(email);

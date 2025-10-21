@@ -1,6 +1,5 @@
 import './load-env';
 
-import { execSync } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -62,7 +61,12 @@ export async function setup() {
 
     // Create test sheet with sample data
     const testTabName = `E2E-Test-Sheet-${Date.now()}`;
-    const addSheetResult = await execCommand(`npm run dev -- sheet add-sheet -n "${testTabName}"`, undefined, 15000, testHomeDir);
+    const addSheetResult = await execCommand(
+      `npm run dev -- sheet add-sheet -n "${testTabName}"`,
+      undefined,
+      15000,
+      testHomeDir
+    );
 
     if (addSheetResult.exitCode !== 0) {
       throw new Error(`Failed to create test sheet: ${addSheetResult.stderr}`);

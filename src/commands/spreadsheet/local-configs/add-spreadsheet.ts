@@ -55,7 +55,7 @@ export function createAddSpreadsheetCommand(): Command {
             process.exit(0);
           }
 
-          const choices = spreadsheets.map(s => ({
+          const choices = spreadsheets.map((s) => ({
             name: `${s.name} (Modified: ${new Date(s.modifiedTime).toLocaleDateString()})`,
             value: { id: s.id, name: s.name }
           }));
@@ -86,11 +86,7 @@ export function createAddSpreadsheetCommand(): Command {
           name = selection.localName;
         }
 
-        await configManager.addSpreadsheet(
-          activeAccount.email,
-          name,
-          spreadsheetId
-        );
+        await configManager.addSpreadsheet(activeAccount.email, name, spreadsheetId);
 
         const spreadsheets = configManager.listSpreadsheets(activeAccount.email);
         if (spreadsheets.length === 1) {

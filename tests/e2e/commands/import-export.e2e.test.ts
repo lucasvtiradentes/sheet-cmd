@@ -1,7 +1,7 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { beforeEach, describe, expect, it, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadGlobalFixtures } from '../global-fixtures';
 import { execCommand } from '../test-utils';
 

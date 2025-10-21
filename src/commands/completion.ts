@@ -545,7 +545,9 @@ async function installZshCompletionSilent(): Promise<void> {
         accessSync(dir, constants.W_OK);
         targetDir = dir;
         break;
-      } catch {/* continue */}
+      } catch {
+        /* continue */
+      }
     }
   }
 
@@ -576,7 +578,9 @@ async function installBashCompletionSilent(): Promise<void> {
         accessSync(dir, constants.W_OK);
         targetDir = dir;
         break;
-      } catch {/* continue */}
+      } catch {
+        /* continue */
+      }
     }
   }
 

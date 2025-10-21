@@ -1,5 +1,5 @@
-import { readFileSync } from 'fs';
 import { Command } from 'commander';
+import { readFileSync } from 'fs';
 
 import { getGoogleSheetsService } from '../../../lib/command-helpers.js';
 import { parseCSV } from '../../../lib/csv-parser.js';
@@ -12,12 +12,7 @@ export function createImportCsvCommand(): Command {
     .requiredOption('-f, --file <path>', 'CSV file path')
     .option('--skip-header', 'Skip the first row (header) when importing')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: {
-      name: string;
-      file: string;
-      skipHeader?: boolean;
-      spreadsheet?: string
-    }) => {
+    .action(async (options: { name: string; file: string; skipHeader?: boolean; spreadsheet?: string }) => {
       try {
         const sheetsService = await getGoogleSheetsService(options.spreadsheet);
 

@@ -18,10 +18,7 @@ export class GoogleDriveService {
   }
 
   async listSpreadsheets(): Promise<DriveSpreadsheet[]> {
-    const oauth2Client = new google.auth.OAuth2(
-      this.credentials.client_id,
-      this.credentials.client_secret
-    );
+    const oauth2Client = new google.auth.OAuth2(this.credentials.client_id, this.credentials.client_secret);
 
     oauth2Client.setCredentials({
       access_token: this.credentials.access_token,
@@ -32,7 +29,9 @@ export class GoogleDriveService {
     Logger.info('Checking access token...');
     const tokenInfo = await oauth2Client.getTokenInfo(this.credentials.access_token || '');
     Logger.info(`Token scopes: ${tokenInfo.scopes?.join(', ') || 'none'}`);
-    Logger.info(`Token expires at: ${this.credentials.expiry_date ? new Date(this.credentials.expiry_date).toLocaleString() : 'unknown'}`);
+    Logger.info(
+      `Token expires at: ${this.credentials.expiry_date ? new Date(this.credentials.expiry_date).toLocaleString() : 'unknown'}`
+    );
 
     const drive = google.drive({ version: 'v3', auth: oauth2Client });
 
@@ -49,7 +48,7 @@ export class GoogleDriveService {
       const files = response.data.files || [];
       Logger.info(`Found ${files.length} spreadsheet(s)`);
 
-      return files.map(file => ({
+      return files.map((file) => ({
         id: file.id || '',
         name: file.name || 'Untitled',
         modifiedTime: file.modifiedTime || '',

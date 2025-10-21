@@ -7,7 +7,12 @@ export interface CommandResult {
   exitCode: number;
 }
 
-export async function execCommand(command: string, input?: string, timeout = 30000, homeDir?: string): Promise<CommandResult> {
+export async function execCommand(
+  command: string,
+  input?: string,
+  timeout = 30000,
+  homeDir?: string
+): Promise<CommandResult> {
   return new Promise((resolve, reject) => {
     // Parse command respecting quoted arguments
     const parts: string[] = [];

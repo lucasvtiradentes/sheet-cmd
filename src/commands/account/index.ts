@@ -1,8 +1,8 @@
 import { Command } from 'commander';
 import { createAddAccountCommand } from './add-account.js';
 import { createListAccountsCommand } from './list-accounts.js';
-import { createRemoveAccountCommand } from './remove-account.js';
 import { createReauthAccountCommand } from './reauth-account.js';
+import { createRemoveAccountCommand } from './remove-account.js';
 import { createSwitchAccountCommand } from './switch-account.js';
 
 export function createAccountCommand(): Command {

@@ -1,7 +1,7 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { beforeEach, describe, expect, it, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { loadGlobalFixtures } from '../global-fixtures';
 import { execCommand } from '../test-utils';
 
@@ -89,7 +89,12 @@ describe('Advanced Features E2E', () => {
     const skipHeaderTab = `Skip-Header-${Date.now()}`;
 
     // Create sheet
-    const createResult = await execCommand(`npm run dev -- sheet add-sheet -n "${skipHeaderTab}"`, undefined, 15000, testHomeDir);
+    const createResult = await execCommand(
+      `npm run dev -- sheet add-sheet -n "${skipHeaderTab}"`,
+      undefined,
+      15000,
+      testHomeDir
+    );
 
     if (createResult.exitCode !== 0) {
       console.log('Failed to create sheet:', createResult.stderr);

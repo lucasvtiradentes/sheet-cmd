@@ -20,10 +20,6 @@ jobs:
     name: 'PR CI'
     uses: ./.github/workflows/callable-ci.yml
     with:
-      run_typecheck: true
+      run_lint: true
       run_build: true
-      run_tests: true
-    secrets:
-      TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-      TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
 

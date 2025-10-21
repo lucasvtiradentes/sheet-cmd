@@ -1,5 +1,5 @@
-import http from 'http';
 import { OAuth2Client } from 'google-auth-library';
+import http from 'http';
 import { GOOGLE_API_URLS, OAUTH_CONFIG, OAUTH_SCOPES } from '../constants.js';
 import type { OAuthCredentials } from '../types/local.js';
 import { Logger } from './logger.js';
@@ -9,10 +9,7 @@ interface OAuthFlowResult {
   credentials: OAuthCredentials;
 }
 
-export async function performOAuthFlow(
-  clientId: string,
-  clientSecret: string
-): Promise<OAuthFlowResult> {
+export async function performOAuthFlow(clientId: string, clientSecret: string): Promise<OAuthFlowResult> {
   const port = await getRandomAvailablePort();
   const redirectUri = `http://${OAUTH_CONFIG.REDIRECT_HOST}:${port}${OAUTH_CONFIG.REDIRECT_PATH}`;
 
@@ -20,11 +17,7 @@ export async function performOAuthFlow(
 
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: OAUTH_CONFIG.ACCESS_TYPE,
-    scope: [
-      OAUTH_SCOPES.SPREADSHEETS,
-      OAUTH_SCOPES.DRIVE_READONLY,
-      OAUTH_SCOPES.USERINFO_EMAIL
-    ],
+    scope: [OAUTH_SCOPES.SPREADSHEETS, OAUTH_SCOPES.DRIVE_READONLY, OAUTH_SCOPES.USERINFO_EMAIL],
     prompt: OAUTH_CONFIG.PROMPT
   });
 
@@ -39,7 +32,7 @@ export async function performOAuthFlow(
   const userInfo = await fetch(GOOGLE_API_URLS.USERINFO, {
     headers: { Authorization: `Bearer ${tokens.access_token}` }
   });
-  const userData = await userInfo.json() as { email: string };
+  const userData = (await userInfo.json()) as { email: string };
 
   if (!tokens.refresh_token) {
     throw new Error('No refresh token received. Try revoking app access and re-authenticating.');

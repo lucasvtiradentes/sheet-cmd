@@ -12,13 +12,7 @@ export function createWriteCellCommand(): Command {
     .option('-r, --range <range>', 'Cell range (e.g., A1:B2)')
     .requiredOption('-v, --value <value>', 'Value to write (for range: use comma for columns, semicolon for rows)')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: {
-      name: string;
-      cell?: string;
-      range?: string;
-      value: string;
-      spreadsheet?: string
-    }) => {
+    .action(async (options: { name: string; cell?: string; range?: string; value: string; spreadsheet?: string }) => {
       try {
         if (!options.cell && !options.range) {
           Logger.error('Either --cell or --range must be specified');
@@ -39,10 +33,8 @@ export function createWriteCellCommand(): Command {
         } else if (options.range) {
           // Parse value: semicolon separates rows, comma separates columns
           // Example: "val1, val2; val3, val4" -> [["val1", "val2"], ["val3", "val4"]]
-          const rows = options.value.split(';').map(row => row.trim());
-          const values = rows.map(row =>
-            row.split(',').map(cell => cell.trim())
-          );
+          const rows = options.value.split(';').map((row) => row.trim());
+          const values = rows.map((row) => row.split(',').map((cell) => cell.trim()));
 
           // Validate range dimensions match the provided values
           const rangeParts = options.range.split(':');
@@ -54,8 +46,8 @@ export function createWriteCellCommand(): Command {
             const endMatch = endCell.match(/^([A-Z]+)(\d+)$/);
 
             if (startMatch && endMatch) {
-              const startRow = parseInt(startMatch[2]);
-              const endRow = parseInt(endMatch[2]);
+              const startRow = parseInt(startMatch[2], 10);
+              const endRow = parseInt(endMatch[2], 10);
               const startCol = startMatch[1];
               const endCol = endMatch[1];
 
@@ -65,13 +57,13 @@ export function createWriteCellCommand(): Command {
 
               // Get actual dimensions
               const actualRows = values.length;
-              const actualCols = Math.max(...values.map(row => row.length));
+              const actualCols = Math.max(...values.map((row) => row.length));
 
               // Validate dimensions
               if (actualRows !== expectedRows || actualCols !== expectedCols) {
                 Logger.error(
                   `Dimension mismatch: Range ${options.range} expects ${expectedRows}x${expectedCols} ` +
-                  `but got ${actualRows}x${actualCols} values`
+                    `but got ${actualRows}x${actualCols} values`
                 );
                 Logger.info(`Tip: Provide ${expectedRows} rows with ${expectedCols} columns each`);
                 process.exit(1);

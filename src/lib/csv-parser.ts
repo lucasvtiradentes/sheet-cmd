@@ -23,7 +23,7 @@
  * ```
  */
 export function parseCSV(content: string): string[][] {
-  const lines = content.split('\n').filter(line => line.trim() !== '');
+  const lines = content.split('\n').filter((line) => line.trim() !== '');
   const result: string[][] = [];
 
   for (const line of lines) {

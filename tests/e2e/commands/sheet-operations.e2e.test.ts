@@ -17,7 +17,12 @@ describe('Sheet Operations E2E', () => {
   });
 
   it('should add a new tab', async () => {
-    const addResult = await execCommand(`npm run dev -- sheet add-sheet -n "${uniqueTabName}"`, undefined, 15000, testHomeDir);
+    const addResult = await execCommand(
+      `npm run dev -- sheet add-sheet -n "${uniqueTabName}"`,
+      undefined,
+      15000,
+      testHomeDir
+    );
 
     expect(addResult.exitCode).toBe(0);
     expect(addResult.stdout.toLowerCase()).toMatch(/created|success/);
