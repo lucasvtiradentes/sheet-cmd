@@ -42,6 +42,7 @@
     "commander": "^14.0.0",
     "google-auth-library": "^9.14.2",
     "google-spreadsheet": "^4.1.4",
+    "googleapis": "^164.1.0",
     "inquirer": "^12.7.0",
     "zod": "^4.0.5"
   },

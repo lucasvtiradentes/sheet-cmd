@@ -1,21 +1,26 @@
-import { JWT } from 'google-auth-library';
+import { OAuth2Client } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
+import type { OAuthCredentials } from '../types/local.js';
 
 export interface GoogleSheetsConfig {
   spreadsheetId: string;
-  serviceAccountEmail: string;
-  privateKey: string;
+  oauthCredentials: OAuthCredentials;
 }
 
 export class GoogleSheetsService {
   private doc: GoogleSpreadsheet | null = null;
-  private auth: JWT;
+  private auth: OAuth2Client;
 
   constructor(private config: GoogleSheetsConfig) {
-    this.auth = new JWT({
-      email: config.serviceAccountEmail,
-      key: config.privateKey,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+    this.auth = new OAuth2Client(
+      config.oauthCredentials.client_id,
+      config.oauthCredentials.client_secret
+    );
+
+    this.auth.setCredentials({
+      access_token: config.oauthCredentials.access_token,
+      refresh_token: config.oauthCredentials.refresh_token,
+      expiry_date: config.oauthCredentials.expiry_date
     });
   }
 

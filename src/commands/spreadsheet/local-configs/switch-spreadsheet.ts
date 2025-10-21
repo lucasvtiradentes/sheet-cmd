@@ -6,23 +6,30 @@ import { Logger } from '../../../lib/logger.js';
 
 export function createSwitchSpreadsheetCommand(): Command {
   return new Command('switch')
-    .description('Switch to a different spreadsheet (sets it as active)')
+    .description('Switch to a different spreadsheet (sets it as active for the current account)')
     .argument('[name]', 'Name of the spreadsheet to switch to')
     .action(async (name?: string) => {
       try {
         const configManager = new ConfigManager();
+        const activeAccount = configManager.getActiveAccount();
+
+        if (!activeAccount) {
+          Logger.error('No active account set.');
+          Logger.info('Use: sheet-cmd account add');
+          process.exit(1);
+        }
 
         let spreadsheetName = name;
 
         if (!spreadsheetName) {
-          const spreadsheets = configManager.getAllSpreadsheets();
+          const spreadsheets = configManager.listSpreadsheets(activeAccount.email);
 
           if (spreadsheets.length === 0) {
             Logger.warning('No spreadsheets configured. Use "sheet-cmd spreadsheet add" to add one.');
             return;
           }
 
-          const activeSpreadsheet = configManager.getActiveSpreadsheetName();
+          const activeSpreadsheet = configManager.getActiveSpreadsheetName(activeAccount.email);
 
           const answer = await inquirer.prompt([
             {
@@ -44,7 +51,7 @@ export function createSwitchSpreadsheetCommand(): Command {
           return;
         }
 
-        configManager.setActiveSpreadsheet(spreadsheetName);
+        configManager.setActiveSpreadsheet(activeAccount.email, spreadsheetName);
         Logger.success(`Switched to spreadsheet: ${spreadsheetName}`);
       } catch (error) {
         Logger.error('Failed to switch spreadsheet', error);

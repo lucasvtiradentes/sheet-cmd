@@ -2,6 +2,7 @@
 
 import { Command } from 'commander';
 
+import { createAccountCommand } from './commands/account/index.js';
 import { createCompletionCommand } from './commands/completion.js';
 import { displayHelpText } from './commands/help-text.js';
 import { createSheetCommand } from './commands/sheet/index.js';
@@ -16,7 +17,7 @@ program
   .description('Google Sheets CLI - A tool to interact with Google Sheets')
   .version(APP_INFO.version);
 
-// Add commands
+program.addCommand(createAccountCommand());
 program.addCommand(createSpreadsheetCommand());
 program.addCommand(createSheetCommand());
 program.addCommand(createUpdateCommand());

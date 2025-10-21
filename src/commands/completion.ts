@@ -20,6 +20,9 @@ _sheet_cmd() {
     case $state in
         args)
             case $line[1] in
+                account)
+                    _sheet_cmd_account
+                    ;;
                 spreadsheet)
                     _sheet_cmd_spreadsheet
                     ;;
@@ -40,12 +43,34 @@ _sheet_cmd() {
 _sheet_cmd_commands() {
     local commands
     commands=(
+        'account:Manage Google accounts'
         'spreadsheet:Manage spreadsheet configurations'
         'sheet:Manage and interact with Google Sheets'
         'update:Update sheet-cmd to latest version'
         'completion:Generate shell completion scripts'
     )
     _describe 'command' commands
+}
+
+_sheet_cmd_account() {
+    local curcontext="$curcontext" state line
+    typeset -A opt_args
+
+    _arguments -C \\
+        '1: :_sheet_cmd_account_commands' \\
+        '*::arg:->args'
+}
+
+_sheet_cmd_account_commands() {
+    local account_commands
+    account_commands=(
+        'add:Add a Google account via OAuth'
+        'list:List all configured Google accounts'
+        'switch:Switch active Google account'
+        'remove:Remove a Google account'
+        'reauth:Re-authenticate the active account'
+    )
+    _describe 'account command' account_commands
 }
 
 _sheet_cmd_spreadsheet() {
@@ -60,7 +85,7 @@ _sheet_cmd_spreadsheet() {
 _sheet_cmd_spreadsheet_commands() {
     local spreadsheet_commands
     spreadsheet_commands=(
-        'add:Add a new spreadsheet configuration'
+        'add:Add a new spreadsheet (interactive by default, use --id for manual)'
         'list:List all configured spreadsheets'
         'remove:Remove a spreadsheet configuration'
         'switch:Switch to a different spreadsheet (sets as active)'
@@ -213,7 +238,10 @@ _sheet_cmd_completion() {
     _init_completion || return
 
     # Main commands
-    local commands="spreadsheet sheet update completion"
+    local commands="account spreadsheet sheet update completion"
+
+    # Account subcommands
+    local account_commands="add list switch remove reauth"
 
     # Spreadsheet subcommands
     local spreadsheet_commands="add list remove switch active"
@@ -225,6 +253,9 @@ _sheet_cmd_completion() {
         COMPREPLY=(\\$(compgen -W "\\$commands" -- "\\$cur"))
     elif [[ \\$cword -eq 2 ]]; then
         case "\\$\{COMP_WORDS[1]}" in
+            account)
+                COMPREPLY=(\\$(compgen -W "\\$account_commands" -- "\\$cur"))
+                ;;
             spreadsheet)
                 COMPREPLY=(\\$(compgen -W "\\$spreadsheet_commands" -- "\\$cur"))
                 ;;

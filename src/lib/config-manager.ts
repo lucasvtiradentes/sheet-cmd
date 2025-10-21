@@ -1,9 +1,10 @@
 import * as fs from 'fs';
 
 import { CONFIG_PATHS } from '../constants.js';
-import type { SheetsConfig, SpreadsheetCredentials, UserMetadata } from '../types/local.js';
+import type { Account, OAuthCredentials, SheetsConfig, SpreadsheetConfig, UserMetadata } from '../types/local.js';
 import { sheetsConfigSchema, userMetadataSchema } from '../types/local.js';
 import { readJson, writeJson } from '../utils/json-utils.js';
+import { refreshTokenIfNeeded } from './token-refresh.js';
 
 export class ConfigManager {
   private userMetadata: UserMetadata | null = null;
@@ -29,7 +30,8 @@ export class ConfigManager {
 
   private createDefaultUserMetadata(): void {
     const defaultMetadata: UserMetadata = {
-      config_path: CONFIG_PATHS.defaultConfigFile
+      config_path: CONFIG_PATHS.defaultConfigFile,
+      accounts: {}
     };
     writeJson(CONFIG_PATHS.userMetadataFile, defaultMetadata);
   }
@@ -42,6 +44,13 @@ export class ConfigManager {
     } catch (error) {
       throw new Error(`Failed to load user metadata: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
+  }
+
+  private saveUserMetadata(): void {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+    writeJson(CONFIG_PATHS.userMetadataFile, this.userMetadata);
   }
 
   private getConfigPath(): string {
@@ -74,7 +83,6 @@ export class ConfigManager {
 
   private createDefaultConfig(): void {
     const defaultConfig: SheetsConfig = {
-      spreadsheets: {},
       settings: {
         max_results: 50,
         default_columns: 'A:Z'
@@ -94,105 +102,226 @@ export class ConfigManager {
     writeJson(configPath, this.config);
   }
 
-  // Public API Methods
-
-  async addSpreadsheet(
-    name: string,
-    spreadsheetId: string,
-    serviceAccountEmail: string,
-    privateKey: string
-  ): Promise<void> {
-    const config = this.loadConfig();
-
-    if (config.spreadsheets[name]) {
-      throw new Error(`Spreadsheet '${name}' already exists`);
+  async addAccount(email: string, credentials: OAuthCredentials): Promise<void> {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
     }
 
-    const spreadsheet: SpreadsheetCredentials = {
-      name,
-      spreadsheet_id: spreadsheetId,
-      service_account_email: serviceAccountEmail,
-      private_key: privateKey
+    if (this.userMetadata.accounts[email]) {
+      throw new Error(`Account '${email}' already exists`);
+    }
+
+    const account: Account = {
+      email,
+      oauth: credentials,
+      spreadsheets: {}
     };
 
-    config.spreadsheets[name] = spreadsheet;
-    this.saveConfig();
+    this.userMetadata.accounts[email] = account;
+    this.saveUserMetadata();
   }
 
-  async removeSpreadsheet(name: string): Promise<void> {
-    const config = this.loadConfig();
-
-    if (!config.spreadsheets[name]) {
-      throw new Error(`Spreadsheet '${name}' not found`);
+  async removeAccount(email: string): Promise<void> {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
     }
 
-    delete config.spreadsheets[name];
-    this.saveConfig();
-
-    // Clear active spreadsheet if it's the one being removed
-    if (this.userMetadata?.active_spreadsheet === name) {
-      this.clearActiveSpreadsheet();
+    if (!this.userMetadata.accounts[email]) {
+      throw new Error(`Account '${email}' not found`);
     }
+
+    delete this.userMetadata.accounts[email];
+
+    if (this.userMetadata.activeAccount === email) {
+      this.userMetadata.activeAccount = undefined;
+    }
+
+    this.saveUserMetadata();
   }
 
-  getAllSpreadsheets(): SpreadsheetCredentials[] {
-    const config = this.loadConfig();
-    return Object.values(config.spreadsheets);
+  getAllAccounts(): Account[] {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    return Object.values(this.userMetadata.accounts);
   }
 
-  getSpreadsheet(name: string): SpreadsheetCredentials | null {
-    const config = this.loadConfig();
-    return config.spreadsheets[name] || null;
+  getAccount(email: string): Account | null {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    return this.userMetadata.accounts[email] || null;
   }
 
-  listSpreadsheets(): Array<{ name: string; spreadsheetId: string }> {
-    const config = this.loadConfig();
+  setActiveAccount(email: string): void {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
 
-    return Object.entries(config.spreadsheets).map(([name, spreadsheet]) => ({
+    if (!this.userMetadata.accounts[email]) {
+      throw new Error(`Account '${email}' not found`);
+    }
+
+    this.userMetadata.activeAccount = email;
+    this.saveUserMetadata();
+  }
+
+  getActiveAccount(): Account | null {
+    if (!this.userMetadata?.activeAccount) {
+      return null;
+    }
+
+    return this.getAccount(this.userMetadata.activeAccount);
+  }
+
+  getActiveAccountEmail(): string | null {
+    return this.userMetadata?.activeAccount || null;
+  }
+
+  async updateAccountCredentials(email: string, credentials: OAuthCredentials): Promise<void> {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    const account = this.userMetadata.accounts[email];
+    if (!account) {
+      throw new Error(`Account '${email}' not found`);
+    }
+
+    account.oauth = credentials;
+    this.saveUserMetadata();
+  }
+
+  async getRefreshedCredentials(email: string): Promise<OAuthCredentials> {
+    const account = this.getAccount(email);
+    if (!account) {
+      throw new Error(`Account '${email}' not found`);
+    }
+
+    const refreshedCredentials = await refreshTokenIfNeeded(account.oauth);
+
+    if (refreshedCredentials !== account.oauth) {
+      await this.updateAccountCredentials(email, refreshedCredentials);
+    }
+
+    return refreshedCredentials;
+  }
+
+  async addSpreadsheet(email: string, name: string, spreadsheetId: string): Promise<void> {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    const account = this.userMetadata.accounts[email];
+    if (!account) {
+      throw new Error(`Account '${email}' not found`);
+    }
+
+    if (account.spreadsheets[name]) {
+      throw new Error(`Spreadsheet '${name}' already exists for account '${email}'`);
+    }
+
+    const spreadsheet: SpreadsheetConfig = {
+      spreadsheet_id: spreadsheetId
+    };
+
+    account.spreadsheets[name] = spreadsheet;
+    this.saveUserMetadata();
+  }
+
+  async removeSpreadsheet(email: string, name: string): Promise<void> {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    const account = this.userMetadata.accounts[email];
+    if (!account) {
+      throw new Error(`Account '${email}' not found`);
+    }
+
+    if (!account.spreadsheets[name]) {
+      throw new Error(`Spreadsheet '${name}' not found for account '${email}'`);
+    }
+
+    delete account.spreadsheets[name];
+
+    if (account.activeSpreadsheet === name) {
+      account.activeSpreadsheet = undefined;
+    }
+
+    this.saveUserMetadata();
+  }
+
+  listSpreadsheets(email: string): Array<{ name: string; spreadsheetId: string }> {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    const account = this.userMetadata.accounts[email];
+    if (!account) {
+      throw new Error(`Account '${email}' not found`);
+    }
+
+    return Object.entries(account.spreadsheets).map(([name, spreadsheet]) => ({
       name,
       spreadsheetId: spreadsheet.spreadsheet_id
     }));
   }
 
-  // Active spreadsheet management
-
-  setActiveSpreadsheet(name: string): void {
-    const config = this.loadConfig();
-
-    if (!config.spreadsheets[name]) {
-      throw new Error(`Spreadsheet '${name}' not found`);
-    }
-
+  getSpreadsheet(email: string, name: string): SpreadsheetConfig | null {
     if (!this.userMetadata) {
       throw new Error('User metadata not loaded');
     }
 
-    this.userMetadata.active_spreadsheet = name;
-    writeJson(CONFIG_PATHS.userMetadataFile, this.userMetadata);
-  }
-
-  getActiveSpreadsheet(): SpreadsheetCredentials | null {
-    if (!this.userMetadata?.active_spreadsheet) {
+    const account = this.userMetadata.accounts[email];
+    if (!account) {
       return null;
     }
 
-    return this.getSpreadsheet(this.userMetadata.active_spreadsheet);
+    return account.spreadsheets[name] || null;
   }
 
-  getActiveSpreadsheetName(): string | null {
-    return this.userMetadata?.active_spreadsheet || null;
-  }
-
-  clearActiveSpreadsheet(): void {
+  setActiveSpreadsheet(email: string, name: string): void {
     if (!this.userMetadata) {
       throw new Error('User metadata not loaded');
     }
 
-    this.userMetadata.active_spreadsheet = undefined;
-    writeJson(CONFIG_PATHS.userMetadataFile, this.userMetadata);
+    const account = this.userMetadata.accounts[email];
+    if (!account) {
+      throw new Error(`Account '${email}' not found`);
+    }
+
+    if (!account.spreadsheets[name]) {
+      throw new Error(`Spreadsheet '${name}' not found for account '${email}'`);
+    }
+
+    account.activeSpreadsheet = name;
+    this.saveUserMetadata();
   }
 
-  // Completion tracking
+  getActiveSpreadsheet(email: string): SpreadsheetConfig | null {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    const account = this.userMetadata.accounts[email];
+    if (!account || !account.activeSpreadsheet) {
+      return null;
+    }
+
+    return account.spreadsheets[account.activeSpreadsheet] || null;
+  }
+
+  getActiveSpreadsheetName(email: string): string | null {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    const account = this.userMetadata.accounts[email];
+    return account?.activeSpreadsheet || null;
+  }
 
   markCompletionInstalled(): void {
     const config = this.loadConfig();
