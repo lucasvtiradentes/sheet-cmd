@@ -1,5 +1,11 @@
 # sheet-cmd
 
+## 1.1.1
+
+### Patch Changes
+
+- ce72770: update readme
+
 ## 1.1.0
 
 ### Minor Changes
