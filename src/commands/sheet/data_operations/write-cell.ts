@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 
 import { getGoogleSheetsService } from '../../../core/command-helpers.js';
-import { columnLetterToNumber } from '../../../utils/cell-utils.js';
+import { columnLetterToNumber } from '../../../utils/cell.js';
 import { Logger } from '../../../utils/logger.js';
 
 export function createWriteCellCommand(): Command {
