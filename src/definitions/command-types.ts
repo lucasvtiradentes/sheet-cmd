@@ -104,9 +104,9 @@ export type AccountRemoveOptions = {
 };
 
 export type SpreadsheetSelectOptions = {
-  name?: string;
+  id?: string;
 };
 
 export type SpreadsheetRemoveOptions = {
-  name?: string;
+  id?: string;
 };

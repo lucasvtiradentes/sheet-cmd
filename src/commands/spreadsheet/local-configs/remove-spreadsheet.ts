@@ -7,7 +7,7 @@ import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
 import { Logger } from '../../../utils/logger.js';
 
 export function createRemoveSpreadsheetCommand(): Command {
-  const command = createSubCommandFromSchema(
+  return createSubCommandFromSchema(
     CommandNames.SPREADSHEET,
     SubCommandNames.SPREADSHEET_REMOVE,
     async (options: SpreadsheetRemoveOptions) => {
@@ -21,9 +21,9 @@ export function createRemoveSpreadsheetCommand(): Command {
           process.exit(1);
         }
 
-        let spreadsheetName = options.name;
+        let spreadsheetId = options.id;
 
-        if (!spreadsheetName) {
+        if (!spreadsheetId) {
           const spreadsheets = configManager.listSpreadsheets(activeAccount.email);
 
           if (spreadsheets.length === 0) {
@@ -36,16 +36,34 @@ export function createRemoveSpreadsheetCommand(): Command {
               type: 'list',
               name: 'spreadsheet',
               message: 'Select spreadsheet to remove:',
-              choices: spreadsheets.map((s) => s.name)
+              choices: spreadsheets.map((s) => ({
+                name: s.name,
+                value: s.spreadsheetId
+              }))
             }
           ]);
 
-          spreadsheetName = answer.spreadsheet;
+          spreadsheetId = answer.spreadsheet;
         }
 
-        if (!spreadsheetName) {
-          Logger.error('No spreadsheet name provided');
+        if (!spreadsheetId) {
+          Logger.error('No spreadsheet ID provided');
           return;
+        }
+
+        const spreadsheet = configManager.getSpreadsheetById(activeAccount.email, spreadsheetId);
+        if (!spreadsheet) {
+          Logger.error(`Spreadsheet with ID '${spreadsheetId}' not found`);
+          process.exit(1);
+        }
+
+        const spreadsheetName = Object.entries(configManager.listSpreadsheets(activeAccount.email)).find(
+          ([_, s]) => s.spreadsheetId === spreadsheetId
+        )?.[1]?.name;
+
+        if (!spreadsheetName) {
+          Logger.error(`Spreadsheet with ID '${spreadsheetId}' not found`);
+          process.exit(1);
         }
 
         const confirm = await inquirer.prompt([
@@ -70,8 +88,4 @@ export function createRemoveSpreadsheetCommand(): Command {
       }
     }
   );
-
-  command.argument('[spreadsheetName]', 'Spreadsheet name to remove (optional - interactive if not provided)');
-
-  return command;
 }

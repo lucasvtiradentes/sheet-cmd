@@ -25,6 +25,13 @@ export const spreadsheetCommandDefinition: Command = {
     {
       name: SubCommandNames.SPREADSHEET_SELECT,
       description: 'Select a different spreadsheet (sets as active)',
+      flags: [
+        {
+          name: '--id',
+          description: 'Spreadsheet ID (skips interactive selection)',
+          type: 'string'
+        }
+      ],
       examples: [`${APP_INFO.name} spreadsheet select`]
     },
     {
@@ -35,6 +42,13 @@ export const spreadsheetCommandDefinition: Command = {
     {
       name: SubCommandNames.SPREADSHEET_REMOVE,
       description: 'Remove a spreadsheet configuration',
+      flags: [
+        {
+          name: '--id',
+          description: 'Spreadsheet ID (skips interactive selection)',
+          type: 'string'
+        }
+      ],
       examples: [`${APP_INFO.name} spreadsheet remove`]
     }
   ]

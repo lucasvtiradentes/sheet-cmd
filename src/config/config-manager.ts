@@ -282,6 +282,19 @@ export class ConfigManager {
     return account.spreadsheets[name] || null;
   }
 
+  getSpreadsheetById(email: string, id: string): SpreadsheetConfig | null {
+    if (!this.userMetadata) {
+      throw new Error('User metadata not loaded');
+    }
+
+    const account = this.userMetadata.accounts[email];
+    if (!account) {
+      return null;
+    }
+
+    return Object.values(account.spreadsheets).find((s) => s.spreadsheet_id === id) || null;
+  }
+
   setActiveSpreadsheet(email: string, name: string): void {
     if (!this.userMetadata) {
       throw new Error('User metadata not loaded');
