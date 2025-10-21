@@ -54,6 +54,7 @@ export function createAddAccountCommand(): Command {
       Logger.plain('');
 
       Logger.bold('STEP 4: Add Scopes');
+      Logger.link(`  ${GOOGLE_CLOUD_CONSOLE_URLS.SCOPES}`);
       Logger.info('  - Click "ADD OR REMOVE SCOPES"');
       Logger.info('  - Search and add:');
       Logger.info('    → .../auth/spreadsheets');
@@ -62,6 +63,7 @@ export function createAddAccountCommand(): Command {
       Logger.plain('');
 
       Logger.bold('STEP 5: Add Test Users');
+      Logger.link(`  ${GOOGLE_CLOUD_CONSOLE_URLS.TEST_USERS}`);
       Logger.info('  - Click "ADD USERS"');
       Logger.info('  - Add your email address');
       Logger.info('  - Click "SAVE AND CONTINUE"');
@@ -104,7 +106,7 @@ export function createAddAccountCommand(): Command {
         Logger.success(`Account '${result.email}' added and set as active!`);
       } else {
         Logger.success(`Account '${result.email}' added successfully!`);
-        Logger.info(`Switch to this account: sheet-cmd account switch ${result.email}`);
+        Logger.info('Switch to this account: sheet-cmd account select');
       }
     } catch (error) {
       Logger.error(`Failed to add account: ${error instanceof Error ? error.message : 'Unknown error'}`);

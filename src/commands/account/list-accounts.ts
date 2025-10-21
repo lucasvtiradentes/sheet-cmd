@@ -17,17 +17,13 @@ export function createListAccountsCommand(): Command {
         return;
       }
 
-      Logger.info('Configured accounts:\n');
+      Logger.info('Configured accounts:');
       accounts.forEach((account) => {
         const isActive = account.email === activeAccountEmail;
-        const marker = isActive ? '*' : ' ';
         const spreadsheetCount = Object.keys(account.spreadsheets).length;
-        Logger.info(`${marker} ${account.email} (${spreadsheetCount} spreadsheet${spreadsheetCount !== 1 ? 's' : ''})`);
+        const prefix = isActive ? '->' : '  ';
+        Logger.info(`${prefix} ${account.email} (${spreadsheetCount} spreadsheet${spreadsheetCount !== 1 ? 's' : ''})`);
       });
-
-      if (activeAccountEmail) {
-        Logger.info(`\n* = active account`);
-      }
     } catch (error) {
       Logger.error(`Failed to list accounts: ${error instanceof Error ? error.message : 'Unknown error'}`);
       process.exit(1);

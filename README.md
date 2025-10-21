@@ -65,7 +65,7 @@ To use sheet-cmd, you need OAuth 2.0 credentials from Google Cloud Console:
 - Search and enable "Google Drive API"
 
 **4. Configure OAuth Consent Screen**
-- Go to "APIs & Services" > "OAuth consent screen"
+- Go to: [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent)
 - User Type: **External**
 - App name: sheet-cmd (or any name)
 - User support email: your email
@@ -73,6 +73,7 @@ To use sheet-cmd, you need OAuth 2.0 credentials from Google Cloud Console:
 - Click "SAVE AND CONTINUE"
 
 **5. Add Scopes**
+- Go to: [Add scopes](https://console.cloud.google.com/auth/scopes)
 - Click "ADD OR REMOVE SCOPES"
 - Search and add:
   - `.../auth/spreadsheets`
@@ -80,12 +81,13 @@ To use sheet-cmd, you need OAuth 2.0 credentials from Google Cloud Console:
 - Click "UPDATE" then "SAVE AND CONTINUE"
 
 **6. Add Test Users**
+- Go to: [Add test users](https://console.cloud.google.com/auth/audience)
 - Click "ADD USERS"
 - Add your email address
 - Click "SAVE AND CONTINUE"
 
 **7. Create OAuth 2.0 Client ID**
-- Go to "APIs & Services" > "Credentials"
+- Go to: [Credentials](https://console.cloud.google.com/apis/credentials)
 - Click "CREATE CREDENTIALS" > "OAuth client ID"
 - Application type: **Desktop app**
 - Name: sheet-cmd

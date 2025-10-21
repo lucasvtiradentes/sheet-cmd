@@ -15,7 +15,7 @@ export class Logger {
   }
 
   static info(message: string): void {
-    console.log(chalk.blue(`ℹ️  ${message}`));
+    console.log(`${message}`);
   }
 
   static dim(message: string): void {

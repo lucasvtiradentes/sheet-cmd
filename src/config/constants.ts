@@ -74,6 +74,7 @@ export const GOOGLE_CLOUD_CONSOLE_URLS = {
   CREDENTIALS: 'https://console.cloud.google.com/apis/credentials',
   CONSENT_SCREEN: 'https://console.cloud.google.com/apis/credentials/consent',
   SCOPES: 'https://console.cloud.google.com/auth/scopes',
+  TEST_USERS: 'https://console.cloud.google.com/auth/audience',
   ENABLE_SHEETS_API: 'https://console.cloud.google.com/apis/library/sheets.googleapis.com',
   ENABLE_DRIVE_API: 'https://console.cloud.google.com/apis/library/drive.googleapis.com'
 };
