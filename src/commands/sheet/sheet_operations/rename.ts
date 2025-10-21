@@ -11,7 +11,7 @@ export function createRenameCommand(): Command {
     SubCommandNames.SHEET_RENAME,
     async (options: SheetRenameOptions) => {
       try {
-        const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+        const sheetsService = await getGoogleSheetsService();
 
         Logger.loading(`Renaming sheet '${options.name}' to '${options.newName}'...`);
         await sheetsService.renameSheet(options.name, options.newName);

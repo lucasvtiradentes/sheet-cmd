@@ -11,7 +11,7 @@ export function createRemoveCommand(): Command {
     SubCommandNames.SHEET_REMOVE,
     async (options: SheetRemoveOptions) => {
       try {
-        const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+        const sheetsService = await getGoogleSheetsService();
 
         Logger.loading(`Removing sheet '${options.name}'...`);
         await sheetsService.removeSheet(options.name);

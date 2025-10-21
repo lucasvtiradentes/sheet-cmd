@@ -22,7 +22,7 @@ export function createWriteCommand(): Command {
           process.exit(1);
         }
 
-        const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+        const sheetsService = await getGoogleSheetsService();
 
         if (options.cell) {
           Logger.loading(`Writing to cell ${options.cell}...`);

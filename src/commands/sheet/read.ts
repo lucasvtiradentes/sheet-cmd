@@ -21,7 +21,7 @@ export function createReadCommand(): Command {
           process.exit(1);
         }
 
-        const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+        const sheetsService = await getGoogleSheetsService();
 
         Logger.loading(`Reading sheet '${options.name}'...`);
         const includeFormulas = options.formulas ?? false;

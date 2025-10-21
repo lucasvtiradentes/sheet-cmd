@@ -11,7 +11,7 @@ export function createCopyCommand(): Command {
     SubCommandNames.SHEET_COPY,
     async (options: SheetCopyOptions) => {
       try {
-        const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+        const sheetsService = await getGoogleSheetsService();
 
         Logger.loading(`Copying sheet '${options.name}' to '${options.to}'...`);
         await sheetsService.copySheet(options.name, options.to);

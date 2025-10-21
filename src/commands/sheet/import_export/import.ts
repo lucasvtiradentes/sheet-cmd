@@ -13,7 +13,7 @@ export function createImportCommand(): Command {
     SubCommandNames.SHEET_IMPORT,
     async (options: SheetImportOptions) => {
       try {
-        const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+        const sheetsService = await getGoogleSheetsService();
 
         Logger.loading(`Reading CSV file '${options.file}'...`);
         const csvContent = readFileSync(options.file, 'utf-8');

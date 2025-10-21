@@ -8,15 +8,7 @@ export const sheetCommandDefinition: Command = {
     {
       name: SubCommandNames.SHEET_LIST,
       description: 'List all sheets in a spreadsheet',
-      flags: [
-        {
-          name: '--spreadsheet',
-          alias: '-s',
-          description: 'Spreadsheet name (uses active if not provided)',
-          type: 'string'
-        }
-      ],
-      examples: [`${APP_INFO.name} sheet list`, `${APP_INFO.name} sheet list -s "My Spreadsheet"`]
+      examples: [`${APP_INFO.name} sheet list`]
     },
     {
       name: SubCommandNames.SHEET_READ,
@@ -28,12 +20,6 @@ export const sheetCommandDefinition: Command = {
           description: 'Tab name',
           type: 'string',
           required: true
-        },
-        {
-          name: '--spreadsheet',
-          alias: '-s',
-          description: 'Spreadsheet name (uses active if not provided)',
-          type: 'string'
         },
         {
           name: '--output',
@@ -71,12 +57,6 @@ export const sheetCommandDefinition: Command = {
           description: 'Tab name',
           type: 'string',
           required: true
-        },
-        {
-          name: '--spreadsheet',
-          alias: '-s',
-          description: 'Spreadsheet name (uses active if not provided)',
-          type: 'string'
         }
       ],
       examples: [`${APP_INFO.name} sheet add -n "NewSheet"`]
@@ -91,12 +71,6 @@ export const sheetCommandDefinition: Command = {
           description: 'Tab name',
           type: 'string',
           required: true
-        },
-        {
-          name: '--spreadsheet',
-          alias: '-s',
-          description: 'Spreadsheet name (uses active if not provided)',
-          type: 'string'
         }
       ],
       examples: [`${APP_INFO.name} sheet remove -n "OldSheet"`]
@@ -117,12 +91,6 @@ export const sheetCommandDefinition: Command = {
           description: 'New tab name',
           type: 'string',
           required: true
-        },
-        {
-          name: '--spreadsheet',
-          alias: '-s',
-          description: 'Spreadsheet name (uses active if not provided)',
-          type: 'string'
         }
       ],
       examples: [`${APP_INFO.name} sheet rename -n "OldName" --new-name "NewName"`]
@@ -143,12 +111,6 @@ export const sheetCommandDefinition: Command = {
           description: 'Destination tab name',
           type: 'string',
           required: true
-        },
-        {
-          name: '--spreadsheet',
-          alias: '-s',
-          description: 'Spreadsheet name (uses active if not provided)',
-          type: 'string'
         }
       ],
       examples: [`${APP_INFO.name} sheet copy -n "Sheet1" --to "Sheet1 Copy"`]
@@ -182,12 +144,6 @@ export const sheetCommandDefinition: Command = {
           description: 'Value to write (use , for columns, ; for rows)',
           type: 'string',
           required: true
-        },
-        {
-          name: '--spreadsheet',
-          alias: '-s',
-          description: 'Spreadsheet name (uses active if not provided)',
-          type: 'string'
         }
       ],
       examples: [
@@ -212,12 +168,6 @@ export const sheetCommandDefinition: Command = {
           description: 'Values to append (comma-separated)',
           type: 'string',
           required: true
-        },
-        {
-          name: '--spreadsheet',
-          alias: '-s',
-          description: 'Spreadsheet name (uses active if not provided)',
-          type: 'string'
         }
       ],
       examples: [`${APP_INFO.name} sheet append -n "Sheet1" -v "val1,val2,val3"`]
@@ -244,12 +194,6 @@ export const sheetCommandDefinition: Command = {
           name: '--skip-header',
           description: 'Skip header row when importing',
           type: 'boolean'
-        },
-        {
-          name: '--spreadsheet',
-          alias: '-s',
-          description: 'Spreadsheet name (uses active if not provided)',
-          type: 'string'
         }
       ],
       examples: [
@@ -286,12 +230,6 @@ export const sheetCommandDefinition: Command = {
           name: '--output',
           alias: '-o',
           description: 'Output file path',
-          type: 'string'
-        },
-        {
-          name: '--spreadsheet',
-          alias: '-s',
-          description: 'Spreadsheet name (uses active if not provided)',
           type: 'string'
         }
       ],

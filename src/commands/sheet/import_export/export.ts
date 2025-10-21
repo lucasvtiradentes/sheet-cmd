@@ -21,7 +21,7 @@ export function createExportCommand(): Command {
           process.exit(1);
         }
 
-        const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+        const sheetsService = await getGoogleSheetsService();
 
         Logger.loading(`Exporting data from '${options.name}'${options.range ? ` (range: ${options.range})` : ''}...`);
 

@@ -2,7 +2,7 @@ import { ConfigManager } from '../config/config-manager.js';
 import { Logger } from '../utils/logger.js';
 import { GoogleSheetsService } from './google-sheets.service.js';
 
-export async function getGoogleSheetsService(spreadsheetName?: string): Promise<GoogleSheetsService> {
+export async function getGoogleSheetsService(): Promise<GoogleSheetsService> {
   const configManager = new ConfigManager();
 
   const activeAccount = configManager.getActiveAccount();
@@ -12,22 +12,17 @@ export async function getGoogleSheetsService(spreadsheetName?: string): Promise<
     process.exit(1);
   }
 
-  let resolvedSpreadsheetName = spreadsheetName;
-
-  if (!resolvedSpreadsheetName) {
-    const activeSpreadsheetName = configManager.getActiveSpreadsheetName(activeAccount.email);
-    if (!activeSpreadsheetName) {
-      Logger.error('No spreadsheet specified and no active spreadsheet set.');
-      Logger.info('Use --spreadsheet flag or run: sheet-cmd spreadsheet switch <name>');
-      process.exit(1);
-    }
-    resolvedSpreadsheetName = activeSpreadsheetName;
+  const activeSpreadsheetName = configManager.getActiveSpreadsheetName(activeAccount.email);
+  if (!activeSpreadsheetName) {
+    Logger.error('No active spreadsheet set.');
+    Logger.info('Use: sheet-cmd spreadsheet select <name>');
+    process.exit(1);
   }
 
-  const spreadsheet = configManager.getSpreadsheet(activeAccount.email, resolvedSpreadsheetName);
+  const spreadsheet = configManager.getSpreadsheet(activeAccount.email, activeSpreadsheetName);
 
   if (!spreadsheet) {
-    Logger.error(`Spreadsheet '${resolvedSpreadsheetName}' not found. Use "sheet-cmd spreadsheet add" to add one.`);
+    Logger.error(`Spreadsheet '${activeSpreadsheetName}' not found. Use "sheet-cmd spreadsheet add" to add one.`);
     process.exit(1);
   }
 

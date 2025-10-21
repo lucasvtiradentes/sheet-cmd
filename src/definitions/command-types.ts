@@ -38,13 +38,10 @@ export type SubCommandOptions<T extends SubCommand> = T extends { flags: Readonl
 
 type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
 
-export type SheetListOptions = {
-  spreadsheet?: string;
-};
+export type SheetListOptions = Record<string, never>;
 
 export type SheetReadOptions = {
   name: string;
-  spreadsheet?: string;
   output: 'markdown' | 'csv';
   formulas?: boolean;
   export?: string;
@@ -52,24 +49,20 @@ export type SheetReadOptions = {
 
 export type SheetAddOptions = {
   name: string;
-  spreadsheet?: string;
 };
 
 export type SheetRemoveOptions = {
   name: string;
-  spreadsheet?: string;
 };
 
 export type SheetRenameOptions = {
   name: string;
   newName: string;
-  spreadsheet?: string;
 };
 
 export type SheetCopyOptions = {
   name: string;
   to: string;
-  spreadsheet?: string;
 };
 
 export type SheetWriteOptions = {
@@ -77,21 +70,18 @@ export type SheetWriteOptions = {
   cell?: string;
   range?: string;
   value: string;
-  spreadsheet?: string;
 };
 
 export type SheetAppendOptions = {
   name: string;
   value: string;
   values: string;
-  spreadsheet?: string;
 };
 
 export type SheetImportOptions = {
   name: string;
   file: string;
   skipHeader?: boolean;
-  spreadsheet?: string;
 };
 
 export type SheetExportOptions = {
@@ -99,7 +89,6 @@ export type SheetExportOptions = {
   range?: string;
   format: 'json' | 'csv';
   output?: string;
-  spreadsheet?: string;
 };
 
 export type SpreadsheetAddOptions = {

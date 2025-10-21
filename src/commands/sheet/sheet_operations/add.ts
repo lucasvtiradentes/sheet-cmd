@@ -8,7 +8,7 @@ import { Logger } from '../../../utils/logger.js';
 export function createAddCommand(): Command {
   return createSubCommandFromSchema(CommandNames.SHEET, SubCommandNames.SHEET_ADD, async (options: SheetAddOptions) => {
     try {
-      const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+      const sheetsService = await getGoogleSheetsService();
 
       Logger.loading(`Creating sheet '${options.name}'...`);
       await sheetsService.addSheet(options.name);

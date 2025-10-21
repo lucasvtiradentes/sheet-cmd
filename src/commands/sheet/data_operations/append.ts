@@ -11,7 +11,7 @@ export function createAppendCommand(): Command {
     SubCommandNames.SHEET_APPEND,
     async (options: SheetAppendOptions) => {
       try {
-        const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+        const sheetsService = await getGoogleSheetsService();
 
         const values = options.values.split(',').map((v) => v.trim());
 

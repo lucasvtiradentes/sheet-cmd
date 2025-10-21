@@ -9,9 +9,9 @@ export function createListCommand(): Command {
   return createSubCommandFromSchema(
     CommandNames.SHEET,
     SubCommandNames.SHEET_LIST,
-    async (options: SheetListOptions) => {
+    async (_options: SheetListOptions) => {
       try {
-        const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+        const sheetsService = await getGoogleSheetsService();
 
         Logger.loading('Fetching spreadsheet info...');
         const info = await sheetsService.getSheetInfo();
