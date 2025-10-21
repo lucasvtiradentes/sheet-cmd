@@ -35,7 +35,7 @@ export class Logger {
   }
 
   static loading(message: string): void {
-    console.log(chalk.blue(`🔄 ${message}`));
+    console.log(`🔄 ${message}`);
   }
 
   static link(url: string, prefix?: string): void {
