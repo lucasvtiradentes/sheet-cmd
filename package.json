@@ -13,6 +13,8 @@
     "dev": "tsx src/cli.ts",
     "typecheck": "tsc --noEmit",
     "build": "rimraf ./dist && tsc",
+    "postbuild": "pnpm run update-docs",
+    "update-docs": "tsx scripts/update-docs.ts",
     "start": "node dist/cli.js",
     "test:e2e": "vitest run --config tests/e2e/vitest.config.ts",
     "format": "biome format --write .",

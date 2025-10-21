@@ -1,12 +1,12 @@
 import { Command } from 'commander';
 import { performOAuthFlow } from '../../auth/oauth-flow.js';
 import { ConfigManager } from '../../config/config-manager.js';
+import { createSubCommandFromSchema } from '../../definitions/command-builder.js';
+import { CommandNames, SubCommandNames } from '../../definitions/types.js';
 import { Logger } from '../../utils/logger.js';
 
 export function createReauthAccountCommand(): Command {
-  const command = new Command('reauth');
-
-  command.description('Re-authenticate the active account (refresh OAuth tokens)').action(async () => {
+  return createSubCommandFromSchema(CommandNames.ACCOUNT, SubCommandNames.ACCOUNT_REAUTH, async () => {
     try {
       const configManager = new ConfigManager();
       const activeAccount = configManager.getActiveAccount();
@@ -34,6 +34,4 @@ export function createReauthAccountCommand(): Command {
       process.exit(1);
     }
   });
-
-  return command;
 }

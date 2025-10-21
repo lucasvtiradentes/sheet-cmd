@@ -1,14 +1,16 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
-
 import { ConfigManager } from '../../../config/config-manager.js';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
+import type { SpreadsheetSelectOptions } from '../../../definitions/command-types.js';
+import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
 import { Logger } from '../../../utils/logger.js';
 
 export function createSelectSpreadsheetCommand(): Command {
-  return new Command('select')
-    .description('Select a different spreadsheet (interactive - sets it as active for the current account)')
-    .argument('[name]', 'Name of the spreadsheet to select (optional - interactive if not provided)')
-    .action(async (name?: string) => {
+  const command = createSubCommandFromSchema(
+    CommandNames.SPREADSHEET,
+    SubCommandNames.SPREADSHEET_SELECT,
+    async (options: SpreadsheetSelectOptions) => {
       try {
         const configManager = new ConfigManager();
         const activeAccount = configManager.getActiveAccount();
@@ -19,7 +21,7 @@ export function createSelectSpreadsheetCommand(): Command {
           process.exit(1);
         }
 
-        let spreadsheetName = name;
+        let spreadsheetName = options.name;
 
         if (!spreadsheetName) {
           const spreadsheets = configManager.listSpreadsheets(activeAccount.email);
@@ -57,5 +59,10 @@ export function createSelectSpreadsheetCommand(): Command {
         Logger.error('Failed to select spreadsheet', error);
         process.exit(1);
       }
-    });
+    }
+  );
+
+  command.argument('[spreadsheetName]', 'Spreadsheet name to select (optional - interactive if not provided)');
+
+  return command;
 }

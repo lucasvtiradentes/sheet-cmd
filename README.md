@@ -229,6 +229,152 @@ Example `user_metadata.json` structure:
 
 **Security**: All OAuth tokens are stored locally and automatically refreshed before expiry.
 
+<!-- BEGIN:COMMANDS -->
+### Account Commands
+
+**add** - Add a Google account via OAuth
+
+```bash
+sheet-cmd account add
+```
+
+**list** - List all configured Google accounts
+
+```bash
+sheet-cmd account list
+```
+
+**select** - Select active Google account
+
+```bash
+sheet-cmd account select
+```
+
+**remove** - Remove a Google account
+
+```bash
+sheet-cmd account remove
+```
+
+**reauth** - Re-authenticate the active account
+
+```bash
+sheet-cmd account reauth
+```
+
+### Spreadsheet Commands
+
+**add** - Add a new spreadsheet (interactive by default, use --id for manual)
+
+```bash
+sheet-cmd spreadsheet add
+```
+
+**list** - List all configured spreadsheets
+
+```bash
+sheet-cmd spreadsheet list
+```
+
+**select** - Select a different spreadsheet (sets as active)
+
+```bash
+sheet-cmd spreadsheet select
+```
+
+**active** - Show the currently active spreadsheet
+
+```bash
+sheet-cmd spreadsheet active
+```
+
+**remove** - Remove a spreadsheet configuration
+
+```bash
+sheet-cmd spreadsheet remove
+```
+
+### Sheet Commands
+
+**list** - List all sheets in a spreadsheet
+
+```bash
+sheet-cmd sheet list
+```
+
+**read** - Read the complete content of a sheet
+
+```bash
+sheet-cmd sheet read -n "Sheet1"
+```
+
+**add** - Add a new sheet to the spreadsheet
+
+```bash
+sheet-cmd sheet add -n "NewSheet"
+```
+
+**remove** - Remove a sheet from the spreadsheet
+
+```bash
+sheet-cmd sheet remove -n "OldSheet"
+```
+
+**rename** - Rename a sheet in the spreadsheet
+
+```bash
+sheet-cmd sheet rename -n "OldName" --new-name "NewName"
+```
+
+**copy** - Copy a sheet to a new sheet
+
+```bash
+sheet-cmd sheet copy -n "Sheet1" --to "Sheet1 Copy"
+```
+
+**write** - Write to a specific cell or range of cells
+
+```bash
+sheet-cmd sheet write -n "Sheet1" -c A1 -v "Hello"
+```
+
+**append** - Append a new row to the end of the sheet
+
+```bash
+sheet-cmd sheet append -n "Sheet1" -v "val1,val2,val3"
+```
+
+**import** - Import CSV file to a sheet
+
+```bash
+sheet-cmd sheet import -n "Sheet1" -f data.csv
+```
+
+**export** - Export sheet data to JSON or CSV format
+
+```bash
+sheet-cmd sheet export -n "Sheet1" -f json -o output.json
+```
+
+### Update
+
+Update sheet-cmd to latest version
+
+```bash
+sheet-cmd update
+```
+
+### Completion Commands
+
+**install** - Install shell completion for your current shell
+
+```bash
+sheet-cmd completion install
+```
+
+
+<!-- END:COMMANDS -->
+
 ## :wrench: Development
 
 ```bash

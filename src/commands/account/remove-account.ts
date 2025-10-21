@@ -1,15 +1,15 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../config/config-manager.js';
+import { createSubCommandFromSchema } from '../../definitions/command-builder.js';
+import { CommandNames, SubCommandNames } from '../../definitions/types.js';
 import { Logger } from '../../utils/logger.js';
 
 export function createRemoveAccountCommand(): Command {
-  const command = new Command('remove');
-
-  command
-    .description('Remove a Google account and all its spreadsheets (interactive)')
-    .argument('[email]', 'Account email to remove (optional - interactive if not provided)')
-    .action(async (email?: string) => {
+  const command = createSubCommandFromSchema(
+    CommandNames.ACCOUNT,
+    SubCommandNames.ACCOUNT_REMOVE,
+    async (email?: string) => {
       try {
         const configManager = new ConfigManager();
         const accounts = configManager.getAllAccounts();
@@ -78,7 +78,10 @@ export function createRemoveAccountCommand(): Command {
         Logger.error(`Failed to remove account: ${error instanceof Error ? error.message : 'Unknown error'}`);
         process.exit(1);
       }
-    });
+    }
+  );
+
+  command.argument('[email]', 'Account email to remove (optional - interactive if not provided)');
 
   return command;
 }

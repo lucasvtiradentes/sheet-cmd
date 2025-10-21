@@ -6,6 +6,8 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
 
+import { createCommandFromSchema } from '../definitions/command-builder.js';
+import { CommandNames } from '../definitions/types.js';
 import { Logger } from '../utils/logger.js';
 import { reinstallCompletionSilently } from './completion.js';
 
@@ -13,7 +15,7 @@ const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export function createUpdateCommand(): Command {
-  return new Command('update').description('Update the sheet-cmd package to the latest version').action(async () => {
+  return createCommandFromSchema(CommandNames.UPDATE, async () => {
     try {
       Logger.loading('Checking current version...');
 
@@ -134,8 +136,7 @@ async function getGlobalNpmPath(): Promise<string | null> {
       if (stdout.includes('sheet-cmd')) {
         return 'npm';
       }
-    } catch {
-    }
+    } catch {}
   }
 
   return null;

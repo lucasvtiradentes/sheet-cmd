@@ -1,4 +1,6 @@
 import { Command } from 'commander';
+import { createCommandFromSchema } from '../../definitions/command-builder.js';
+import { CommandNames } from '../../definitions/types.js';
 import { createAppendCommand } from './data_operations/append.js';
 import { createWriteCommand } from './data_operations/write.js';
 import { createExportCommand } from './import_export/export.js';
@@ -11,8 +13,7 @@ import { createRemoveCommand } from './sheet_operations/remove.js';
 import { createRenameCommand } from './sheet_operations/rename.js';
 
 export function createSheetCommand(): Command {
-  const sheet = new Command('sheet');
-  sheet.description('Manage and interact with spreadsheet sheets');
+  const sheet = createCommandFromSchema(CommandNames.SHEET);
 
   sheet.addCommand(createListCommand());
   sheet.addCommand(createReadCommand());

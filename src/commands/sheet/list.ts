@@ -1,13 +1,15 @@
 import { Command } from 'commander';
-
 import { getGoogleSheetsService } from '../../core/command-helpers.js';
+import { createSubCommandFromSchema } from '../../definitions/command-builder.js';
+import type { SheetListOptions } from '../../definitions/command-types.js';
+import { CommandNames, SubCommandNames } from '../../definitions/types.js';
 import { Logger } from '../../utils/logger.js';
 
 export function createListCommand(): Command {
-  return new Command('list')
-    .description('List all sheets in a spreadsheet')
-    .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: { spreadsheet?: string }) => {
+  return createSubCommandFromSchema(
+    CommandNames.SHEET,
+    SubCommandNames.SHEET_LIST,
+    async (options: SheetListOptions) => {
       try {
         const sheetsService = await getGoogleSheetsService(options.spreadsheet);
 
@@ -24,5 +26,6 @@ export function createListCommand(): Command {
         Logger.error('Failed to list sheets', error);
         process.exit(1);
       }
-    });
+    }
+  );
 }

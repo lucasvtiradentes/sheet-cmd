@@ -1,18 +1,16 @@
 import { Command } from 'commander';
-
 import { getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
+import type { SheetWriteOptions } from '../../../definitions/command-types.js';
+import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
 import { columnLetterToNumber } from '../../../utils/cell.js';
 import { Logger } from '../../../utils/logger.js';
 
 export function createWriteCommand(): Command {
-  return new Command('write')
-    .description('Write to a specific cell or range of cells')
-    .requiredOption('-n, --name <name>', 'Sheet name')
-    .option('-c, --cell <cell>', 'Single cell (e.g., A1)')
-    .option('-r, --range <range>', 'Cell range (e.g., A1:B2)')
-    .requiredOption('-v, --value <value>', 'Value to write (for range: use comma for columns, semicolon for rows)')
-    .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: { name: string; cell?: string; range?: string; value: string; spreadsheet?: string }) => {
+  return createSubCommandFromSchema(
+    CommandNames.SHEET,
+    SubCommandNames.SHEET_WRITE,
+    async (options: SheetWriteOptions) => {
       try {
         if (!options.cell && !options.range) {
           Logger.error('Either --cell or --range must be specified');
@@ -72,5 +70,6 @@ export function createWriteCommand(): Command {
         Logger.error('Failed to write cell(s)', error);
         process.exit(1);
       }
-    });
+    }
+  );
 }

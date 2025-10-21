@@ -1,14 +1,16 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
-
 import { ConfigManager } from '../../../config/config-manager.js';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
+import type { SpreadsheetRemoveOptions } from '../../../definitions/command-types.js';
+import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
 import { Logger } from '../../../utils/logger.js';
 
 export function createRemoveSpreadsheetCommand(): Command {
-  return new Command('remove')
-    .description('Remove a spreadsheet from the active account')
-    .argument('[name]', 'Name of the spreadsheet to remove')
-    .action(async (name?: string) => {
+  const command = createSubCommandFromSchema(
+    CommandNames.SPREADSHEET,
+    SubCommandNames.SPREADSHEET_REMOVE,
+    async (options: SpreadsheetRemoveOptions) => {
       try {
         const configManager = new ConfigManager();
         const activeAccount = configManager.getActiveAccount();
@@ -19,7 +21,7 @@ export function createRemoveSpreadsheetCommand(): Command {
           process.exit(1);
         }
 
-        let spreadsheetName = name;
+        let spreadsheetName = options.name;
 
         if (!spreadsheetName) {
           const spreadsheets = configManager.listSpreadsheets(activeAccount.email);
@@ -66,5 +68,10 @@ export function createRemoveSpreadsheetCommand(): Command {
         Logger.error('Failed to remove spreadsheet', error);
         process.exit(1);
       }
-    });
+    }
+  );
+
+  command.argument('[spreadsheetName]', 'Spreadsheet name to remove (optional - interactive if not provided)');
+
+  return command;
 }

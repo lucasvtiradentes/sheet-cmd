@@ -1,11 +1,11 @@
 import { Command } from 'commander';
 import { ConfigManager } from '../../config/config-manager.js';
+import { createSubCommandFromSchema } from '../../definitions/command-builder.js';
+import { CommandNames, SubCommandNames } from '../../definitions/types.js';
 import { Logger } from '../../utils/logger.js';
 
 export function createListAccountsCommand(): Command {
-  const command = new Command('list');
-
-  command.description('List all configured Google accounts').action(() => {
+  return createSubCommandFromSchema(CommandNames.ACCOUNT, SubCommandNames.ACCOUNT_LIST, () => {
     try {
       const configManager = new ConfigManager();
       const accounts = configManager.getAllAccounts();
@@ -33,6 +33,4 @@ export function createListAccountsCommand(): Command {
       process.exit(1);
     }
   });
-
-  return command;
 }

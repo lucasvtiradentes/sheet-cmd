@@ -119,7 +119,6 @@ Pierre Dubois,pierre@email.com,555-0110,Paris,France`;
     await execCommand(`npm run dev -- sheet remove-sheet -n "${importTabName}"`, undefined, 15000, testHomeDir);
   }, 75000);
 
-
   it('should handle non-existent CSV file gracefully', async () => {
     const nonExistentFile = path.join(tempTestDir, 'does-not-exist.csv');
 

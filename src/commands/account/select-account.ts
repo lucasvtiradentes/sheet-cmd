@@ -1,15 +1,15 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../config/config-manager.js';
+import { createSubCommandFromSchema } from '../../definitions/command-builder.js';
+import { CommandNames, SubCommandNames } from '../../definitions/types.js';
 import { Logger } from '../../utils/logger.js';
 
 export function createSelectAccountCommand(): Command {
-  const command = new Command('select');
-
-  command
-    .description('Select active Google account (interactive)')
-    .argument('[email]', 'Account email to select (optional - interactive if not provided)')
-    .action(async (email?: string) => {
+  const command = createSubCommandFromSchema(
+    CommandNames.ACCOUNT,
+    SubCommandNames.ACCOUNT_SELECT,
+    async (email?: string) => {
       try {
         const configManager = new ConfigManager();
         const accounts = configManager.getAllAccounts();
@@ -53,7 +53,10 @@ export function createSelectAccountCommand(): Command {
         Logger.error(`Failed to select account: ${error instanceof Error ? error.message : 'Unknown error'}`);
         process.exit(1);
       }
-    });
+    }
+  );
+
+  command.argument('[email]', 'Account email to select (optional - interactive if not provided)');
 
   return command;
 }

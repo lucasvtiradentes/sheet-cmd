@@ -1,15 +1,15 @@
 import { Command } from 'commander';
-
 import { getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
+import type { SheetCopyOptions } from '../../../definitions/command-types.js';
+import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
 import { Logger } from '../../../utils/logger.js';
 
 export function createCopyCommand(): Command {
-  return new Command('copy')
-    .description('Copy a sheet to a new sheet')
-    .requiredOption('-n, --name <name>', 'Sheet name to copy')
-    .requiredOption('--to <name>', 'New sheet name')
-    .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: { name: string; to: string; spreadsheet?: string }) => {
+  return createSubCommandFromSchema(
+    CommandNames.SHEET,
+    SubCommandNames.SHEET_COPY,
+    async (options: SheetCopyOptions) => {
       try {
         const sheetsService = await getGoogleSheetsService(options.spreadsheet);
 
@@ -21,5 +21,6 @@ export function createCopyCommand(): Command {
         Logger.error('Failed to copy sheet', error);
         process.exit(1);
       }
-    });
+    }
+  );
 }

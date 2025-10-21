@@ -15,4 +15,3 @@ beforeEach(() => {
     throw new Error('PRIVATE_KEY_E2E is required for E2E tests. Please set it in .env.e2e file.');
   }
 });
-

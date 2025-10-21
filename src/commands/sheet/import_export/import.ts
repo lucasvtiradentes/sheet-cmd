@@ -1,18 +1,17 @@
 import { Command } from 'commander';
 import { readFileSync } from 'fs';
-
 import { getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
+import type { SheetImportOptions } from '../../../definitions/command-types.js';
+import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
 import { parseCSV } from '../../../utils/csv.js';
 import { Logger } from '../../../utils/logger.js';
 
 export function createImportCommand(): Command {
-  return new Command('import')
-    .description('Import CSV file to a sheet')
-    .requiredOption('-n, --name <name>', 'Sheet name')
-    .requiredOption('-f, --file <path>', 'CSV file path')
-    .option('--skip-header', 'Skip the first row (header) when importing')
-    .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: { name: string; file: string; skipHeader?: boolean; spreadsheet?: string }) => {
+  return createSubCommandFromSchema(
+    CommandNames.SHEET,
+    SubCommandNames.SHEET_IMPORT,
+    async (options: SheetImportOptions) => {
       try {
         const sheetsService = await getGoogleSheetsService(options.spreadsheet);
 
@@ -65,5 +64,6 @@ export function createImportCommand(): Command {
         Logger.error('Failed to import CSV', error);
         process.exit(1);
       }
-    });
+    }
+  );
 }

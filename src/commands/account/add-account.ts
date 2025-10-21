@@ -3,6 +3,8 @@ import * as readline from 'readline';
 import { performOAuthFlow } from '../../auth/oauth-flow.js';
 import { ConfigManager } from '../../config/config-manager.js';
 import { GOOGLE_CLOUD_CONSOLE_URLS } from '../../config/constants.js';
+import { createSubCommandFromSchema } from '../../definitions/command-builder.js';
+import { CommandNames, SubCommandNames } from '../../definitions/types.js';
 import { Logger } from '../../utils/logger.js';
 
 async function promptInput(question: string): Promise<string> {
@@ -20,9 +22,7 @@ async function promptInput(question: string): Promise<string> {
 }
 
 export function createAddAccountCommand(): Command {
-  const command = new Command('add');
-
-  command.description('Add a Google account via OAuth').action(async () => {
+  return createSubCommandFromSchema(CommandNames.ACCOUNT, SubCommandNames.ACCOUNT_ADD, async () => {
     try {
       Logger.bold('='.repeat(70));
       Logger.bold('  GOOGLE CLOUD CONSOLE SETUP');
@@ -94,6 +94,4 @@ export function createAddAccountCommand(): Command {
       process.exit(1);
     }
   });
-
-  return command;
 }

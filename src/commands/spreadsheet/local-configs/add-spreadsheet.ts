@@ -3,13 +3,16 @@ import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager.js';
 import { GOOGLE_API_URLS } from '../../../config/constants.js';
 import { GoogleDriveService } from '../../../core/google-drive.service.js';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
+import type { SpreadsheetAddOptions } from '../../../definitions/command-types.js';
+import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
 import { Logger } from '../../../utils/logger.js';
 
 export function createAddSpreadsheetCommand(): Command {
-  return new Command('add')
-    .description('Add a new spreadsheet to the active account (interactive by default)')
-    .option('--id <spreadsheet-id>', 'Spreadsheet ID (skips interactive selection)')
-    .action(async (options) => {
+  return createSubCommandFromSchema(
+    CommandNames.SPREADSHEET,
+    SubCommandNames.SPREADSHEET_ADD,
+    async (options: SpreadsheetAddOptions) => {
       try {
         const configManager = new ConfigManager();
         const activeAccount = configManager.getActiveAccount();
@@ -99,5 +102,6 @@ export function createAddSpreadsheetCommand(): Command {
         Logger.error('Failed to add spreadsheet', error);
         process.exit(1);
       }
-    });
+    }
+  );
 }

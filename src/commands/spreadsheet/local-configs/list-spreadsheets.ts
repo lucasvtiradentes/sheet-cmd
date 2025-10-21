@@ -1,10 +1,11 @@
 import { Command } from 'commander';
-
 import { ConfigManager } from '../../../config/config-manager.js';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
+import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
 import { Logger } from '../../../utils/logger.js';
 
 export function createListSpreadsheetsCommand(): Command {
-  return new Command('list').description('List all configured spreadsheets for the active account').action(async () => {
+  return createSubCommandFromSchema(CommandNames.SPREADSHEET, SubCommandNames.SPREADSHEET_LIST, async () => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
 

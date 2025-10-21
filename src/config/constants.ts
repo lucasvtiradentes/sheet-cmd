@@ -26,8 +26,7 @@ export function getUserOS(): SupportedOS {
       if (release.includes('microsoft') || release.includes('wsl')) {
         return 'wsl';
       }
-    } catch {
-    }
+    } catch {}
     return 'linux';
   }
 
@@ -85,3 +84,5 @@ export const OAUTH_CONFIG = {
   ACCESS_TYPE: 'offline' as const,
   PROMPT: 'consent' as const
 };
+
+export const TOKEN_REFRESH_THRESHOLD_MS = 5 * 60 * 1000;
