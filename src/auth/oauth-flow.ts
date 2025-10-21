@@ -77,7 +77,7 @@ async function startCallbackServer(port: number): Promise<string> {
           res.end(`
             <html>
               <body style="font-family: system-ui; text-align: center; padding: 50px;">
-                <h1 style="color: #10b981;">✓ Authentication Successful</h1>
+                <h1 style="color: #10b981;">Authentication Successful</h1>
                 <p>You can close this window and return to the terminal.</p>
               </body>
             </html>

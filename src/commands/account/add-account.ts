@@ -30,33 +30,50 @@ export function createAddAccountCommand(): Command {
       Logger.plain('');
       Logger.info('Follow these steps to get OAuth credentials:\n');
 
-      Logger.bold('STEP 1: Enable Required APIs');
+      Logger.bold('STEP 1: Create or Select a Project');
+      Logger.link(`  ${GOOGLE_CLOUD_CONSOLE_URLS.CREDENTIALS}`);
+      Logger.info('  - Go to Google Cloud Console');
+      Logger.info('  - Create a new project OR select an existing one');
+      Logger.info('  - Note: May require setting up billing (free tier available)');
+      Logger.plain('');
+
+      Logger.bold('STEP 2: Enable Required APIs');
       Logger.info('  a) Enable Google Sheets API:');
       Logger.link(`     ${GOOGLE_CLOUD_CONSOLE_URLS.ENABLE_SHEETS_API}`);
       Logger.info('  b) Enable Google Drive API:');
       Logger.link(`     ${GOOGLE_CLOUD_CONSOLE_URLS.ENABLE_DRIVE_API}`);
       Logger.plain('');
 
-      Logger.bold('STEP 2: Configure OAuth Consent Screen');
+      Logger.bold('STEP 3: Configure OAuth Consent Screen');
       Logger.link(`  ${GOOGLE_CLOUD_CONSOLE_URLS.CONSENT_SCREEN}`);
       Logger.info('  - User Type: External');
-      Logger.info('  - Fill app name, support email, developer email');
-      Logger.info('  - Add test users: YOUR EMAIL ADDRESS');
+      Logger.info('  - App name: sheet-cmd (or any name)');
+      Logger.info('  - User support email: your email');
+      Logger.info('  - Developer contact: your email');
+      Logger.info('  - Click "SAVE AND CONTINUE"');
       Logger.plain('');
 
-      Logger.bold('STEP 3: Add Required Scopes');
-      Logger.link(`  ${GOOGLE_CLOUD_CONSOLE_URLS.SCOPES}`);
-      Logger.info('  Click "ADD OR REMOVE SCOPES" and add:');
-      Logger.info('  - .../auth/spreadsheets (View and manage your Google Sheets)');
-      Logger.info('  - .../auth/drive.readonly (View your Google Drive files)');
+      Logger.bold('STEP 4: Add Scopes');
+      Logger.info('  - Click "ADD OR REMOVE SCOPES"');
+      Logger.info('  - Search and add:');
+      Logger.info('    → .../auth/spreadsheets');
+      Logger.info('    → .../auth/drive.readonly');
+      Logger.info('  - Click "UPDATE" then "SAVE AND CONTINUE"');
       Logger.plain('');
 
-      Logger.bold('STEP 4: Create OAuth 2.0 Client ID');
+      Logger.bold('STEP 5: Add Test Users');
+      Logger.info('  - Click "ADD USERS"');
+      Logger.info('  - Add your email address');
+      Logger.info('  - Click "SAVE AND CONTINUE"');
+      Logger.plain('');
+
+      Logger.bold('STEP 6: Create OAuth 2.0 Client ID');
       Logger.link(`  ${GOOGLE_CLOUD_CONSOLE_URLS.CREDENTIALS}`);
       Logger.info('  - Click "CREATE CREDENTIALS" → "OAuth client ID"');
       Logger.info('  - Application type: Desktop app');
-      Logger.info('  - Name: sheet-cmd (or any name you prefer)');
-      Logger.info('  - Copy Client ID and Client Secret');
+      Logger.info('  - Name: sheet-cmd');
+      Logger.info('  - Click "CREATE"');
+      Logger.info('  - Copy the Client ID and Client Secret');
       Logger.plain('');
 
       Logger.bold('='.repeat(70));

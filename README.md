@@ -28,14 +28,11 @@ Manage Google Sheets from the command line: read, write, import/export data acro
 npm install -g sheet-cmd
 
 # 2. Setup Google OAuth credentials
-# → Go to: https://console.cloud.google.com/apis/credentials
-# → Enable Google Sheets API and Google Drive API
-# → Configure OAuth Consent Screen (External, add test users)
-# → Create OAuth 2.0 Client ID (Desktop app)
-# → Copy Client ID and Client Secret
+# → See "Google Cloud Console Setup" section below
 
 # 3. Add your Google account
 sheet-cmd account add
+# → Follow the setup instructions
 # → Paste Client ID and Client Secret
 # → Browser opens for authentication
 # → Grant permissions
@@ -51,6 +48,53 @@ sheet-cmd sheet select
 # 6. Start using!
 sheet-cmd sheet read
 ```
+
+<details>
+<summary><b>Google Cloud Console Setup</b></summary>
+
+To use sheet-cmd, you need OAuth 2.0 credentials from Google Cloud Console:
+
+**1. Go to [Google Cloud Console](https://console.cloud.google.com/)**
+
+**2. Create or select a project**
+- May require setting up billing (free tier available)
+
+**3. Enable APIs**
+- Go to "APIs & Services" > "Library"
+- Search and enable "Google Sheets API"
+- Search and enable "Google Drive API"
+
+**4. Configure OAuth Consent Screen**
+- Go to "APIs & Services" > "OAuth consent screen"
+- User Type: **External**
+- App name: sheet-cmd (or any name)
+- User support email: your email
+- Developer contact: your email
+- Click "SAVE AND CONTINUE"
+
+**5. Add Scopes**
+- Click "ADD OR REMOVE SCOPES"
+- Search and add:
+  - `.../auth/spreadsheets`
+  - `.../auth/drive.readonly`
+- Click "UPDATE" then "SAVE AND CONTINUE"
+
+**6. Add Test Users**
+- Click "ADD USERS"
+- Add your email address
+- Click "SAVE AND CONTINUE"
+
+**7. Create OAuth 2.0 Client ID**
+- Go to "APIs & Services" > "Credentials"
+- Click "CREATE CREDENTIALS" > "OAuth client ID"
+- Application type: **Desktop app**
+- Name: sheet-cmd
+- Click "CREATE"
+- **Copy the Client ID and Client Secret**
+
+**Note**: The first time you authenticate, you'll see an "unverified app" warning. This is normal for apps in testing mode. Click "Advanced" → "Go to [app name] (unsafe)" to proceed.
+
+</details>
 
 ## :bulb: Usage
 
@@ -207,39 +251,6 @@ sheet-cmd completion install
 ## :package: Additional Information
 
 **Prerequisites:** Node.js 18+, Google Account, Linux/macOS/Windows
-
-<details>
-<summary><b>Google Cloud Console Setup</b></summary>
-
-To use sheet-cmd, you need OAuth 2.0 credentials from Google Cloud Console:
-
-**1. Go to [Google Cloud Console](https://console.cloud.google.com/)**
-
-**2. Create or select a project**
-
-**3. Enable APIs**
-- Go to "APIs & Services" > "Library"
-- Search and enable "Google Sheets API"
-- Search and enable "Google Drive API"
-
-**4. Configure OAuth Consent Screen**
-- Go to "APIs & Services" > "OAuth consent screen"
-- User Type: **External**
-- Fill in app name, user support email, developer email
-- **Add test users**: Add your email address(es)
-- **Scopes**: The app will request required scopes automatically
-
-**5. Create OAuth 2.0 Client ID**
-- Go to "APIs & Services" > "Credentials"
-- Click "Create Credentials" > "OAuth client ID"
-- Application type: **Desktop app**
-- Give it a name (e.g., "sheet-cmd")
-- Click "Create"
-- **Copy the Client ID and Client Secret**
-
-**Note**: The first time you authenticate, you'll see an "unverified app" warning. This is normal for apps in testing mode. Click "Advanced" → "Go to [app name] (unsafe)" to proceed.
-
-</details>
 
 <details>
 <summary><b>Configuration Files</b></summary>
