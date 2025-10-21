@@ -1,9 +1,9 @@
 import { Command } from 'commander';
 import { writeFileSync } from 'fs';
 
-import { getGoogleSheetsService } from '../../lib/command-helpers.js';
-import { formatAsCSV, formatAsMarkdown } from '../../lib/data-formatters.js';
-import { Logger } from '../../lib/logger.js';
+import { getGoogleSheetsService } from '../../core/command-helpers.js';
+import { formatAsCSV, formatAsMarkdown } from '../../utils/formatters.js';
+import { Logger } from '../../utils/logger.js';
 
 type OutputFormat = 'markdown' | 'csv';
 

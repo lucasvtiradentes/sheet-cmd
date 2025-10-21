@@ -1,5 +1,5 @@
-import { GOOGLE_CLOUD_CONSOLE_URLS } from '../constants.js';
-import { Logger } from '../lib/logger.js';
+import { GOOGLE_CLOUD_CONSOLE_URLS } from '../config/constants.js';
+import { Logger } from '../utils/logger.js';
 
 export function displayHelpText(): void {
   Logger.plain('');

@@ -1,6 +1,6 @@
-import { ConfigManager } from './config-manager.js';
+import { ConfigManager } from '../config/config-manager.js';
+import { Logger } from '../utils/logger.js';
 import { GoogleSheetsService } from './google-sheets.service.js';
-import { Logger } from './logger.js';
 
 export async function getGoogleSheetsService(spreadsheetName?: string): Promise<GoogleSheetsService> {
   const configManager = new ConfigManager();

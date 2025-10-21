@@ -1,6 +1,6 @@
 import { OAuth2Client } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
-import type { OAuthCredentials } from '../types/local.js';
+import type { OAuthCredentials } from '../config/types.js';
 
 export interface GoogleSheetsConfig {
   spreadsheetId: string;

@@ -1,9 +1,9 @@
 import { Command } from 'commander';
 import * as readline from 'readline';
-import { GOOGLE_CLOUD_CONSOLE_URLS } from '../../constants.js';
-import { ConfigManager } from '../../lib/config-manager.js';
-import { Logger } from '../../lib/logger.js';
-import { performOAuthFlow } from '../../lib/oauth-flow.js';
+import { performOAuthFlow } from '../../auth/oauth-flow.js';
+import { ConfigManager } from '../../config/config-manager.js';
+import { GOOGLE_CLOUD_CONSOLE_URLS } from '../../config/constants.js';
+import { Logger } from '../../utils/logger.js';
 
 async function promptInput(question: string): Promise<string> {
   const rl = readline.createInterface({

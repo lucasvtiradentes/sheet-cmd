@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 
-import { getGoogleSheetsService } from '../../lib/command-helpers.js';
-import { Logger } from '../../lib/logger.js';
+import { getGoogleSheetsService } from '../../core/command-helpers.js';
+import { Logger } from '../../utils/logger.js';
 
 export function createListSheetsCommand(): Command {
   return new Command('list-sheets')

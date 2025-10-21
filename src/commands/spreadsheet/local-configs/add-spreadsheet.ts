@@ -1,10 +1,9 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
-
-import { GOOGLE_API_URLS } from '../../../constants.js';
-import { ConfigManager } from '../../../lib/config-manager.js';
-import { GoogleDriveService } from '../../../lib/google-drive.service.js';
-import { Logger } from '../../../lib/logger.js';
+import { ConfigManager } from '../../../config/config-manager.js';
+import { GOOGLE_API_URLS } from '../../../config/constants.js';
+import { GoogleDriveService } from '../../../core/google-drive.service.js';
+import { Logger } from '../../../utils/logger.js';
 
 export function createAddSpreadsheetCommand(): Command {
   return new Command('add')

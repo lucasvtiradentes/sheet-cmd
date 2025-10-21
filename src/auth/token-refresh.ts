@@ -1,5 +1,5 @@
 import { OAuth2Client } from 'google-auth-library';
-import type { OAuthCredentials } from '../types/local.js';
+import type { OAuthCredentials } from '../config/types.js';
 
 const TOKEN_REFRESH_THRESHOLD_MS = 5 * 60 * 1000;
 

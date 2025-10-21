@@ -1,10 +1,9 @@
 import * as fs from 'fs';
-
-import { CONFIG_PATHS } from '../constants.js';
-import type { Account, OAuthCredentials, SheetsConfig, SpreadsheetConfig, UserMetadata } from '../types/local.js';
-import { sheetsConfigSchema, userMetadataSchema } from '../types/local.js';
-import { readJson, writeJson } from '../utils/json-utils.js';
-import { refreshTokenIfNeeded } from './token-refresh.js';
+import { refreshTokenIfNeeded } from '../auth/token-refresh.js';
+import { readJson, writeJson } from '../utils/json.js';
+import { CONFIG_PATHS } from './constants.js';
+import type { Account, OAuthCredentials, SheetsConfig, SpreadsheetConfig, UserMetadata } from './types.js';
+import { sheetsConfigSchema, userMetadataSchema } from './types.js';
 
 export class ConfigManager {
   private userMetadata: UserMetadata | null = null;

@@ -8,7 +8,7 @@ import { displayHelpText } from './commands/help-text.js';
 import { createSheetCommand } from './commands/sheet/index.js';
 import { createSpreadsheetCommand } from './commands/spreadsheet/index.js';
 import { createUpdateCommand } from './commands/update.js';
-import { APP_INFO } from './constants.js';
+import { APP_INFO } from './config/constants.js';
 
 const program = new Command();
 

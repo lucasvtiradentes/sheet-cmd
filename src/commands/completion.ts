@@ -4,8 +4,8 @@ import { join } from 'node:path';
 import chalk from 'chalk';
 import { Command } from 'commander';
 
-import { ConfigManager } from '../lib/config-manager.js';
-import { Logger } from '../lib/logger.js';
+import { ConfigManager } from '../config/config-manager.js';
+import { Logger } from '../utils/logger.js';
 
 const ZSH_COMPLETION_SCRIPT = `#compdef sheet-cmd sheet
 
@@ -495,13 +495,9 @@ async function installBashCompletion(): Promise<void> {
   Logger.info(chalk.cyan('  source ~/.bashrc'));
 }
 
-/**
- * Reinstall completion silently (used after update) - only if already installed
- */
 export async function reinstallCompletionSilently(): Promise<boolean> {
   const configManager = new ConfigManager();
 
-  // Only reinstall if user had previously installed completions
   if (!configManager.isCompletionInstalled()) {
     return false;
   }

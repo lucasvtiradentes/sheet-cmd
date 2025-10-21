@@ -1,6 +1,6 @@
 import { Command } from 'commander';
-import { ConfigManager } from '../../lib/config-manager.js';
-import { Logger } from '../../lib/logger.js';
+import { ConfigManager } from '../../config/config-manager.js';
+import { Logger } from '../../utils/logger.js';
 
 export function createListAccountsCommand(): Command {
   const command = new Command('list');

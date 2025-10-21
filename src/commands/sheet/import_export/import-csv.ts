@@ -1,9 +1,9 @@
 import { Command } from 'commander';
 import { readFileSync } from 'fs';
 
-import { getGoogleSheetsService } from '../../../lib/command-helpers.js';
-import { parseCSV } from '../../../lib/csv-parser.js';
-import { Logger } from '../../../lib/logger.js';
+import { getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { parseCSV } from '../../../utils/csv.js';
+import { Logger } from '../../../utils/logger.js';
 
 export function createImportCsvCommand(): Command {
   return new Command('import-csv')

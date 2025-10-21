@@ -6,7 +6,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
 
-import { Logger } from '../lib/logger.js';
+import { Logger } from '../utils/logger.js';
 import { reinstallCompletionSilently } from './completion.js';
 
 const execAsync = promisify(exec);

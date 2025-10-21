@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 
-import { ConfigManager } from '../../../lib/config-manager.js';
-import { Logger } from '../../../lib/logger.js';
+import { ConfigManager } from '../../../config/config-manager.js';
+import { Logger } from '../../../utils/logger.js';
 
 export function createActiveSpreadsheetCommand(): Command {
   return new Command('active').description('Show the currently active spreadsheet').action(async () => {
