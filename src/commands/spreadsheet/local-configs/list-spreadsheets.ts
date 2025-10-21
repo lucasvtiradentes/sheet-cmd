@@ -1,32 +1,39 @@
 import { Command } from 'commander';
-
-import { ConfigManager } from '../../../lib/config-manager.js';
-import { Logger } from '../../../lib/logger.js';
+import { ConfigManager } from '../../../config/config-manager.js';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
+import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
+import { Logger } from '../../../utils/logger.js';
 
 export function createListSpreadsheetsCommand(): Command {
-  return new Command('list')
-    .description('List all configured spreadsheets')
-    .action(async () => {
-      const configManager = new ConfigManager();
-      const spreadsheets = configManager.getAllSpreadsheets();
-      const activeSpreadsheetName = configManager.getActiveSpreadsheetName();
+  return createSubCommandFromSchema(CommandNames.SPREADSHEET, SubCommandNames.SPREADSHEET_LIST, async () => {
+    const configManager = new ConfigManager();
+    const activeAccount = configManager.getActiveAccount();
 
-      if (spreadsheets.length === 0) {
-        Logger.warning('No spreadsheets configured. Use "sheet-cmd spreadsheet add" to add one.');
-        return;
-      }
+    if (!activeAccount) {
+      Logger.error('No active account set.');
+      Logger.info('Use: sheet-cmd account add');
+      return;
+    }
 
-      Logger.bold('\nConfigured spreadsheets:');
-      spreadsheets.forEach((spreadsheet) => {
-        const isActive = spreadsheet.name === activeSpreadsheetName;
-        const marker = isActive ? '* ' : '  ';
-        Logger.plain(`${marker}${spreadsheet.name}${isActive ? ' (active)' : ''}`);
-        Logger.dim(`    ID: ${spreadsheet.spreadsheet_id}`);
-      });
+    const spreadsheets = configManager.listSpreadsheets(activeAccount.email);
+    const activeSpreadsheetName = configManager.getActiveSpreadsheetName(activeAccount.email);
 
-      if (activeSpreadsheetName) {
-        Logger.plain('');
-        Logger.dim('* = active spreadsheet');
-      }
+    if (spreadsheets.length === 0) {
+      Logger.warning('No spreadsheets configured. Use "sheet-cmd spreadsheet add" to add one.');
+      return;
+    }
+
+    Logger.bold(`\nSpreadsheets for ${activeAccount.email}:`);
+    spreadsheets.forEach((spreadsheet) => {
+      const isActive = spreadsheet.name === activeSpreadsheetName;
+      const marker = isActive ? '* ' : '  ';
+      Logger.plain(`${marker}${spreadsheet.name}${isActive ? ' (active)' : ''}`);
+      Logger.dim(`    ID: ${spreadsheet.spreadsheetId}`);
     });
+
+    if (activeSpreadsheetName) {
+      Logger.plain('');
+      Logger.dim('* = active spreadsheet');
+    }
+  });
 }

@@ -1,6 +1,15 @@
+# FOLDERS ======================================================================
+
 node_modules/
 dist/
-ignore/
+.ignore/
 .turbo/
+.claude/
+.git/
+docs/
+completions/
+
+# FILES ========================================================================
 
 .env.e2e
+CLAUDE.md

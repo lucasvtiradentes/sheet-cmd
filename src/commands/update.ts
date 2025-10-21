@@ -6,14 +6,16 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
 
-import { Logger } from '../lib/logger.js';
+import { createCommandFromSchema } from '../definitions/command-builder.js';
+import { CommandNames } from '../definitions/types.js';
+import { Logger } from '../utils/logger.js';
 import { reinstallCompletionSilently } from './completion.js';
 
 const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export function createUpdateCommand(): Command {
-  return new Command('update').description('Update the sheet-cmd package to the latest version').action(async () => {
+  return createCommandFromSchema(CommandNames.UPDATE, async () => {
     try {
       Logger.loading('Checking current version...');
 
@@ -66,7 +68,6 @@ export function createUpdateCommand(): Command {
         Logger.dim(stdout);
       }
 
-      // Attempt to reinstall shell completions silently
       const completionReinstalled = await reinstallCompletionSilently();
       if (completionReinstalled) {
         Logger.dim('✨ Shell completion updated');
@@ -107,7 +108,6 @@ async function detectPackageManager(): Promise<string | null> {
     }
   }
 
-  // Default to npm if we can't determine
   return 'npm';
 }
 
@@ -115,13 +115,11 @@ async function getGlobalNpmPath(): Promise<string | null> {
   const isWindows = platform() === 'win32';
 
   try {
-    // Try to find the sheet-cmd executable
     const whereCommand = isWindows ? 'where' : 'which';
     const { stdout } = await execAsync(`${whereCommand} sheet-cmd`);
     const execPath = stdout.trim();
 
     if (execPath) {
-      // On Unix systems, this might be a symlink, so resolve it
       if (!isWindows) {
         try {
           const { stdout: realPath } = await execAsync(`readlink -f "${execPath}"`);
@@ -133,15 +131,12 @@ async function getGlobalNpmPath(): Promise<string | null> {
       return execPath;
     }
   } catch {
-    // If which/where fails, try npm list
     try {
       const { stdout } = await execAsync('npm list -g --depth=0 sheet-cmd');
       if (stdout.includes('sheet-cmd')) {
         return 'npm';
       }
-    } catch {
-      // Continue to other methods
-    }
+    } catch {}
   }
 
   return null;

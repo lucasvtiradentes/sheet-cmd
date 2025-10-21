@@ -2,69 +2,153 @@
 <a href="https://www.google.com/sheets/about/" target="_blank" rel="noopener noreferrer">
   <img width="64" src=".github/image/sheet.png" alt="Google Sheets logo">
 </a>
-<h2>Sheet cmd</h2>
-<p>A CLI tool to interact with Google Sheets</p>
+<h2>Sheet CMD</h2>
 <p>
-  <a href="https://www.npmjs.com/package/sheet-cmd"><img src="https://img.shields.io/npm/v/sheet-cmd.svg" alt="npm version"></a>
-  <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-  <br>
-  <a href="#star-features">Features</a> • <a href="#question-motivation">Motivation</a> • <a href="#rocket-quick-start">Quick Start</a> • <a href="#bulb-usage">Usage</a> • <a href="#package-setup">Setup</a> • <a href="#wrench-development">Development</a>
+  <a href="#rocket-quick-start">Quick Start</a> • <a href="#bulb-usage">Usage</a> • <a href="#package-additional-information">Additional Information</a>
 </p>
-
 </div>
 
-## :star: Features
+## Overview
 
-- **Multi-spreadsheet support** - Manage multiple Google Sheets with separate credentials
-- **Active spreadsheet system** - Set once, use everywhere (no need for -s flag)
-- **Complete sheet management** - Create, rename, copy, and remove sheets
-- **Data operations** - Read, write, append rows with multiple output formats
-- **Import/Export** - CSV import and export to JSON/CSV formats
-- **Secure credentials** - All credentials stored locally on your machine
-- **LLM-friendly** - Designed for AI tool integrations like Claude Code
-- **Shell completion** - Auto-completion for zsh and bash
-- **Self-updating** - Built-in update mechanism that detects your package manager
+Manage Google Sheets from the command line: read, write, import/export data across multiple accounts and spreadsheets.
 
-## :question: Motivation
+## :sparkles: Features
 
-Why build a CLI for Google Sheets?
-
-Because I want to enable LLMs like [Claude Code](https://www.anthropic.com/claude-code) to easily interact with my Google Sheets data. This tool provides a simple, secure, and flexible way to manage multiple spreadsheets with different credentials, making it perfect for AI-powered workflows.
+&nbsp;&nbsp;&nbsp;✔️ **OAuth 2.0 authentication** - secure access without service accounts<br>
+&nbsp;&nbsp;&nbsp;✔️ **Multi-account support** - manage personal, work, and other Google accounts<br>
+&nbsp;&nbsp;&nbsp;✔️ **Interactive Drive browsing** - select spreadsheets directly from Google Drive<br>
+&nbsp;&nbsp;&nbsp;✔️ **Active context system** - set account/spreadsheet/sheet once, use everywhere<br>
+&nbsp;&nbsp;&nbsp;✔️ **Data operations** - read, write, append with markdown/CSV/JSON formats<br>
+&nbsp;&nbsp;&nbsp;✔️ **LLM-friendly** - designed for AI integrations like Claude Code<br>
 
 ## :rocket: Quick Start
 
 ```bash
-# Install
-npm install sheet-cmd -g
+# 1. Install
+npm install -g sheet-cmd
 
-# Setup spreadsheet
+# 2. Setup Google OAuth credentials
+# → See "Google Cloud Console Setup" section below
+
+# 3. Add your Google account
+sheet-cmd account add
+# → Follow the setup instructions
+# → Paste Client ID and Client Secret
+# → Browser opens for authentication
+# → Grant permissions
+
+# 4. Add a spreadsheet
 sheet-cmd spreadsheet add
+# → Browse and select from Google Drive
 
-# Set as active
-sheet-cmd spreadsheet switch my-sheet
+# 5. Select a sheet
+sheet-cmd sheet select
+# → Choose sheet to work with
 
-# Start using
-sheet-cmd sheet list-sheets
+# 6. Start using!
+sheet-cmd sheet read
 ```
+
+<details>
+<summary><b>Google Cloud Console Setup</b></summary>
+
+To use sheet-cmd, you need OAuth 2.0 credentials from Google Cloud Console:
+
+**1. Go to [Google Cloud Console](https://console.cloud.google.com/)**
+
+**2. Create or select a project**
+- May require setting up billing (free tier available)
+
+**3. Enable APIs**
+- Go to "APIs & Services" > "Library"
+- Search and enable "Google Sheets API"
+- Search and enable "Google Drive API"
+
+**4. Configure OAuth Consent Screen**
+- Go to "APIs & Services" > "OAuth consent screen"
+- User Type: **External**
+- App name: sheet-cmd (or any name)
+- User support email: your email
+- Developer contact: your email
+- Click "SAVE AND CONTINUE"
+
+**5. Add Scopes**
+- Click "ADD OR REMOVE SCOPES"
+- Search and add:
+  - `.../auth/spreadsheets`
+  - `.../auth/drive.readonly`
+- Click "UPDATE" then "SAVE AND CONTINUE"
+
+**6. Add Test Users**
+- Click "ADD USERS"
+- Add your email address
+- Click "SAVE AND CONTINUE"
+
+**7. Create OAuth 2.0 Client ID**
+- Go to "APIs & Services" > "Credentials"
+- Click "CREATE CREDENTIALS" > "OAuth client ID"
+- Application type: **Desktop app**
+- Name: sheet-cmd
+- Click "CREATE"
+- **Copy the Client ID and Client Secret**
+
+**Note**: The first time you authenticate, you'll see an "unverified app" warning. This is normal for apps in testing mode. Click "Advanced" → "Go to [app name] (unsafe)" to proceed.
+
+</details>
 
 ## :bulb: Usage
 
-### Commands Overview
+All commands use the **active account**, **active spreadsheet**, and **active sheet** by default. Set once, use everywhere.
+
+<details>
+<summary><b>Account Management</b></summary>
 
 ```bash
-sheet-cmd --help                    # Show help
-sheet-cmd update                    # Update to latest version
+# Add Google account via OAuth
+sheet-cmd account add
+
+# List all accounts (* = active)
+sheet-cmd account list
+
+# Select active account (interactive)
+sheet-cmd account select
+
+# Remove account (interactive)
+sheet-cmd account remove
+
+# Re-authenticate active account
+sheet-cmd account reauth
 ```
+
+</details>
 
 <details>
 <summary><b>Spreadsheet Management</b></summary>
 
 ```bash
-sheet-cmd spreadsheet add               # Add spreadsheet (interactive)
-sheet-cmd spreadsheet list              # List all spreadsheets (* = active)
-sheet-cmd spreadsheet switch <name>     # Set active spreadsheet
-sheet-cmd spreadsheet active            # Show currently active spreadsheet
-sheet-cmd spreadsheet remove [name]     # Remove spreadsheet
+# Add spreadsheet (interactive - browse Google Drive)
+sheet-cmd spreadsheet add
+
+# Add spreadsheet manually by ID
+sheet-cmd spreadsheet add --id "1ABC..."
+
+# List all spreadsheets (* = active)
+sheet-cmd spreadsheet list
+
+# Select active spreadsheet (interactive)
+sheet-cmd spreadsheet select
+
+# Select spreadsheet by ID
+sheet-cmd spreadsheet select --id "1ABC..."
+
+# Show currently active spreadsheet
+sheet-cmd spreadsheet active
+
+# Remove spreadsheet (interactive)
+sheet-cmd spreadsheet remove
+
+# Remove spreadsheet by ID
+sheet-cmd spreadsheet remove --id "1ABC..."
 ```
 
 </details>
@@ -72,14 +156,30 @@ sheet-cmd spreadsheet remove [name]     # Remove spreadsheet
 <details>
 <summary><b>Sheet Management</b></summary>
 
-All sheet commands use the active spreadsheet if `-s` flag is not specified.
-
 ```bash
-sheet-cmd sheet list-sheets                              # List all sheets
-sheet-cmd sheet add-sheet -n <name>                      # Add a new sheet
-sheet-cmd sheet remove-sheet -n <name>                   # Remove a sheet
-sheet-cmd sheet rename-sheet -n <old> --new-name <new>  # Rename a sheet
-sheet-cmd sheet copy-sheet -n <name> --to <new>         # Copy a sheet
+# List all sheets in spreadsheet
+sheet-cmd sheet list
+
+# Select active sheet (interactive)
+sheet-cmd sheet select
+
+# Select sheet by name
+sheet-cmd sheet select --name "Sheet1"
+
+# Add a new sheet
+sheet-cmd sheet add --name "NewSheet"
+
+# Remove a sheet (uses active if --name not provided)
+sheet-cmd sheet remove
+sheet-cmd sheet remove --name "OldSheet"
+
+# Rename a sheet (uses active if --name not provided)
+sheet-cmd sheet rename --new-name "NewName"
+sheet-cmd sheet rename --name "OldName" --new-name "NewName"
+
+# Copy a sheet (uses active if --name not provided)
+sheet-cmd sheet copy --to "Sheet1 Copy"
+sheet-cmd sheet copy --name "Sheet1" --to "Sheet1 Copy"
 ```
 
 </details>
@@ -88,19 +188,27 @@ sheet-cmd sheet copy-sheet -n <name> --to <new>         # Copy a sheet
 <summary><b>Data Operations</b></summary>
 
 ```bash
-# Read sheet content
-sheet-cmd sheet read-sheet -n <name>                    # Read in markdown format
-sheet-cmd sheet read-sheet -n <name> -o csv             # Read in CSV format
-sheet-cmd sheet read-sheet -n <name> -f                 # Read with formulas
-sheet-cmd sheet read-sheet -n <name> -e output.md       # Save to file
+# Read sheet content (uses active sheet if --name not provided)
+sheet-cmd sheet read
+sheet-cmd sheet read --name "Sheet1"
+sheet-cmd sheet read --output csv
+sheet-cmd sheet read --formulas
+sheet-cmd sheet read --export output.md
 
-# Write to cells
-sheet-cmd sheet write-cell -n <name> -c A1 -v "Hello"   # Write to single cell
-sheet-cmd sheet write-cell -n <name> -r A1:B2 -v "val1, val2; val3, val4"  # Write to range
+# Write to single cell (uses active sheet if --name not provided)
+sheet-cmd sheet write --cell A1 --value "Hello"
+sheet-cmd sheet write --name "Sheet1" --cell A1 --value "Hello"
 
-# Append rows
-sheet-cmd sheet append-row -n <name> -v "col1, col2, col3"  # Append new row
+# Write to range (uses active sheet if --name not provided)
+sheet-cmd sheet write --range A1:B2 --value "v1,v2;v3,v4"
+sheet-cmd sheet write --name "Sheet1" --range A1:B2 --value "v1,v2;v3,v4"
+
+# Append row (uses active sheet if --name not provided)
+sheet-cmd sheet append --value "col1,col2,col3"
+sheet-cmd sheet append --name "Sheet1" --value "col1,col2,col3"
 ```
+
+**Note**: For `write` command, use `,` to separate columns and `;` to separate rows
 
 </details>
 
@@ -108,108 +216,169 @@ sheet-cmd sheet append-row -n <name> -v "col1, col2, col3"  # Append new row
 <summary><b>Import/Export</b></summary>
 
 ```bash
-# Import CSV
-sheet-cmd sheet import-csv -n <name> -f data.csv        # Import CSV with headers
-sheet-cmd sheet import-csv -n <name> -f data.csv --skip-header  # Skip first row
+# Import CSV (uses active sheet if --name not provided)
+sheet-cmd sheet import --file data.csv
+sheet-cmd sheet import --name "Sheet1" --file data.csv
+sheet-cmd sheet import --file data.csv --skip-header
 
-# Export data
-sheet-cmd sheet export -n <name> -f json -o output.json # Export to JSON
-sheet-cmd sheet export -n <name> -f csv -o output.csv   # Export to CSV
-sheet-cmd sheet export -n <name> -r B2:I25 -f csv       # Export range to CSV
+# Export to JSON (uses active sheet if --name not provided)
+sheet-cmd sheet export --format json --output output.json
+sheet-cmd sheet export --name "Sheet1" --format json --output output.json
+
+# Export to CSV (uses active sheet if --name not provided)
+sheet-cmd sheet export --format csv --output output.csv
+sheet-cmd sheet export --name "Sheet1" --format csv --output output.csv
+
+# Export specific range
+sheet-cmd sheet export --range B2:I25 --format csv --output output.csv
 ```
 
 </details>
 
 <details>
-<summary><b>Shell Completion</b></summary>
+<summary><b>System Commands</b></summary>
 
 ```bash
-# Install completion
+# Update to latest version
+sheet-cmd update
+
+# Install shell completion (bash/zsh)
 sheet-cmd completion install
-
-# Reload shell
-source ~/.zshrc   # for zsh
-source ~/.bashrc  # for bash
-
-# Use tab completion
-sheet-cmd <TAB>
-sheet-cmd spreadsheet <TAB>
-sheet-cmd sheet <TAB>
 ```
 
 </details>
 
-## :package: Setup
+## :package: Additional Information
 
-### Getting Google Service Account Credentials
+**Prerequisites:** Node.js 18+, Google Account, Linux/macOS/Windows
 
-To use this tool, you need a Google Service Account with access to your spreadsheet:
-
-1. **Go to [Google Cloud Console](https://console.cloud.google.com/)**
-2. **Create or select a project**
-3. **Enable Google Sheets API**
-   - Go to "APIs & Services" > "Library"
-   - Search for "Google Sheets API"
-   - Click "Enable"
-4. **Create a Service Account**
-   - Go to "APIs & Services" > "Credentials"
-   - Click "Create Credentials" > "Service Account"
-   - Fill in the details and click "Create"
-5. **Create a Key**
-   - Click on the service account you created
-   - Go to "Keys" tab
-   - Click "Add Key" > "Create new key"
-   - Select "JSON" and click "Create"
-   - Download and save the JSON file
-6. **Share your Google Sheet**
-   - Open your Google Sheet
-   - Click "Share"
-   - Add the service account email (found in the JSON file)
-   - Give it "Editor" permissions
-
-You'll need:
-- **Spreadsheet ID**: From the URL `https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/edit`
-- **Service Account Email**: From the JSON file (`client_email`)
-- **Private Key**: From the JSON file (`private_key`)
-
-### Configuration Files
+<details>
+<summary><b>Configuration Files</b></summary>
 
 Configuration files are stored in:
 - **Linux/WSL**: `~/.config/sheet-cmd/`
 - **macOS**: `~/Library/Preferences/sheet-cmd/`
-- **Windows**: `~/AppData/Roaming/sheet-cmd/`
+- **Windows**: `%APPDATA%/sheet-cmd/`
 
-Files:
-- `user_metadata.json` - Stores active spreadsheet name
-- `config.json` - Stores all spreadsheet credentials and settings
+**Files:**
+- `user_metadata.json` - Stores accounts, active selections, and spreadsheets
+- `config.json` - Stores general settings
 
-Example `config.json`:
+**Example structure:**
 ```json
 {
-  "spreadsheets": {
-    "my-sheet": {
-      "name": "my-sheet",
-      "spreadsheet_id": "1ABC...",
-      "service_account_email": "my-service-account@project.iam.gserviceaccount.com",
-      "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----"
+  "config_path": "~/.config/sheet-cmd/config.json",
+  "activeAccount": "user@gmail.com",
+  "accounts": {
+    "user@gmail.com": {
+      "email": "user@gmail.com",
+      "oauth": {
+        "client_id": "xxx.apps.googleusercontent.com",
+        "client_secret": "xxx",
+        "refresh_token": "xxx",
+        "access_token": "xxx",
+        "expiry_date": 1234567890
+      },
+      "activeSpreadsheet": "my-budget",
+      "spreadsheets": {
+        "my-budget": {
+          "spreadsheet_id": "1ABC...",
+          "activeSheet": "monthly"
+        }
+      }
     }
-  },
-  "settings": {
-    "max_results": 50,
-    "default_columns": "A:Z"
   }
 }
 ```
 
-## :wrench: Development
+**Security**: All OAuth tokens are stored locally and automatically refreshed before expiry.
 
+</details>
+
+<details>
+<summary><b>LLM Integration</b></summary>
+
+Sheet CMD is designed to be LLM-friendly, making it easy for AI tools like [Claude Code](https://www.anthropic.com/claude-code) to interact with your Google Sheets data.
+
+**Why this matters:**
+- Simple command structure that LLMs can easily understand
+- Active context system reduces command complexity
+- Clear output formats (markdown, CSV, JSON)
+- OAuth 2.0 means no service account credentials to manage
+- Multi-account support for different contexts
+
+**Example Claude Code workflow:**
 ```bash
-npm install                     # Install dependencies
-npm run dev                     # Run in development
-npm run build                   # Build for production
-npm run test:e2e                # Run E2E tests
+# Claude can read your budget spreadsheet
+sheet-cmd sheet read --name "Budget" --output markdown
+
+# Process the data and write results back
+sheet-cmd sheet write --name "Analysis" --cell A1 --value "Summary"
+
+# Export for further analysis
+sheet-cmd sheet export --name "Data" --format json --output data.json
 ```
 
-## :scroll: License
+</details>
 
-MIT License - see [LICENSE](LICENSE) file for details.
+<details>
+<summary><b>Uninstallation</b></summary>
+
+To completely remove sheet-cmd:
+
+```bash
+# 1. Remove shell completions (if installed)
+sheet-cmd completion uninstall
+
+# 2. Uninstall the package
+npm uninstall -g sheet-cmd
+
+# 3. (Optional) Remove configuration files
+# Linux/WSL: rm -rf ~/.config/sheet-cmd/
+# macOS: rm -rf ~/Library/Preferences/sheet-cmd/
+# Windows: Remove %APPDATA%/sheet-cmd/
+```
+
+</details>
+
+<details>
+<summary><b>Development setup</b></summary>
+
+For local development:
+
+```bash
+# Clone repository
+git clone https://github.com/lucasvtiradentes/sheet-cmd.git
+cd sheet-cmd
+
+# Install dependencies
+npm install
+
+# Build
+npm run build
+
+# Run in development
+npm run dev -- sheet list
+
+# Run tests
+npm run test
+npm run test:e2e
+
+# Type checking
+npm run typecheck
+
+# Linting
+npm run lint
+```
+
+</details>
+
+---
+
+<div align="center">
+  <p>
+    <a target="_blank" href="https://www.linkedin.com/in/lucasvtiradentes/"><img src="https://img.shields.io/badge/-linkedin-blue?logo=Linkedin&logoColor=white" alt="LinkedIn"></a>
+    <a target="_blank" href="mailto:lucasvtiradentes@gmail.com"><img src="https://img.shields.io/badge/gmail-red?logo=gmail&logoColor=white" alt="Gmail"></a>
+  </p>
+  <p>Made with ❤️ by <b>Lucas Vieira</b></p>
+</div>

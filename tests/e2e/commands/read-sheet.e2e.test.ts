@@ -16,11 +16,9 @@ describe('Read Sheet E2E', () => {
   });
 
   it('should read a sheet tab content', async () => {
-    // First list tabs to get a tab name
     const listTabsResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
     expect(listTabsResult.exitCode).toBe(0);
 
-    // Extract first tab name from output (assuming format contains tab names)
     const tabMatch = listTabsResult.stdout.match(/\d+\.\s+(.+)/);
     if (!tabMatch) {
       console.log('No tabs found in spreadsheet, skipping read test');
@@ -29,7 +27,6 @@ describe('Read Sheet E2E', () => {
 
     const tabName = tabMatch[1].trim();
 
-    // Ensure tab has content before reading
     await execCommand(
       `npm run dev -- sheet write-cell -n "${tabName}" -c A1 -v "Test Content"`,
       undefined,
@@ -37,7 +34,6 @@ describe('Read Sheet E2E', () => {
       testHomeDir
     );
 
-    // Read the tab content - using -t flag without quotes in args
     const readResult = await execCommand(
       `npm run dev -- sheet read-sheet -n "${tabName}"`,
       undefined,
@@ -57,7 +53,6 @@ describe('Read Sheet E2E', () => {
       testHomeDir
     );
 
-    // Should fail gracefully
     expect(readResult.exitCode !== 0 || readResult.stderr.length > 0 || readResult.stdout.includes('not found')).toBe(
       true
     );

@@ -1,27 +1,19 @@
-import { writeFileSync } from 'fs';
 import { Command } from 'commander';
-
-import { getGoogleSheetsService } from '../../../lib/command-helpers.js';
-import { formatAsCSV, formatAsJSON } from '../../../lib/data-formatters.js';
-import { Logger } from '../../../lib/logger.js';
+import { writeFileSync } from 'fs';
+import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers.js';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
+import type { SheetExportOptions } from '../../../definitions/command-types.js';
+import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
+import { formatAsCSV, formatAsJSON } from '../../../utils/formatters.js';
+import { Logger } from '../../../utils/logger.js';
 
 type ExportFormat = 'json' | 'csv';
 
 export function createExportCommand(): Command {
-  return new Command('export')
-    .description('Export sheet data to JSON or CSV format')
-    .requiredOption('-n, --name <name>', 'Sheet name to export')
-    .option('-r, --range <range>', 'Cell range to export (e.g., B2:I25). If not specified, exports all data')
-    .option('-f, --format <type>', 'Output format: json, csv (default: json)', 'json')
-    .option('-o, --output <file>', 'Output file path. If not specified, prints to console')
-    .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
-    .action(async (options: {
-      name: string;
-      range?: string;
-      format: ExportFormat;
-      output?: string;
-      spreadsheet?: string
-    }) => {
+  return createSubCommandFromSchema(
+    CommandNames.SHEET,
+    SubCommandNames.SHEET_EXPORT,
+    async (options: SheetExportOptions) => {
       try {
         const validFormats: ExportFormat[] = ['json', 'csv'];
         if (!validFormats.includes(options.format)) {
@@ -29,15 +21,16 @@ export function createExportCommand(): Command {
           process.exit(1);
         }
 
-        const sheetsService = await getGoogleSheetsService(options.spreadsheet);
+        const sheetsService = await getGoogleSheetsService();
+        const sheetName = getActiveSheetName(options.name);
 
-        Logger.loading(`Exporting data from '${options.name}'${options.range ? ` (range: ${options.range})` : ''}...`);
+        Logger.loading(`Exporting data from '${sheetName}'${options.range ? ` (range: ${options.range})` : ''}...`);
 
         let data: string[][];
         if (options.range) {
-          data = await sheetsService.getSheetDataRange(options.name, options.range);
+          data = await sheetsService.getSheetDataRange(sheetName, options.range);
         } else {
-          data = await sheetsService.getSheetData(options.name);
+          data = await sheetsService.getSheetData(sheetName);
         }
 
         if (data.length === 0) {
@@ -63,5 +56,6 @@ export function createExportCommand(): Command {
         Logger.error('Failed to export data', error);
         process.exit(1);
       }
-    });
+    }
+  );
 }

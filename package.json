@@ -1,7 +1,7 @@
 {
   "name": "sheet-cmd",
   "version": "1.0.5",
-  "packageManager": "npm@10.9.0",
+  "packageManager": "pnpm@10.11.0",
   "description": "A CLI tool to interact with Google Sheets - perfect for LLM integrations",
   "type": "module",
   "main": "dist/cli.js",
@@ -13,13 +13,14 @@
     "dev": "tsx src/cli.ts",
     "typecheck": "tsc --noEmit",
     "build": "rimraf ./dist && tsc",
+    "postbuild": "pnpm run update-docs",
+    "update-docs": "tsx scripts/update-docs.ts",
     "start": "node dist/cli.js",
     "test:e2e": "vitest run --config tests/e2e/vitest.config.ts",
+    "format": "biome format --write .",
+    "lint": "biome check --write .",
     "changeset": "changeset",
-    "release": "npm run build && changeset publish",
-    "turbo:typecheck": "turbo typecheck",
-    "turbo:build": "turbo build",
-    "turbo:dev": "turbo dev"
+    "release": "pnpm run build && changeset publish"
   },
   "keywords": [
     "google-sheets",
@@ -42,17 +43,18 @@
     "commander": "^14.0.0",
     "google-auth-library": "^9.14.2",
     "google-spreadsheet": "^4.1.4",
+    "googleapis": "^164.1.0",
     "inquirer": "^12.7.0",
     "zod": "^4.0.5"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.1.2",
     "@changesets/cli": "^2.29.7",
     "@types/inquirer": "^9.0.8",
     "@types/node": "^22.18.8",
     "dotenv": "^17.2.3",
     "rimraf": "^5.0.5",
     "tsx": "^4.19.2",
-    "turbo": "^2.5.8",
     "typescript": "^5.7.3",
     "vitest": "^3.2.4"
   }
