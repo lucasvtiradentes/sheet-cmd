@@ -1,5 +1,11 @@
 # sheet-cmd
 
+## 1.1.2
+
+### Patch Changes
+
+- efc4288: fix logs
+
 ## 1.1.1
 
 ### Patch Changes
