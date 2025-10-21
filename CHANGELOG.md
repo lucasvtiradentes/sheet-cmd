@@ -1,5 +1,11 @@
 # sheet-cmd
 
+## 1.1.0
+
+### Minor Changes
+
+- 26f0cc2: add oauth support
+
 ## 1.0.5
 
 ### Patch Changes
