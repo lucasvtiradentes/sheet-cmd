@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { APP_INFO, GOOGLE_CLOUD_CONSOLE_URLS } from '../../config/constants.js';
+import { APP_INFO } from '../../config/constants.js';
 import { COMMANDS_SCHEMA } from '../commands.js';
 import type { Command, SubCommand } from '../types.js';
 
@@ -87,25 +87,5 @@ ${chalk.dim('* = required flag')}
 
 ${chalk.bold('EXAMPLES')}
 ${examplesSection}
-
-${chalk.bold('GETTING STARTED')}
-  1. Setup Google Cloud Console:
-     → Go to: ${GOOGLE_CLOUD_CONSOLE_URLS.CREDENTIALS}
-     → Enable Google Sheets API
-     → Configure OAuth Consent Screen (External, add test users)
-     → Create OAuth 2.0 Client ID (Desktop app type)
-
-  2. Add your first account:
-     → ${APP_INFO.name} account add
-     → Enter Client ID and Secret from step 1
-     → Browser will open for authentication
-
-  3. Add a spreadsheet:
-     → ${APP_INFO.name} spreadsheet add
-
-  4. Start using sheet operations:
-     → ${APP_INFO.name} sheet list
-
-${chalk.dim('TIP: Use tab completion for easier navigation (sheet-cmd completion install)')}
   `;
 }

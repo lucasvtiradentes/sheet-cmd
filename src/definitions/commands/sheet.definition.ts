@@ -137,14 +137,16 @@ export const sheetCommandDefinition: Command = {
         {
           name: '--cell',
           alias: '-c',
-          description: 'Cell address (e.g., A1)',
-          type: 'string'
+          description: 'Cell address (e.g., A1) - required if --range not provided',
+          type: 'string',
+          required: true
         },
         {
           name: '--range',
           alias: '-r',
-          description: 'Range (e.g., A1:B2)',
-          type: 'string'
+          description: 'Range (e.g., A1:B2) - required if --cell not provided',
+          type: 'string',
+          required: true
         },
         {
           name: '--value',

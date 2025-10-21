@@ -37,18 +37,44 @@ Because I want to enable LLMs like [Claude Code](https://www.anthropic.com/claud
 
 ## :rocket: Quick Start
 
+### 1. Setup Google Cloud Console
+
+- Go to: https://console.cloud.google.com/apis/credentials
+- Enable Google Sheets API
+- Configure OAuth Consent Screen (External, add test users)
+- Create OAuth 2.0 Client ID (Desktop app type)
+
+### 2. Install and authenticate
+
 ```bash
 # Install
 npm install sheet-cmd -g
 
 # Add Google account (OAuth)
 sheet-cmd account add
+# Enter Client ID and Secret from step 1
+# Browser will open for authentication
+```
 
+### 3. Add a spreadsheet
+
+```bash
 # Add spreadsheet (interactive - browse Google Drive)
 sheet-cmd spreadsheet add
+```
 
-# Start using
-sheet-cmd sheet list
+### 4. Select a sheet
+
+```bash
+# Select active sheet (interactive)
+sheet-cmd sheet select
+```
+
+### 5. Start using
+
+```bash
+# Read sheet content
+sheet-cmd sheet read
 ```
 
 ## :bulb: Usage
