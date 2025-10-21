@@ -4,8 +4,8 @@ import { getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { columnLetterToNumber } from '../../../utils/cell.js';
 import { Logger } from '../../../utils/logger.js';
 
-export function createWriteCellCommand(): Command {
-  return new Command('write-cell')
+export function createWriteCommand(): Command {
+  return new Command('write')
     .description('Write to a specific cell or range of cells')
     .requiredOption('-n, --name <name>', 'Sheet name')
     .option('-c, --cell <cell>', 'Single cell (e.g., A1)')

@@ -3,8 +3,8 @@ import { Command } from 'commander';
 import { getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { Logger } from '../../../utils/logger.js';
 
-export function createCopySheetCommand(): Command {
-  return new Command('copy-sheet')
+export function createCopyCommand(): Command {
+  return new Command('copy')
     .description('Copy a sheet to a new sheet')
     .requiredOption('-n, --name <name>', 'Sheet name to copy')
     .requiredOption('--to <name>', 'New sheet name')

@@ -3,8 +3,8 @@ import { Command } from 'commander';
 import { getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { Logger } from '../../../utils/logger.js';
 
-export function createAddSheetCommand(): Command {
-  return new Command('add-sheet')
+export function createAddCommand(): Command {
+  return new Command('add')
     .description('Add a new sheet to the spreadsheet')
     .requiredOption('-n, --name <name>', 'Sheet name to create')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')

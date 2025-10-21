@@ -4,10 +4,10 @@ import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager.js';
 import { Logger } from '../../../utils/logger.js';
 
-export function createSwitchSpreadsheetCommand(): Command {
-  return new Command('switch')
-    .description('Switch to a different spreadsheet (sets it as active for the current account)')
-    .argument('[name]', 'Name of the spreadsheet to switch to')
+export function createSelectSpreadsheetCommand(): Command {
+  return new Command('select')
+    .description('Select a different spreadsheet (sets it as active for the current account)')
+    .argument('[name]', 'Name of the spreadsheet to select')
     .action(async (name?: string) => {
       try {
         const configManager = new ConfigManager();
@@ -35,7 +35,7 @@ export function createSwitchSpreadsheetCommand(): Command {
             {
               type: 'list',
               name: 'spreadsheet',
-              message: 'Select spreadsheet to switch to:',
+              message: 'Select spreadsheet:',
               choices: spreadsheets.map((s) => ({
                 name: s.name === activeSpreadsheet ? `${s.name} (current)` : s.name,
                 value: s.name
@@ -52,9 +52,9 @@ export function createSwitchSpreadsheetCommand(): Command {
         }
 
         configManager.setActiveSpreadsheet(activeAccount.email, spreadsheetName);
-        Logger.success(`Switched to spreadsheet: ${spreadsheetName}`);
+        Logger.success(`Selected spreadsheet: ${spreadsheetName}`);
       } catch (error) {
-        Logger.error('Failed to switch spreadsheet', error);
+        Logger.error('Failed to select spreadsheet', error);
         process.exit(1);
       }
     });

@@ -3,8 +3,8 @@ import { Command } from 'commander';
 import { getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { Logger } from '../../../utils/logger.js';
 
-export function createRemoveSheetCommand(): Command {
-  return new Command('remove-sheet')
+export function createRemoveCommand(): Command {
+  return new Command('remove')
     .description('Remove a sheet from the spreadsheet')
     .requiredOption('-n, --name <name>', 'Sheet name to remove')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')

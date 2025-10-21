@@ -48,7 +48,7 @@ sheet-cmd account add
 sheet-cmd spreadsheet add
 
 # Start using
-sheet-cmd sheet list-sheets
+sheet-cmd sheet list
 ```
 
 ## :bulb: Usage
@@ -66,7 +66,7 @@ sheet-cmd update                    # Update to latest version
 ```bash
 sheet-cmd account add                   # Add Google account via OAuth
 sheet-cmd account list                  # List all accounts (* = active)
-sheet-cmd account switch <email>        # Switch active account
+sheet-cmd account select <email>        # Select active account
 sheet-cmd account remove <email>        # Remove account
 sheet-cmd account reauth                # Re-authenticate active account
 ```
@@ -82,7 +82,7 @@ All spreadsheet commands use the active account.
 sheet-cmd spreadsheet add                      # Add spreadsheet (interactive - browse Google Drive)
 sheet-cmd spreadsheet add --id <spreadsheet-id> # Add spreadsheet by ID (manual entry)
 sheet-cmd spreadsheet list                     # List all spreadsheets (* = active)
-sheet-cmd spreadsheet switch <name>            # Set active spreadsheet
+sheet-cmd spreadsheet select <name>            # Select active spreadsheet
 sheet-cmd spreadsheet active                   # Show currently active spreadsheet
 sheet-cmd spreadsheet remove [name]            # Remove spreadsheet
 ```
@@ -95,11 +95,11 @@ sheet-cmd spreadsheet remove [name]            # Remove spreadsheet
 All sheet commands use the active spreadsheet if `-s` flag is not specified.
 
 ```bash
-sheet-cmd sheet list-sheets                              # List all sheets
-sheet-cmd sheet add-sheet -n <name>                      # Add a new sheet
-sheet-cmd sheet remove-sheet -n <name>                   # Remove a sheet
-sheet-cmd sheet rename-sheet -n <old> --new-name <new>  # Rename a sheet
-sheet-cmd sheet copy-sheet -n <name> --to <new>         # Copy a sheet
+sheet-cmd sheet list                              # List all sheet
+sheet-cmd sheet add -n <name>                      # Add a new sheet
+sheet-cmd sheet remove -n <name>                   # Remove a sheet
+sheet-cmd sheet rename -n <old> --new-name <new>  # Rename a sheet
+sheet-cmd sheet copy -n <name> --to <new>         # Copy a sheet
 ```
 
 </details>
@@ -109,17 +109,17 @@ sheet-cmd sheet copy-sheet -n <name> --to <new>         # Copy a sheet
 
 ```bash
 # Read sheet content
-sheet-cmd sheet read-sheet -n <name>                    # Read in markdown format
-sheet-cmd sheet read-sheet -n <name> -o csv             # Read in CSV format
-sheet-cmd sheet read-sheet -n <name> -f                 # Read with formulas
-sheet-cmd sheet read-sheet -n <name> -e output.md       # Save to file
+sheet-cmd sheet read -n <name>                    # Read in markdown format
+sheet-cmd sheet read -n <name> -o csv             # Read in CSV format
+sheet-cmd sheet read -n <name> -f                 # Read with formulas
+sheet-cmd sheet read -n <name> -e output.md       # Save to file
 
 # Write to cells
-sheet-cmd sheet write-cell -n <name> -c A1 -v "Hello"   # Write to single cell
-sheet-cmd sheet write-cell -n <name> -r A1:B2 -v "val1, val2; val3, val4"  # Write to range
+sheet-cmd sheet write -n <name> -c A1 -v "Hello"   # Write to single cell
+sheet-cmd sheet write -n <name> -r A1:B2 -v "val1, val2; val3, val4"  # Write to range
 
 # Append rows
-sheet-cmd sheet append-row -n <name> -v "col1, col2, col3"  # Append new row
+sheet-cmd sheet append -n <name> -v "col1, col2, col3"  # Append new row
 ```
 
 </details>
@@ -129,8 +129,8 @@ sheet-cmd sheet append-row -n <name> -v "col1, col2, col3"  # Append new row
 
 ```bash
 # Import CSV
-sheet-cmd sheet import-csv -n <name> -f data.csv        # Import CSV with headers
-sheet-cmd sheet import-csv -n <name> -f data.csv --skip-header  # Skip first row
+sheet-cmd sheet import -n <name> -f data.csv        # Import CSV with headers
+sheet-cmd sheet import -n <name> -f data.csv --skip-header  # Skip first row
 
 # Export data
 sheet-cmd sheet export -n <name> -f json -o output.json # Export to JSON
@@ -151,7 +151,7 @@ sheet-cmd completion install
 source ~/.zshrc   # for zsh
 source ~/.bashrc  # for bash
 
-# Use tab completion
+# Use sheet completion
 sheet-cmd <TAB>
 sheet-cmd spreadsheet <TAB>
 sheet-cmd sheet <TAB>

@@ -45,7 +45,7 @@ _sheet_cmd_commands() {
     commands=(
         'account:Manage Google accounts'
         'spreadsheet:Manage spreadsheet configurations'
-        'sheet:Manage and interact with Google Sheets'
+        'sheet:Manage and interact with spreadsheet sheets'
         'update:Update sheet-cmd to latest version'
         'completion:Generate shell completion scripts'
     )
@@ -66,7 +66,7 @@ _sheet_cmd_account_commands() {
     account_commands=(
         'add:Add a Google account via OAuth'
         'list:List all configured Google accounts'
-        'switch:Switch active Google account'
+        'select:Select active Google account'
         'remove:Remove a Google account'
         'reauth:Re-authenticate the active account'
     )
@@ -88,7 +88,7 @@ _sheet_cmd_spreadsheet_commands() {
         'add:Add a new spreadsheet (interactive by default, use --id for manual)'
         'list:List all configured spreadsheets'
         'remove:Remove a spreadsheet configuration'
-        'switch:Switch to a different spreadsheet (sets as active)'
+        'select:Select a different spreadsheet (sets as active)'
         'active:Show the currently active spreadsheet'
     )
     _describe 'spreadsheet command' spreadsheet_commands
@@ -105,15 +105,15 @@ _sheet_cmd_sheet() {
     case $state in
         args)
             case $line[1] in
-                list-sheets)
+                list)
                     _arguments \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
-                read-sheet)
+                read)
                     _arguments \\
-                        '-n[Sheet name]:tab:' \\
-                        '--name[Sheet name]:tab:' \\
+                        '-n[Tab name]:tab:' \\
+                        '--name[Tab name]:tab:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:' \\
                         '-o[Output format]:format:(markdown csv)' \\
@@ -123,40 +123,40 @@ _sheet_cmd_sheet() {
                         '-e[Export to file]:file:_files' \\
                         '--export[Export to file]:file:_files'
                     ;;
-                add-sheet)
+                add)
                     _arguments \\
-                        '-n[Sheet name]:tab:' \\
-                        '--name[Sheet name]:tab:' \\
+                        '-n[Tab name]:tab:' \\
+                        '--name[Tab name]:tab:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
-                remove-sheet)
+                remove)
                     _arguments \\
-                        '-n[Sheet name]:tab:' \\
-                        '--name[Sheet name]:tab:' \\
+                        '-n[Tab name]:tab:' \\
+                        '--name[Tab name]:tab:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
-                rename-sheet)
+                rename)
                     _arguments \\
-                        '-n[Current sheet name]:tab:' \\
-                        '--name[Current sheet name]:tab:' \\
-                        '--new-name[New sheet name]:new:' \\
+                        '-n[Current tab name]:tab:' \\
+                        '--name[Current tab name]:tab:' \\
+                        '--new-name[New tab name]:new:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
-                copy-sheet)
+                copy)
                     _arguments \\
-                        '-n[Source sheet name]:tab:' \\
-                        '--name[Source sheet name]:tab:' \\
-                        '--to[Destination sheet name]:to:' \\
+                        '-n[Source tab name]:tab:' \\
+                        '--name[Source tab name]:tab:' \\
+                        '--to[Destination tab name]:to:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
-                write-cell)
+                write)
                     _arguments \\
-                        '-n[Sheet name]:tab:' \\
-                        '--name[Sheet name]:tab:' \\
+                        '-n[Tab name]:tab:' \\
+                        '--name[Tab name]:tab:' \\
                         '-c[Cell address]:cell:' \\
                         '--cell[Cell address]:cell:' \\
                         '-r[Range]:range:' \\
@@ -166,19 +166,19 @@ _sheet_cmd_sheet() {
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
-                append-row)
+                append)
                     _arguments \\
-                        '-n[Sheet name]:tab:' \\
-                        '--name[Sheet name]:tab:' \\
+                        '-n[Tab name]:tab:' \\
+                        '--name[Tab name]:tab:' \\
                         '-v[Values]:value:' \\
                         '--value[Values]:value:' \\
                         '-s[Spreadsheet name]:spreadsheet:' \\
                         '--spreadsheet[Spreadsheet name]:spreadsheet:'
                     ;;
-                import-csv)
+                import)
                     _arguments \\
-                        '-n[Sheet name]:tab:' \\
-                        '--name[Sheet name]:tab:' \\
+                        '-n[Tab name]:tab:' \\
+                        '--name[Tab name]:tab:' \\
                         '-f[CSV file]:file:_files' \\
                         '--file[CSV file]:file:_files' \\
                         '--skip-header[Skip header row]' \\
@@ -187,8 +187,8 @@ _sheet_cmd_sheet() {
                     ;;
                 export)
                     _arguments \\
-                        '-n[Sheet name]:tab:' \\
-                        '--name[Sheet name]:tab:' \\
+                        '-n[Tab name]:tab:' \\
+                        '--name[Tab name]:tab:' \\
                         '-r[Range]:range:' \\
                         '--range[Range]:range:' \\
                         '-f[Format]:format:(json csv)' \\
@@ -206,15 +206,15 @@ _sheet_cmd_sheet() {
 _sheet_cmd_sheet_commands() {
     local sheet_commands
     sheet_commands=(
-        'list-sheets:List all sheets in a spreadsheet'
-        'read-sheet:Read the complete content of a sheet tab'
-        'add-sheet:Add a new sheet to the spreadsheet'
-        'remove-sheet:Remove a sheet from the spreadsheet'
-        'rename-sheet:Rename a sheet in the spreadsheet'
-        'copy-sheet:Copy a sheet to a new sheet'
-        'write-cell:Write to a specific cell or range of cells'
-        'append-row:Append a new row to the end of the sheet'
-        'import-csv:Import CSV file to a sheet tab'
+        'list:List all sheets in a spreadsheet'
+        'read:Read the complete content of a sheet'
+        'add:Add a new sheet to the spreadsheet'
+        'remove:Remove a sheet from the spreadsheet'
+        'rename:Rename a sheet in the spreadsheet'
+        'copy:Copy a sheet to a new sheet'
+        'write:Write to a specific cell or range of cells'
+        'append:Append a new row to the end of the sheet'
+        'import:Import CSV file to a sheet'
         'export:Export sheet data to JSON or CSV format'
     )
     _describe 'sheet command' sheet_commands
@@ -241,13 +241,13 @@ _sheet_cmd_completion() {
     local commands="account spreadsheet sheet update completion"
 
     # Account subcommands
-    local account_commands="add list switch remove reauth"
+    local account_commands="add list select remove reauth"
 
     # Spreadsheet subcommands
-    local spreadsheet_commands="add list remove switch active"
+    local spreadsheet_commands="add list remove select active"
 
     # Sheet subcommands
-    local sheet_commands="list-sheets read-sheet add-sheet remove-sheet rename-sheet copy-sheet write-cell append-row import-csv export"
+    local sheet_commands="list read add remove rename copy write append import export"
 
     if [[ \\$cword -eq 1 ]]; then
         COMPREPLY=(\\$(compgen -W "\\$commands" -- "\\$cur"))
@@ -271,12 +271,12 @@ _sheet_cmd_completion() {
         case "\\$\{COMP_WORDS[1]}" in
             sheet)
                 case "\\$\{COMP_WORDS[2]}" in
-                    list-sheets)
+                    list)
                         if [[ \\$cur == -* ]]; then
                             COMPREPLY=(\\$(compgen -W "-s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
-                    read-sheet)
+                    read)
                         if [[ \\$cur == -* ]]; then
                             COMPREPLY=(\\$(compgen -W "-n --name -s --spreadsheet -o --output -f --formulas -e --export" -- "\\$cur"))
                         elif [[ \\$prev == "-o" || \\$prev == "--output" ]]; then
@@ -285,37 +285,37 @@ _sheet_cmd_completion() {
                             COMPREPLY=(\\$(compgen -f -- "\\$cur"))
                         fi
                         ;;
-                    add-sheet)
+                    add)
                         if [[ \\$cur == -* ]]; then
                             COMPREPLY=(\\$(compgen -W "-n --name -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
-                    remove-sheet)
+                    remove)
                         if [[ \\$cur == -* ]]; then
                             COMPREPLY=(\\$(compgen -W "-n --name -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
-                    rename-sheet)
+                    rename)
                         if [[ \\$cur == -* ]]; then
                             COMPREPLY=(\\$(compgen -W "-n --name --new-name -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
-                    copy-sheet)
+                    copy)
                         if [[ \\$cur == -* ]]; then
                             COMPREPLY=(\\$(compgen -W "-n --name --to -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
-                    write-cell)
+                    write)
                         if [[ \\$cur == -* ]]; then
                             COMPREPLY=(\\$(compgen -W "-n --name -c --cell -r --range -v --value -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
-                    append-row)
+                    append)
                         if [[ \\$cur == -* ]]; then
                             COMPREPLY=(\\$(compgen -W "-n --name -v --value -s --spreadsheet" -- "\\$cur"))
                         fi
                         ;;
-                    import-csv)
+                    import)
                         if [[ \\$cur == -* ]]; then
                             COMPREPLY=(\\$(compgen -W "-n --name -f --file --skip-header -s --spreadsheet" -- "\\$cur"))
                         elif [[ \\$prev == "-f" || \\$prev == "--file" ]]; then

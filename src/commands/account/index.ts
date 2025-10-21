@@ -3,7 +3,7 @@ import { createAddAccountCommand } from './add-account.js';
 import { createListAccountsCommand } from './list-accounts.js';
 import { createReauthAccountCommand } from './reauth-account.js';
 import { createRemoveAccountCommand } from './remove-account.js';
-import { createSwitchAccountCommand } from './switch-account.js';
+import { createSelectAccountCommand } from './select-account.js';
 
 export function createAccountCommand(): Command {
   const command = new Command('account');
@@ -12,7 +12,7 @@ export function createAccountCommand(): Command {
 
   command.addCommand(createAddAccountCommand());
   command.addCommand(createListAccountsCommand());
-  command.addCommand(createSwitchAccountCommand());
+  command.addCommand(createSelectAccountCommand());
   command.addCommand(createRemoveAccountCommand());
   command.addCommand(createReauthAccountCommand());
 

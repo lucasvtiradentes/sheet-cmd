@@ -3,8 +3,8 @@ import { Command } from 'commander';
 import { getGoogleSheetsService } from '../../core/command-helpers.js';
 import { Logger } from '../../utils/logger.js';
 
-export function createListSheetsCommand(): Command {
-  return new Command('list-sheets')
+export function createListCommand(): Command {
+  return new Command('list')
     .description('List all sheets in a spreadsheet')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')
     .action(async (options: { spreadsheet?: string }) => {

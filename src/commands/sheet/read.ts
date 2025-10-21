@@ -7,8 +7,8 @@ import { Logger } from '../../utils/logger.js';
 
 type OutputFormat = 'markdown' | 'csv';
 
-export function createReadSheetCommand(): Command {
-  return new Command('read-sheet')
+export function createReadCommand(): Command {
+  return new Command('read')
     .description('Read the complete content of a sheet')
     .requiredOption('-n, --name <name>', 'Sheet name to read')
     .option('-s, --spreadsheet <name>', 'Spreadsheet name (uses active spreadsheet if not specified)')

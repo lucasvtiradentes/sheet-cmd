@@ -3,8 +3,8 @@ import { Command } from 'commander';
 import { getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { Logger } from '../../../utils/logger.js';
 
-export function createAppendRowCommand(): Command {
-  return new Command('append-row')
+export function createAppendCommand(): Command {
+  return new Command('append')
     .description('Append a new row to the end of the sheet')
     .requiredOption('-n, --name <name>', 'Sheet name')
     .requiredOption('-v, --values <values>', 'Comma-separated values for the row')

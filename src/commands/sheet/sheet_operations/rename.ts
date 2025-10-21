@@ -3,8 +3,8 @@ import { Command } from 'commander';
 import { getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { Logger } from '../../../utils/logger.js';
 
-export function createRenameSheetCommand(): Command {
-  return new Command('rename-sheet')
+export function createRenameCommand(): Command {
+  return new Command('rename')
     .description('Rename a sheet in the spreadsheet')
     .requiredOption('-n, --name <name>', 'Current sheet name')
     .requiredOption('--new-name <name>', 'New sheet name')

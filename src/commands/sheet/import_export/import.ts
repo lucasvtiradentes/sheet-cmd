@@ -5,8 +5,8 @@ import { getGoogleSheetsService } from '../../../core/command-helpers.js';
 import { parseCSV } from '../../../utils/csv.js';
 import { Logger } from '../../../utils/logger.js';
 
-export function createImportCsvCommand(): Command {
-  return new Command('import-csv')
+export function createImportCommand(): Command {
+  return new Command('import')
     .description('Import CSV file to a sheet')
     .requiredOption('-n, --name <name>', 'Sheet name')
     .requiredOption('-f, --file <path>', 'CSV file path')
