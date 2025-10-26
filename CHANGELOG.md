@@ -1,5 +1,11 @@
 # sheet-cmd
 
+## 1.1.3
+
+### Patch Changes
+
+- 736176b: add new commands
+
 ## 1.1.2
 
 ### Patch Changes
