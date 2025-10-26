@@ -74,6 +74,7 @@ export type SheetWriteOptions = {
   cell?: string;
   range?: string;
   value: string;
+  preserve?: boolean;
 };
 
 export type SheetAppendOptions = {

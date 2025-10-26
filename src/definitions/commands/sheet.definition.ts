@@ -152,6 +152,11 @@ export const sheetCommandDefinition: Command = {
           description: 'Value to write (use , for columns, ; for rows)',
           type: 'string',
           required: true
+        },
+        {
+          name: '--no-preserve',
+          description: 'Overwrite cells with formulas or data validation',
+          type: 'boolean'
         }
       ],
       examples: [

@@ -173,7 +173,7 @@ export class GoogleSheetsService {
     await sheet.saveUpdatedCells();
   }
 
-  async writeCellRange(sheetName: string, range: string, values: string[][]): Promise<void> {
+  async writeCellRange(sheetName: string, range: string, values: string[][], noPreserve?: boolean): Promise<void> {
     await this.ensureConnection();
 
     if (!this.doc) {
@@ -205,8 +205,20 @@ export class GoogleSheetsService {
           const newValue = values[valueRowIndex][valueColIndex];
           const isNewValueEmpty = newValue === '' || newValue === null;
 
-          if (!(hasDataValidation && isCellEmpty && isNewValueEmpty) && !hasFormula) {
+          // Commander.js automatically handles --no-* flags by:
+          // - Converting "--no-preserve" to property "noPreserve" (camelCase without "no" prefix)
+          // - Setting noPreserve=true when flag is present, undefined when not present
+          // This is different from regular boolean flags which would be preserve=true/false
+          if (noPreserve) {
+            // --no-preserve flag: overwrite everything including formulas and data validation
             cell.value = newValue;
+          } else {
+            // Default behavior: preserve formulas and skip empty values for cells with data validation
+            // Skip updating if: cell has data validation AND cell is empty AND new value is empty
+            // Skip updating if: cell has a formula (preserve it)
+            if (!(hasDataValidation && isCellEmpty && isNewValueEmpty) && !hasFormula) {
+              cell.value = newValue;
+            }
           }
         }
         valueColIndex++;

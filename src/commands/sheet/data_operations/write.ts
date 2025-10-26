@@ -86,8 +86,11 @@ export function createWriteCommand(): Command {
             }
           }
 
+          // Commander.js converts --no-preserve flag to preserve: false
+          // We need to invert it to get noPreserve: true when flag is present
+          const noPreserve = options.preserve === false;
           Logger.loading(`Writing to range ${options.range}...`);
-          await sheetsService.writeCellRange(sheetName, options.range, values);
+          await sheetsService.writeCellRange(sheetName, options.range, values, noPreserve);
           Logger.success(`Range ${options.range} updated successfully`);
         }
       } catch (error) {
