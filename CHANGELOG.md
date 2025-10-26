@@ -1,5 +1,11 @@
 # sheet-cmd
 
+## 1.1.5
+
+### Patch Changes
+
+- 798df88: add read range command
+
 ## 1.1.4
 
 ### Patch Changes
