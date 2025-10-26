@@ -27,7 +27,9 @@ export function createReadCommand(): Command {
 
         Logger.loading(`Reading sheet '${sheetName}'...`);
         const includeFormulas = options.formulas ?? false;
-        const data = await sheetsService.getSheetData(sheetName, includeFormulas);
+        const data = options.range
+          ? await sheetsService.getSheetDataRange(sheetName, options.range, includeFormulas)
+          : await sheetsService.getSheetData(sheetName, includeFormulas);
 
         if (data.length === 0) {
           Logger.warning('Sheet is empty');

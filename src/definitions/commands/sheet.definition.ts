@@ -51,11 +51,18 @@ export const sheetCommandDefinition: Command = {
           alias: '-e',
           description: 'Export to file',
           type: 'string'
+        },
+        {
+          name: '--range',
+          alias: '-r',
+          description: 'Range to read (e.g., A1:B10)',
+          type: 'string'
         }
       ],
       examples: [
         `${APP_INFO.name} sheet read -n "Sheet1"`,
         `${APP_INFO.name} sheet read -n "Sheet1" -o markdown`,
+        `${APP_INFO.name} sheet read -n "Sheet1" -r "A1:B10"`,
         `${APP_INFO.name} sheet read -n "Sheet1" -e output.csv`
       ]
     },
@@ -161,7 +168,8 @@ export const sheetCommandDefinition: Command = {
       ],
       examples: [
         `${APP_INFO.name} sheet write -n "Sheet1" -c A1 -v "Hello"`,
-        `${APP_INFO.name} sheet write -n "Sheet1" -r A1:B2 -v "v1,v2;v3,v4"`
+        `${APP_INFO.name} sheet write -n "Sheet1" -r A1:B2 -v "v1,v2;v3,v4"`,
+        `${APP_INFO.name} sheet write -n "Sheet1" -r A1:B2 -v "v1,v2;v3,v4" --no-preserve`
       ]
     },
     {

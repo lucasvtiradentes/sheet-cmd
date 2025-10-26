@@ -49,6 +49,7 @@ export type SheetReadOptions = {
   output?: 'markdown' | 'csv';
   formulas?: boolean;
   export?: string;
+  range?: string;
 };
 
 export type SheetAddOptions = {

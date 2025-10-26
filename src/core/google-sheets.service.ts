@@ -196,7 +196,9 @@ export class GoogleSheetsService {
       let valueColIndex = 0;
       for (let col = startCell.columnIndex; col <= endCell.columnIndex; col++) {
         const cell = sheet.getCell(row, col);
-        const cellWithRawData = cell as unknown as { _rawData?: { dataValidation?: unknown; userEnteredValue?: { formulaValue?: string } } };
+        const cellWithRawData = cell as unknown as {
+          _rawData?: { dataValidation?: unknown; userEnteredValue?: { formulaValue?: string } };
+        };
         const hasDataValidation = cellWithRawData._rawData?.dataValidation !== undefined;
         const hasFormula = cellWithRawData._rawData?.userEnteredValue?.formulaValue !== undefined;
         const isCellEmpty = !cell.value || cell.value === '';

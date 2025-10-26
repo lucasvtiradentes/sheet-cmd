@@ -102,6 +102,181 @@ To use sheet-cmd, you need OAuth 2.0 credentials from Google Cloud Console:
 
 All commands use the **active account**, **active spreadsheet**, and **active sheet** by default. Set once, use everywhere.
 
+<!-- BEGIN:COMMANDS -->
+### Account Commands
+
+**add** - Add a Google account via OAuth
+
+```bash
+sheet-cmd account add
+```
+
+**list** - List all configured Google accounts
+
+```bash
+sheet-cmd account list
+```
+
+**select** - Select active Google account
+
+```bash
+sheet-cmd account select
+```
+
+**remove** - Remove a Google account
+
+```bash
+sheet-cmd account remove
+```
+
+**reauth** - Re-authenticate the active account
+
+```bash
+sheet-cmd account reauth
+```
+
+### Spreadsheet Commands
+
+**add** - Add a new spreadsheet (interactive by default, use --id for manual)
+
+```bash
+sheet-cmd spreadsheet add
+```
+
+**list** - List all configured spreadsheets
+
+```bash
+sheet-cmd spreadsheet list
+```
+
+**select** - Select a different spreadsheet (sets as active)
+
+```bash
+sheet-cmd spreadsheet select
+```
+
+**active** - Show the currently active spreadsheet
+
+```bash
+sheet-cmd spreadsheet active
+```
+
+**remove** - Remove a spreadsheet configuration
+
+```bash
+sheet-cmd spreadsheet remove
+```
+
+### Sheet Commands
+
+**list** - List all sheets in a spreadsheet
+
+```bash
+sheet-cmd sheet list
+```
+
+**select** - Select a sheet (sets as active)
+
+```bash
+sheet-cmd sheet select
+```
+
+**read** - Read the complete content of a sheet
+
+```bash
+sheet-cmd sheet read -n "Sheet1"
+sheet-cmd sheet read -n "Sheet1" -o markdown
+sheet-cmd sheet read -n "Sheet1" -r "A1:B10"
+sheet-cmd sheet read -n "Sheet1" -e output.csv
+```
+
+**add** - Add a new sheet to the spreadsheet
+
+```bash
+sheet-cmd sheet add -n "NewSheet"
+```
+
+**remove** - Remove a sheet from the spreadsheet
+
+```bash
+sheet-cmd sheet remove -n "OldSheet"
+```
+
+**rename** - Rename a sheet in the spreadsheet
+
+```bash
+sheet-cmd sheet rename -n "OldName" --new-name "NewName"
+```
+
+**copy** - Copy a sheet to a new sheet
+
+```bash
+sheet-cmd sheet copy -n "Sheet1" --to "Sheet1 Copy"
+```
+
+**write** - Write to a specific cell or range of cells
+
+```bash
+sheet-cmd sheet write -n "Sheet1" -c A1 -v "Hello"
+sheet-cmd sheet write -n "Sheet1" -r A1:B2 -v "v1,v2;v3,v4"
+sheet-cmd sheet write -n "Sheet1" -r A1:B2 -v "v1,v2;v3,v4" --no-preserve
+```
+
+**append** - Append a new row to the end of the sheet
+
+```bash
+sheet-cmd sheet append -n "Sheet1" -v "val1,val2,val3"
+```
+
+**import** - Import CSV file to a sheet
+
+```bash
+sheet-cmd sheet import -n "Sheet1" -f data.csv
+sheet-cmd sheet import -n "Sheet1" -f data.csv --skip-header
+```
+
+**export** - Export sheet data to JSON or CSV format
+
+```bash
+sheet-cmd sheet export -n "Sheet1" -f json -o output.json
+sheet-cmd sheet export -n "Sheet1" -f csv -o output.csv
+```
+
+**row-add** - Add a row to the sheet
+
+```bash
+sheet-cmd sheet row-add -r 5 --above
+sheet-cmd sheet row-add -r 5 --below --formulas
+sheet-cmd sheet row-add -r 5 --below --formulas --count 3
+```
+
+**row-remove** - Remove a row from the sheet
+
+```bash
+sheet-cmd sheet row-remove -r 5
+sheet-cmd sheet row-remove -r 5 --count 3
+sheet-cmd sheet row-remove -r 10 --above --count 5
+```
+
+### Update
+
+Update sheet-cmd to latest version
+
+```bash
+sheet-cmd update
+```
+
+### Completion Commands
+
+**install** - Install shell completion for your current shell
+
+```bash
+sheet-cmd completion install
+```
+
+
+<!-- END:COMMANDS -->
+
 <details>
 <summary><b>Account Management</b></summary>
 

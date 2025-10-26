@@ -9,7 +9,9 @@ function generateAllCommands(): string {
         output += `### ${cmd.name.charAt(0).toUpperCase() + cmd.name.slice(1)}\n\n`;
         output += `${cmd.description}\n\n`;
         output += '```bash\n';
-        output += `${cmd.examples[0]}\n`;
+        for (const example of cmd.examples) {
+          output += `${example}\n`;
+        }
         output += '```\n\n';
       }
       continue;
@@ -22,7 +24,9 @@ function generateAllCommands(): string {
 
       output += `**${sub.name}** - ${sub.description}\n\n`;
       output += '```bash\n';
-      output += `${sub.examples[0]}\n`;
+      for (const example of sub.examples) {
+        output += `${example}\n`;
+      }
       output += '```\n\n';
     }
   }
