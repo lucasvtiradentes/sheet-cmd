@@ -17,7 +17,7 @@ export function createRowRemoveCommand(): Command {
         }
 
         const rowNumber = parseInt(options.row, 10);
-        if (isNaN(rowNumber) || rowNumber < 1) {
+        if (Number.isNaN(rowNumber) || rowNumber < 1) {
           Logger.error('Row number must be a positive integer');
           process.exit(1);
         }
@@ -28,7 +28,7 @@ export function createRowRemoveCommand(): Command {
         }
 
         const count = options.count ? parseInt(options.count, 10) : 1;
-        if (isNaN(count) || count < 1) {
+        if (Number.isNaN(count) || count < 1) {
           Logger.error('Count must be a positive integer');
           process.exit(1);
         }

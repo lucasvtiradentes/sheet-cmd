@@ -197,7 +197,17 @@ export class GoogleSheetsService {
       for (let col = startCell.columnIndex; col <= endCell.columnIndex; col++) {
         const cell = sheet.getCell(row, col);
         if (values[valueRowIndex] && values[valueRowIndex][valueColIndex] !== undefined) {
-          cell.value = values[valueRowIndex][valueColIndex];
+          const newValue = values[valueRowIndex][valueColIndex];
+          const cellWithRawData = cell as unknown as { _rawData?: { dataValidation?: unknown } };
+          const hasDataValidation = cellWithRawData._rawData?.dataValidation !== undefined;
+          const isCellEmpty = !cell.value || cell.value === '';
+          const isNewValueEmpty = newValue === '' || newValue === null;
+
+          if (hasDataValidation && isCellEmpty && isNewValueEmpty) {
+            continue;
+          }
+
+          cell.value = newValue;
         }
         valueColIndex++;
       }
@@ -254,7 +264,11 @@ export class GoogleSheetsService {
     return data;
   }
 
-  async insertRows(sheetName: string, range: { startIndex: number; endIndex: number }, inheritFromBefore = false): Promise<void> {
+  async insertRows(
+    sheetName: string,
+    range: { startIndex: number; endIndex: number },
+    inheritFromBefore = false
+  ): Promise<void> {
     await this.ensureConnection();
 
     if (!this.doc) {
@@ -347,8 +361,48 @@ export class GoogleSheetsService {
     await sheet.saveUpdatedCells();
   }
 
+  async copyRowFormulasBulk(
+    sheetName: string,
+    sourceRowIndex: number,
+    startTargetRowIndex: number,
+    count: number
+  ): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    const formulas = await this.getRowFormulas(sheetName, sourceRowIndex);
+
+    if (formulas.size === 0) {
+      return;
+    }
+
+    const endTargetRowIndex = startTargetRowIndex + count - 1;
+    await sheet.loadCells(`A${startTargetRowIndex + 1}:${endTargetRowIndex + 1}`);
+
+    for (let i = 0; i < count; i++) {
+      const targetRowIndex = startTargetRowIndex + i;
+      const rowDiff = targetRowIndex - sourceRowIndex;
+
+      for (const [col, formula] of formulas) {
+        const cell = sheet.getCell(targetRowIndex, col);
+        const adjustedFormula = this.adjustFormulaReferences(formula, rowDiff);
+        cell.formula = adjustedFormula;
+      }
+    }
+
+    await sheet.saveUpdatedCells();
+  }
+
   private adjustFormulaReferences(formula: string, rowDiff: number): string {
-    return formula.replace(/([A-Z]+)(\d+)/g, (match, colLetter, rowNum) => {
+    return formula.replace(/([A-Z]+)(\d+)/g, (_match, colLetter, rowNum) => {
       const newRow = parseInt(rowNum, 10) + rowDiff;
       return `${colLetter}${newRow}`;
     });

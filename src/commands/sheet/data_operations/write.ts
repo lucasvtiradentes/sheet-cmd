@@ -30,8 +30,31 @@ export function createWriteCommand(): Command {
           await sheetsService.writeCell(sheetName, options.cell, options.value);
           Logger.success(`Cell ${options.cell} updated successfully`);
         } else if (options.range) {
-          const rows = options.value.split(';').map((row) => row.trim());
-          const values = rows.map((row) => row.split(',').map((cell) => cell.trim()));
+          let values: any[][];
+
+          if (options.value.trim().startsWith('[')) {
+            try {
+              values = JSON.parse(options.value);
+              if (!Array.isArray(values) || !Array.isArray(values[0])) {
+                throw new Error('Value must be a 2D array');
+              }
+            } catch (_error) {
+              Logger.error('Invalid JSON array format. Expected 2D array like [["a","b"],["c","d"]]');
+              process.exit(1);
+            }
+          } else {
+            const rows = options.value.split(';').map((row) => row.trim());
+            values = rows.map((row) =>
+              row.split(',').map((cell) => {
+                const trimmed = cell.trim();
+                const numericValue = trimmed.replace(',', '.');
+                if (!Number.isNaN(Number(numericValue)) && numericValue !== '') {
+                  return Number(numericValue);
+                }
+                return trimmed;
+              })
+            );
+          }
 
           const rangeParts = options.range.split(':');
           if (rangeParts.length === 2) {
