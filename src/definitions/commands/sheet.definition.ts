@@ -138,15 +138,13 @@ export const sheetCommandDefinition: Command = {
           name: '--cell',
           alias: '-c',
           description: 'Cell address (e.g., A1) - required if --range not provided',
-          type: 'string',
-          required: true
+          type: 'string'
         },
         {
           name: '--range',
           alias: '-r',
           description: 'Range (e.g., A1:B2) - required if --cell not provided',
-          type: 'string',
-          required: true
+          type: 'string'
         },
         {
           name: '--value',
@@ -243,6 +241,92 @@ export const sheetCommandDefinition: Command = {
       examples: [
         `${APP_INFO.name} sheet export -n "Sheet1" -f json -o output.json`,
         `${APP_INFO.name} sheet export -n "Sheet1" -f csv -o output.csv`
+      ]
+    },
+    {
+      name: SubCommandNames.ROW_ADD,
+      description: 'Add a row to the sheet',
+      flags: [
+        {
+          name: '--row',
+          alias: '-r',
+          description: 'Row number (1-indexed)',
+          type: 'string',
+          required: true
+        },
+        {
+          name: '--name',
+          alias: '-n',
+          description: 'Tab name (uses active if not provided)',
+          type: 'string'
+        },
+        {
+          name: '--above',
+          description: 'Insert row above the specified row',
+          type: 'boolean'
+        },
+        {
+          name: '--below',
+          description: 'Insert row below the specified row',
+          type: 'boolean'
+        },
+        {
+          name: '--formulas',
+          alias: '-f',
+          description: 'Copy formatting, formulas, and data validation from adjacent row',
+          type: 'boolean'
+        },
+        {
+          name: '--count',
+          alias: '-c',
+          description: 'Number of rows to add (default: 1)',
+          type: 'string'
+        }
+      ],
+      examples: [
+        `${APP_INFO.name} sheet row-add -r 5 --above`,
+        `${APP_INFO.name} sheet row-add -r 5 --below --formulas`,
+        `${APP_INFO.name} sheet row-add -r 5 --below --formulas --count 3`
+      ]
+    },
+    {
+      name: SubCommandNames.ROW_REMOVE,
+      description: 'Remove a row from the sheet',
+      flags: [
+        {
+          name: '--row',
+          alias: '-r',
+          description: 'Row number (1-indexed)',
+          type: 'string',
+          required: true
+        },
+        {
+          name: '--name',
+          alias: '-n',
+          description: 'Tab name (uses active if not provided)',
+          type: 'string'
+        },
+        {
+          name: '--above',
+          description: 'Remove rows above the specified row',
+          type: 'boolean'
+        },
+        {
+          name: '--below',
+          description: 'Remove rows below the specified row',
+          type: 'boolean'
+        },
+        {
+          name: '--count',
+          alias: '-c',
+          description: 'Number of rows to remove (default: 1)',
+          type: 'string'
+        }
+      ],
+      examples: [
+        `${APP_INFO.name} sheet row-remove -r 5`,
+        `${APP_INFO.name} sheet row-remove -r 5 --count 3`,
+        `${APP_INFO.name} sheet row-remove -r 10 --above --count 5`
       ]
     }
   ]

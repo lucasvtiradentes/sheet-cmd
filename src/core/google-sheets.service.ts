@@ -30,7 +30,7 @@ export class GoogleSheetsService {
 
   async getSheetInfo(): Promise<{
     title: string;
-    sheets: Array<{ title: string; index: number }>;
+    sheets: Array<{ title: string; index: number; sheetId: number }>;
   }> {
     await this.ensureConnection();
 
@@ -42,7 +42,8 @@ export class GoogleSheetsService {
       title: this.doc.title,
       sheets: this.doc.sheetsByIndex.map((sheet, index) => ({
         title: sheet.title,
-        index
+        index,
+        sheetId: sheet.sheetId
       }))
     };
   }
@@ -251,5 +252,105 @@ export class GoogleSheetsService {
     }
 
     return data;
+  }
+
+  async insertRows(sheetName: string, range: { startIndex: number; endIndex: number }, inheritFromBefore = false): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    await sheet.insertDimension('ROWS', range, inheritFromBefore);
+  }
+
+  async deleteRows(sheetName: string, range: { startIndex: number; endIndex: number }): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    await sheet._makeSingleUpdateRequest('deleteDimension', {
+      range: {
+        sheetId: sheet.sheetId,
+        dimension: 'ROWS',
+        startIndex: range.startIndex,
+        endIndex: range.endIndex
+      }
+    });
+  }
+
+  async getRowFormulas(sheetName: string, rowIndex: number): Promise<Map<number, string>> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    await sheet.loadCells(`A${rowIndex + 1}:${rowIndex + 1}`);
+
+    const formulas = new Map<number, string>();
+    for (let col = 0; col < sheet.columnCount; col++) {
+      const cell = sheet.getCell(rowIndex, col);
+      if (cell.formula) {
+        formulas.set(col, cell.formula);
+      }
+    }
+
+    return formulas;
+  }
+
+  async copyRowFormulas(sheetName: string, sourceRowIndex: number, targetRowIndex: number): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    const formulas = await this.getRowFormulas(sheetName, sourceRowIndex);
+
+    if (formulas.size === 0) {
+      return;
+    }
+
+    await sheet.loadCells(`A${targetRowIndex + 1}:${targetRowIndex + 1}`);
+
+    const rowDiff = targetRowIndex - sourceRowIndex;
+
+    for (const [col, formula] of formulas) {
+      const cell = sheet.getCell(targetRowIndex, col);
+      const adjustedFormula = this.adjustFormulaReferences(formula, rowDiff);
+      cell.formula = adjustedFormula;
+    }
+
+    await sheet.saveUpdatedCells();
+  }
+
+  private adjustFormulaReferences(formula: string, rowDiff: number): string {
+    return formula.replace(/([A-Z]+)(\d+)/g, (match, colLetter, rowNum) => {
+      const newRow = parseInt(rowNum, 10) + rowDiff;
+      return `${colLetter}${newRow}`;
+    });
   }
 }

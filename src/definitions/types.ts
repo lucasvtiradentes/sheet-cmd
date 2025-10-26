@@ -65,5 +65,8 @@ export const SubCommandNames = {
   SHEET_IMPORT: 'import',
   SHEET_EXPORT: 'export',
 
+  ROW_ADD: 'row-add',
+  ROW_REMOVE: 'row-remove',
+
   COMPLETION_INSTALL: 'install'
 } as const;

@@ -39,7 +39,7 @@ describe('Spreadsheet Local Configs E2E', () => {
     }
 
     const switchResult = await execCommand(
-      'npm run dev -- spreadsheet switch e2e-test-spreadsheet',
+      'npm run dev -- spreadsheet select e2e-test-spreadsheet',
       undefined,
       15000,
       testHomeDir
@@ -51,7 +51,7 @@ describe('Spreadsheet Local Configs E2E', () => {
 
   it('should handle non-existent spreadsheet gracefully', async () => {
     const switchResult = await execCommand(
-      'npm run dev -- spreadsheet switch "NonExistentSpreadsheet123"',
+      'npm run dev -- spreadsheet select "NonExistentSpreadsheet123"',
       undefined,
       15000,
       testHomeDir

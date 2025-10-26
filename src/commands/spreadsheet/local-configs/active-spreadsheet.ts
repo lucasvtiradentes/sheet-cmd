@@ -19,7 +19,7 @@ export function createActiveSpreadsheetCommand(): Command {
 
     if (!activeSpreadsheetName) {
       Logger.warning('No active spreadsheet set.');
-      Logger.info('Use "sheet-cmd spreadsheet switch <name>" to set one.');
+      Logger.info('Use "sheet-cmd spreadsheet select <name>" to set one.');
       return;
     }
 

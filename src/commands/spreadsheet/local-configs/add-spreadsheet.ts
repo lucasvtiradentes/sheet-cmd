@@ -96,7 +96,7 @@ export function createAddSpreadsheetCommand(): Command {
           Logger.success(`Spreadsheet '${name}' added and set as active!`);
         } else {
           Logger.success(`Spreadsheet '${name}' added successfully!`);
-          Logger.info(`Switch to this spreadsheet: sheet-cmd spreadsheet switch ${name}`);
+          Logger.info(`Switch to this spreadsheet: sheet-cmd spreadsheet select ${name}`);
         }
       } catch (error) {
         Logger.error('Failed to add spreadsheet', error);

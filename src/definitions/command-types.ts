@@ -114,3 +114,20 @@ export type SpreadsheetSelectOptions = {
 export type SpreadsheetRemoveOptions = {
   id?: string;
 };
+
+export type RowAddOptions = {
+  row: string;
+  name?: string;
+  above?: boolean;
+  below?: boolean;
+  formulas?: boolean;
+  count?: string;
+};
+
+export type RowRemoveOptions = {
+  row: string;
+  name?: string;
+  count?: string;
+  above?: boolean;
+  below?: boolean;
+};

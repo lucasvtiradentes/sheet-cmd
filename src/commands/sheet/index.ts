@@ -7,6 +7,8 @@ import { createExportCommand } from './import_export/export.js';
 import { createImportCommand } from './import_export/import.js';
 import { createListCommand } from './list.js';
 import { createReadCommand } from './read.js';
+import { createRowAddCommand } from './row_operations/add-row.js';
+import { createRowRemoveCommand } from './row_operations/remove-row.js';
 import { createAddCommand } from './sheet_operations/add.js';
 import { createCopyCommand } from './sheet_operations/copy.js';
 import { createRemoveCommand } from './sheet_operations/remove.js';
@@ -27,6 +29,8 @@ export function createSheetCommand(): Command {
   sheet.addCommand(createAppendCommand());
   sheet.addCommand(createImportCommand());
   sheet.addCommand(createExportCommand());
+  sheet.addCommand(createRowAddCommand());
+  sheet.addCommand(createRowRemoveCommand());
 
   return sheet;
 }
