@@ -1,5 +1,11 @@
 # sheet-cmd
 
+## 1.1.4
+
+### Patch Changes
+
+- eec8f9c: update formulas method
+
 ## 1.1.3
 
 ### Patch Changes
