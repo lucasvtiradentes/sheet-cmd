@@ -5,7 +5,7 @@ import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
 import { Logger } from '../../../utils/logger.js';
 
 export function createActiveSpreadsheetCommand(): Command {
-  return createSubCommandFromSchema(CommandNames.SPREADSHEET, SubCommandNames.SPREADSHEET_ACTIVE, async () => {
+  const spreadsheetActiveCommand = async () => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
 
@@ -32,5 +32,12 @@ export function createActiveSpreadsheetCommand(): Command {
 
     Logger.success(`Active spreadsheet: ${activeSpreadsheetName}`);
     Logger.dim(`  ID: ${activeSpreadsheet.spreadsheet_id}`);
-  });
+  };
+
+  return createSubCommandFromSchema(
+    CommandNames.SPREADSHEET,
+    SubCommandNames.SPREADSHEET_ACTIVE,
+    spreadsheetActiveCommand,
+    'Failed to get active spreadsheet'
+  );
 }

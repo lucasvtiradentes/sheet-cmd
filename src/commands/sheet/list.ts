@@ -6,26 +6,24 @@ import { CommandNames, SubCommandNames } from '../../definitions/types.js';
 import { Logger } from '../../utils/logger.js';
 
 export function createListCommand(): Command {
+  const sheetListCommand = async (_options: SheetListOptions) => {
+    const sheetsService = await getGoogleSheetsService();
+
+    Logger.loading('Fetching spreadsheet info...');
+    const info = await sheetsService.getSheetInfo();
+
+    Logger.success(`Connected to spreadsheet: ${info.title}`);
+    Logger.bold(`\n📋 Sheets (${info.sheets.length}):\n`);
+
+    info.sheets.forEach((sheet) => {
+      Logger.plain(`  ${sheet.index + 1}. ${sheet.title}`);
+    });
+  };
+
   return createSubCommandFromSchema(
     CommandNames.SHEET,
     SubCommandNames.SHEET_LIST,
-    async (_options: SheetListOptions) => {
-      try {
-        const sheetsService = await getGoogleSheetsService();
-
-        Logger.loading('Fetching spreadsheet info...');
-        const info = await sheetsService.getSheetInfo();
-
-        Logger.success(`Connected to spreadsheet: ${info.title}`);
-        Logger.bold(`\n📋 Sheets (${info.sheets.length}):\n`);
-
-        info.sheets.forEach((sheet) => {
-          Logger.plain(`  ${sheet.index + 1}. ${sheet.title}`);
-        });
-      } catch (error) {
-        Logger.error('Failed to list sheets', error);
-        process.exit(1);
-      }
-    }
+    sheetListCommand,
+    'Failed to list sheets'
   );
 }

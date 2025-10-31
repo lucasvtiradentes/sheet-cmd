@@ -5,48 +5,49 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 
 import { ConfigManager } from '../config/config-manager.js';
-import { createCommandFromSchema } from '../definitions/command-builder.js';
+import { createCommandFromSchema, createSubCommandFromSchema } from '../definitions/command-builder.js';
 import { generateBashCompletion, generateZshCompletion } from '../definitions/generators/completion-generator.js';
-import { CommandNames } from '../definitions/types.js';
+import { CommandNames, SubCommandNames } from '../definitions/types.js';
 import { Logger } from '../utils/logger.js';
 
 const ZSH_COMPLETION_SCRIPT = generateZshCompletion();
 
 const BASH_COMPLETION_SCRIPT = generateBashCompletion();
 
+function createInstallCommand(): Command {
+  const installCompletionCommand = async () => {
+    const shell = detectShell();
+
+    switch (shell) {
+      case 'zsh':
+        await installZshCompletion();
+        break;
+      case 'bash':
+        await installBashCompletion();
+        break;
+      default:
+        Logger.error(`Unsupported shell: ${shell}`);
+        Logger.info('');
+        Logger.info('🐚 Supported shells: zsh, bash');
+        Logger.info('💡 Please switch to a supported shell to use autocompletion');
+        process.exit(1);
+    }
+
+    const configManager = new ConfigManager();
+    configManager.markCompletionInstalled();
+  };
+
+  return createSubCommandFromSchema(
+    CommandNames.COMPLETION,
+    SubCommandNames.COMPLETION_INSTALL,
+    installCompletionCommand,
+    'Failed to install completion'
+  );
+}
+
 export function createCompletionCommand(): Command {
   const completion = createCommandFromSchema(CommandNames.COMPLETION);
-
-  completion
-    .command('install')
-    .description('Install shell completion for your current shell')
-    .action(async () => {
-      const shell = detectShell();
-
-      try {
-        switch (shell) {
-          case 'zsh':
-            await installZshCompletion();
-            break;
-          case 'bash':
-            await installBashCompletion();
-            break;
-          default:
-            Logger.error(`Unsupported shell: ${shell}`);
-            Logger.info('');
-            Logger.info('🐚 Supported shells: zsh, bash');
-            Logger.info('💡 Please switch to a supported shell to use autocompletion');
-            process.exit(1);
-        }
-
-        const configManager = new ConfigManager();
-        configManager.markCompletionInstalled();
-      } catch (error) {
-        Logger.error('Failed to install completion', error);
-        process.exit(1);
-      }
-    });
-
+  completion.addCommand(createInstallCommand());
   return completion;
 }
 

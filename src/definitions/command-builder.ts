@@ -1,7 +1,12 @@
 import { Command } from 'commander';
+import { handleCommandError } from '../utils/error-handler.js';
 import { getCommand, getSubCommand } from './commands.js';
 
-export function createCommandFromSchema(commandName: string, action?: () => void): Command {
+export function createCommandFromSchema(
+  commandName: string,
+  action?: () => void | Promise<void>,
+  errorMessageFn?: string | ((error: unknown) => string)
+): Command {
   const schema = getCommand(commandName);
 
   if (!schema) {
@@ -18,7 +23,21 @@ export function createCommandFromSchema(commandName: string, action?: () => void
   }
 
   if (action) {
-    command.action(action);
+    const wrappedAction = async () => {
+      const commandPromise = async () => {
+        await action();
+      };
+
+      const baseMessage = errorMessageFn
+        ? typeof errorMessageFn === 'function'
+          ? errorMessageFn
+          : () => errorMessageFn
+        : () => `Failed to execute: ${commandName}`;
+
+      await commandPromise().catch(handleCommandError(baseMessage));
+    };
+
+    command.action(wrappedAction);
   }
 
   return command;
@@ -27,7 +46,8 @@ export function createCommandFromSchema(commandName: string, action?: () => void
 export function createSubCommandFromSchema<TArgs extends unknown[] = unknown[]>(
   commandName: string,
   subCommandName: string,
-  action: (...args: TArgs) => void | Promise<void>
+  action: (...args: TArgs) => void | Promise<void>,
+  errorMessageFn?: string | ((error: unknown) => string)
 ): Command {
   const schema = getSubCommand(commandName, subCommandName);
 
@@ -73,7 +93,21 @@ export function createSubCommandFromSchema<TArgs extends unknown[] = unknown[]>(
     }
   }
 
-  command.action(action);
+  const wrappedAction = async (...args: TArgs) => {
+    const commandPromise = async () => {
+      await action(...args);
+    };
+
+    const baseMessage = errorMessageFn
+      ? typeof errorMessageFn === 'function'
+        ? errorMessageFn
+        : () => errorMessageFn
+      : () => `Failed to execute: ${commandName} ${subCommandName}`;
+
+    await commandPromise().catch(handleCommandError(baseMessage));
+  };
+
+  command.action(wrappedAction);
 
   return command;
 }

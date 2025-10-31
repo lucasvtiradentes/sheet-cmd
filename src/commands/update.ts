@@ -15,78 +15,76 @@ const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export function createUpdateCommand(): Command {
-  return createCommandFromSchema(CommandNames.UPDATE, async () => {
-    try {
-      Logger.loading('Checking current version...');
+  const updateCommand = async () => {
+    Logger.loading('Checking current version...');
 
-      const currentVersion = getCurrentVersion();
-      if (!currentVersion) {
-        Logger.error('Could not determine current version');
-        return;
-      }
-
-      Logger.loading('Checking latest version...');
-
-      const latestVersion = await getLatestVersion();
-      if (!latestVersion) {
-        Logger.error('Could not fetch latest version from npm');
-        return;
-      }
-
-      Logger.info(`📦 Current version: ${currentVersion}`);
-      Logger.info(`📦 Latest version: ${latestVersion}`);
-
-      if (currentVersion === latestVersion) {
-        Logger.success('sheet-cmd is already up to date!');
-        return;
-      }
-
-      Logger.loading('Detecting package manager...');
-
-      const packageManager = await detectPackageManager();
-
-      if (!packageManager) {
-        Logger.error('Could not detect how sheet-cmd was installed');
-        Logger.dim('Please update manually using your package manager');
-        return;
-      }
-
-      Logger.info(`📦 Detected package manager: ${packageManager}`);
-      Logger.loading(`Updating sheet-cmd from ${currentVersion} to ${latestVersion}...`);
-
-      const updateCommand = getUpdateCommand(packageManager);
-      const { stdout, stderr } = await execAsync(updateCommand);
-
-      if (stderr && !stderr.includes('npm WARN')) {
-        Logger.error(`Error updating: ${stderr}`);
-        return;
-      }
-
-      Logger.success(`sheet-cmd updated successfully from ${currentVersion} to ${latestVersion}!`);
-
-      if (stdout) {
-        Logger.dim(stdout);
-      }
-
-      const completionReinstalled = await reinstallCompletionSilently();
-      if (completionReinstalled) {
-        Logger.dim('✨ Shell completion updated');
-        Logger.info('');
-        Logger.info('To activate the updated completion, run:');
-
-        const currentShell = process.env.SHELL || '';
-        if (currentShell.includes('zsh')) {
-          Logger.info('  exec zsh');
-        } else if (currentShell.includes('bash')) {
-          Logger.info('  exec bash');
-        } else {
-          Logger.info('  # Restart your shell');
-        }
-      }
-    } catch (error) {
-      Logger.error('Error updating', error);
+    const currentVersion = getCurrentVersion();
+    if (!currentVersion) {
+      Logger.error('Could not determine current version');
+      return;
     }
-  });
+
+    Logger.loading('Checking latest version...');
+
+    const latestVersion = await getLatestVersion();
+    if (!latestVersion) {
+      Logger.error('Could not fetch latest version from npm');
+      return;
+    }
+
+    Logger.info(`📦 Current version: ${currentVersion}`);
+    Logger.info(`📦 Latest version: ${latestVersion}`);
+
+    if (currentVersion === latestVersion) {
+      Logger.success('sheet-cmd is already up to date!');
+      return;
+    }
+
+    Logger.loading('Detecting package manager...');
+
+    const packageManager = await detectPackageManager();
+
+    if (!packageManager) {
+      Logger.error('Could not detect how sheet-cmd was installed');
+      Logger.dim('Please update manually using your package manager');
+      return;
+    }
+
+    Logger.info(`📦 Detected package manager: ${packageManager}`);
+    Logger.loading(`Updating sheet-cmd from ${currentVersion} to ${latestVersion}...`);
+
+    const updateCommand = getUpdateCommand(packageManager);
+    const { stdout, stderr } = await execAsync(updateCommand);
+
+    if (stderr && !stderr.includes('npm WARN')) {
+      Logger.error(`Error updating: ${stderr}`);
+      return;
+    }
+
+    Logger.success(`sheet-cmd updated successfully from ${currentVersion} to ${latestVersion}!`);
+
+    if (stdout) {
+      Logger.dim(stdout);
+    }
+
+    const completionReinstalled = await reinstallCompletionSilently();
+    if (completionReinstalled) {
+      Logger.dim('✨ Shell completion updated');
+      Logger.info('');
+      Logger.info('To activate the updated completion, run:');
+
+      const currentShell = process.env.SHELL || '';
+      if (currentShell.includes('zsh')) {
+        Logger.info('  exec zsh');
+      } else if (currentShell.includes('bash')) {
+        Logger.info('  exec bash');
+      } else {
+        Logger.info('  # Restart your shell');
+      }
+    }
+  };
+
+  return createCommandFromSchema(CommandNames.UPDATE, updateCommand, 'Failed to check for updates');
 }
 
 async function detectPackageManager(): Promise<string | null> {
