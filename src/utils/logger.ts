@@ -26,7 +26,7 @@ export class Logger {
     console.log(message);
   }
 
-  static json(data: any): void {
+  static json(data: unknown): void {
     console.log(JSON.stringify(data, null, 2));
   }
 

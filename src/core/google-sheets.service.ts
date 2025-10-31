@@ -173,7 +173,7 @@ export class GoogleSheetsService {
     await sheet.saveUpdatedCells();
   }
 
-  async writeCellRange(sheetName: string, range: string, values: string[][], noPreserve?: boolean): Promise<void> {
+  async writeCellRange(sheetName: string, range: string, values: (string | number)[][], noPreserve?: boolean): Promise<void> {
     await this.ensureConnection();
 
     if (!this.doc) {

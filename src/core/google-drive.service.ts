@@ -54,7 +54,7 @@ export class GoogleDriveService {
         modifiedTime: file.modifiedTime || '',
         webViewLink: file.webViewLink || ''
       }));
-    } catch (error: any) {
+    } catch (error: unknown) {
       Logger.error('Google Drive API error:', error);
       Logger.info('\nRequired scopes for this operation:');
       Logger.info(`  - ${OAUTH_SCOPES.SPREADSHEETS}`);

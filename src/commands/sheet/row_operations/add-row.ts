@@ -4,30 +4,19 @@ import { createSubCommandFromSchema } from '../../../definitions/command-builder
 import type { RowAddOptions } from '../../../definitions/command-types.js';
 import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
 import { Logger } from '../../../utils/logger.js';
+import { validatePositiveInteger, validateRequired } from '../../../utils/validators.js';
 
 export function createRowAddCommand(): Command {
   const rowAddCommand = async (options: RowAddOptions) => {
-    if (!options.row) {
-      Logger.error('Row number is required. Use --row <number>');
-      process.exit(1);
-    }
-
-    const rowNumber = parseInt(options.row, 10);
-    if (Number.isNaN(rowNumber) || rowNumber < 1) {
-      Logger.error('Row number must be a positive integer');
-      process.exit(1);
-    }
+    const rowValue = validateRequired(options.row, 'Row number');
+    const rowNumber = validatePositiveInteger(rowValue, 'Row number');
 
     if (options.above && options.below) {
-      Logger.error('Cannot use both --above and --below. Choose one.');
+      Logger.error('Cannot use both --above and --below. Choose one');
       process.exit(1);
     }
 
-    const count = options.count ? parseInt(options.count, 10) : 1;
-    if (Number.isNaN(count) || count < 1) {
-      Logger.error('Count must be a positive integer');
-      process.exit(1);
-    }
+    const count = options.count ? validatePositiveInteger(options.count, 'Count') : 1;
 
     const sheetsService = await getGoogleSheetsService();
     const sheetName = getActiveSheetName(options.name);

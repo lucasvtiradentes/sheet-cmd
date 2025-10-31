@@ -26,7 +26,7 @@ export function createWriteCommand(): Command {
       await sheetsService.writeCell(sheetName, options.cell, options.value);
       Logger.success(`Cell ${options.cell} updated successfully`);
     } else if (options.range) {
-      let values: any[][];
+      let values: (string | number)[][];
 
       if (options.value.trim().startsWith('[')) {
         try {
