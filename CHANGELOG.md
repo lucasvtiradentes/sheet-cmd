@@ -1,5 +1,11 @@
 # sheet-cmd
 
+## 1.1.6
+
+### Patch Changes
+
+- accb918: add global error catch
+
 ## 1.1.5
 
 ### Patch Changes
