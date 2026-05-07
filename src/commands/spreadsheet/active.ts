@@ -1,5 +1,6 @@
 import { defineSubCommand, flag } from '../../cli/define';
 import { ConfigManager } from '../../config/config-manager';
+import { getProgramName } from '../../config/constants';
 import { Logger } from '../../utils/logger';
 import { getSpreadsheetUrl } from '../../utils/spreadsheet';
 
@@ -14,7 +15,7 @@ export const activeSpreadsheetCommand = defineSubCommand({
 
     if (!activeAccount) {
       Logger.error('No active account set.');
-      Logger.info('Use: gsheet account add');
+      Logger.info(`Use: ${getProgramName()} account add`);
       return;
     }
 
@@ -22,7 +23,7 @@ export const activeSpreadsheetCommand = defineSubCommand({
 
     if (!activeSpreadsheetName) {
       Logger.warning('No active spreadsheet set.');
-      Logger.info('Use "gsheet spreadsheet select" to set one.');
+      Logger.info(`Use "${getProgramName()} spreadsheet select" to set one.`);
       return;
     }
 

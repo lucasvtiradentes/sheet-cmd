@@ -1,6 +1,7 @@
 import inquirer from 'inquirer';
 import { defineSubCommand, flag } from '../../../cli/define';
 import { ConfigManager } from '../../../config/config-manager';
+import { getProgramName } from '../../../config/constants';
 import { getGoogleSheetsService } from '../../../core/command-helpers';
 import { Logger } from '../../../utils/logger';
 
@@ -15,14 +16,14 @@ export const selectCommand = defineSubCommand({
 
     if (!activeAccount) {
       Logger.error('No active account set.');
-      Logger.info('Use: gsheet account add');
+      Logger.info(`Use: ${getProgramName()} account add`);
       process.exit(1);
     }
 
     const activeSpreadsheetName = configManager.getActiveSpreadsheetName(activeAccount.email);
     if (!activeSpreadsheetName) {
       Logger.error('No active spreadsheet set.');
-      Logger.info('Use: gsheet spreadsheet select');
+      Logger.info(`Use: ${getProgramName()} spreadsheet select`);
       process.exit(1);
     }
 

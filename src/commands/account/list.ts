@@ -1,5 +1,6 @@
 import { defineSubCommand } from '../../cli/define';
 import { ConfigManager } from '../../config/config-manager';
+import { getProgramName } from '../../config/constants';
 import { Logger } from '../../utils/logger';
 
 export const listAccountsCommand = defineSubCommand({
@@ -13,7 +14,7 @@ export const listAccountsCommand = defineSubCommand({
 
     if (accounts.length === 0) {
       Logger.info('No accounts configured.');
-      Logger.info('Add one with: gsheet account add');
+      Logger.info(`Add one with: ${getProgramName()} account add`);
       return;
     }
 

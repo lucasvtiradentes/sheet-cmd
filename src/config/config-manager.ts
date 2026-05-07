@@ -3,7 +3,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { assertRequiredOAuthScopes } from '../auth/oauth-scopes';
 import { refreshTokenIfNeeded } from '../auth/token-refresh';
 import { readJson, writeJson } from '../utils/json';
-import { CONFIG_PATHS } from './constants';
+import { CONFIG_PATHS, getProgramName } from './constants';
 import type { Account, OAuthCredentials, SheetsConfig, SpreadsheetConfig, UserMetadata } from './types';
 import { sheetsConfigSchema, userMetadataSchema } from './types';
 
@@ -392,7 +392,7 @@ export class ConfigManager {
 
 async function assertCredentialsHaveRequiredScopes(credentials: OAuthCredentials): Promise<void> {
   if (!credentials.access_token) {
-    throw new Error('No access token available. Run `gsheet account reauth`.');
+    throw new Error(`No access token available. Run \`${getProgramName()} account reauth\`.`);
   }
 
   const oauth2Client = new OAuth2Client(credentials.client_id, credentials.client_secret);

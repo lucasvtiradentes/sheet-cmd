@@ -1,3 +1,4 @@
+import { getProgramName } from '../config/constants';
 import { Logger } from './logger';
 
 function formatError(error: unknown): string {
@@ -17,7 +18,7 @@ export function handleCommandError(baseMessage: string | ((error: unknown) => st
     if (errorDetails.includes('invalid_grant')) {
       Logger.error('OAuth token refresh failed: invalid_grant');
       Logger.info('Your refresh token is expired or invalid');
-      Logger.info('Fix: gsheet account reauth');
+      Logger.info(`Fix: ${getProgramName()} account reauth`);
       process.exit(1);
     }
 

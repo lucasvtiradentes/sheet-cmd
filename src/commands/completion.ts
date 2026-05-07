@@ -16,7 +16,7 @@ import {
 import { getZshCompletionScript } from '../cli/completion/zsh';
 import { defineCommand, defineSubCommand } from '../cli/define';
 import { ConfigManager } from '../config/config-manager';
-import { APP_INFO } from '../config/constants';
+import { getProgramName } from '../config/constants';
 import { Logger } from '../utils/logger';
 
 enum CompletionShell {
@@ -75,7 +75,7 @@ export function createCompletionCommand(program: CaporalProgram): void {
 
   program.command(completionCommand.name, completionCommand.description).action(async () => {
     Logger.info(`Available shells: ${completionShells.join(', ')}`);
-    Logger.info(`Usage: ${APP_INFO.name} completion <shell>`);
+    Logger.info(`Usage: ${getProgramName()} completion <shell>`);
   });
 
   for (const shellCommand of completionCommand.subcommands) {
@@ -141,7 +141,7 @@ async function installZshCompletionSilent(): Promise<void> {
     mkdirSync(targetDir, { recursive: true });
   }
 
-  const completionFile = join(targetDir, `_${APP_INFO.name}`);
+  const completionFile = join(targetDir, `_${getProgramName()}`);
   writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Zsh));
 }
 
@@ -172,7 +172,7 @@ async function installBashCompletionSilent(): Promise<void> {
     mkdirSync(targetDir, { recursive: true });
   }
 
-  const completionFile = join(targetDir, APP_INFO.name);
+  const completionFile = join(targetDir, getProgramName());
   writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Bash));
 }
 
@@ -181,7 +181,7 @@ async function installFishCompletionSilent(): Promise<void> {
   const targetDir = join(homeDir, '.config', 'fish', 'completions');
   mkdirSync(targetDir, { recursive: true });
 
-  const completionFile = join(targetDir, `${APP_INFO.name}.fish`);
+  const completionFile = join(targetDir, `${getProgramName()}.fish`);
   writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Fish));
 }
 

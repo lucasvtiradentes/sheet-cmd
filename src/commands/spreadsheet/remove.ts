@@ -1,6 +1,7 @@
 import inquirer from 'inquirer';
 import { defineSubCommand, flag } from '../../cli/define';
 import { ConfigManager } from '../../config/config-manager';
+import { getProgramName } from '../../config/constants';
 import { Logger } from '../../utils/logger';
 import { parseSpreadsheetId } from '../../utils/spreadsheet';
 
@@ -15,7 +16,7 @@ export const removeSpreadsheetCommand = defineSubCommand({
 
     if (!activeAccount) {
       Logger.error('No active account set.');
-      Logger.info('Use: gsheet account add');
+      Logger.info(`Use: ${getProgramName()} account add`);
       process.exit(1);
     }
 

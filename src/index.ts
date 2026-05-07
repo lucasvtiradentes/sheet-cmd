@@ -1,6 +1,6 @@
 export type { OAuthFlowOptions, OAuthFlowResult } from './auth/oauth-flow';
 export { performOAuthFlow } from './auth/oauth-flow';
-export { assertRequiredOAuthScopes } from './auth/oauth-scopes';
+export { assertDriveFileOAuthScope, assertRequiredOAuthScopes } from './auth/oauth-scopes';
 export { refreshToken, refreshTokenIfNeeded } from './auth/token-refresh';
 export {
   createDriveService,
@@ -39,7 +39,7 @@ export {
   spreadsheetConfigSchema,
   userMetadataSchema
 } from './config/types';
-export type { DriveSpreadsheet } from './core/google-drive.service';
+export type { CreatedDriveSpreadsheet, DriveSpreadsheet } from './core/google-drive.service';
 export { GoogleDriveService } from './core/google-drive.service';
 export type { GoogleSheetsConfig } from './core/google-sheets.service';
 export { GoogleSheetsService } from './core/google-sheets.service';

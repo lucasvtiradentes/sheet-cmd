@@ -2,7 +2,7 @@ import * as readline from 'readline';
 import { performOAuthFlow } from '../../auth/oauth-flow';
 import { defineSubCommand } from '../../cli/define';
 import { ConfigManager } from '../../config/config-manager';
-import { GOOGLE_CLOUD_CONSOLE_URLS } from '../../config/constants';
+import { GOOGLE_CLOUD_CONSOLE_URLS, getProgramName } from '../../config/constants';
 import { Logger } from '../../utils/logger';
 
 async function promptInput(question: string): Promise<string> {
@@ -47,7 +47,7 @@ export const addAccountCommand = defineSubCommand({
     Logger.bold('STEP 3: Configure OAuth Consent Screen');
     Logger.link(`  ${GOOGLE_CLOUD_CONSOLE_URLS.CONSENT_SCREEN}`);
     Logger.info('  - User Type: External');
-    Logger.info('  - App name: gsheet (or any name)');
+    Logger.info(`  - App name: ${getProgramName()} (or any name)`);
     Logger.info('  - User support email: your email');
     Logger.info('  - Developer contact: your email');
     Logger.info('  - Click "SAVE AND CONTINUE"');
@@ -59,6 +59,7 @@ export const addAccountCommand = defineSubCommand({
     Logger.info('  - Search and add:');
     Logger.info('    → .../auth/spreadsheets');
     Logger.info('    → .../auth/drive.readonly');
+    Logger.info('    → .../auth/drive.file');
     Logger.info('    → .../auth/userinfo.email');
     Logger.info('  - Click "UPDATE" then "SAVE AND CONTINUE"');
     Logger.plain('');
@@ -74,7 +75,7 @@ export const addAccountCommand = defineSubCommand({
     Logger.link(`  ${GOOGLE_CLOUD_CONSOLE_URLS.CREDENTIALS}`);
     Logger.info('  - Click "CREATE CREDENTIALS" → "OAuth client ID"');
     Logger.info('  - Application type: Desktop app');
-    Logger.info('  - Name: gsheet');
+    Logger.info(`  - Name: ${getProgramName()}`);
     Logger.info('  - Click "CREATE"');
     Logger.info('  - Copy the Client ID and Client Secret');
     Logger.plain('');
@@ -107,7 +108,7 @@ export const addAccountCommand = defineSubCommand({
       Logger.success(`Account '${result.email}' added and set as active!`);
     } else {
       Logger.success(`Account '${result.email}' added successfully!`);
-      Logger.info('Switch to this account: gsheet account select');
+      Logger.info(`Switch to this account: ${getProgramName()} account select`);
     }
     process.exit(0);
   }

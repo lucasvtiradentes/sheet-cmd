@@ -1,5 +1,5 @@
 import type { Command as CaporalCommand, Program as CaporalProgram } from '@caporal/core';
-import { APP_INFO } from '../config/constants';
+import { getProgramName } from '../config/constants';
 import { handleCommandError } from '../utils/error-handler';
 import {
   type CommandArgument,
@@ -30,7 +30,7 @@ function registerParentCommand(program: CaporalProgram, definition: ParentComman
 
   command.action(async () => {
     const commandPromise = async () => {
-      console.log(`Usage: ${APP_INFO.name} ${definition.name} <command>`);
+      console.log(`Usage: ${getProgramName()} ${definition.name} <command>`);
       console.log('');
       console.log(`Available commands: ${definition.subcommands.map((subcommand) => subcommand.name).join(', ')}`);
     };

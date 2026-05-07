@@ -1,5 +1,5 @@
 import { OAuth2Client } from 'google-auth-library';
-import { TOKEN_REFRESH_THRESHOLD_MS } from '../config/constants';
+import { getProgramName, TOKEN_REFRESH_THRESHOLD_MS } from '../config/constants';
 import type { OAuthCredentials } from '../config/types';
 import { assertRequiredOAuthScopes } from './oauth-scopes';
 
@@ -25,7 +25,7 @@ export async function refreshToken(credentials: OAuthCredentials): Promise<OAuth
   const accessToken = newTokens.access_token || credentials.access_token;
 
   if (!accessToken) {
-    throw new Error('No access token available after refresh. Run `gsheet account reauth`.');
+    throw new Error(`No access token available after refresh. Run \`${getProgramName()} account reauth\`.`);
   }
 
   const tokenInfo = await oauth2Client.getTokenInfo(accessToken);

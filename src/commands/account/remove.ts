@@ -1,6 +1,7 @@
 import inquirer from 'inquirer';
 import { argument, defineSubCommand } from '../../cli/define';
 import { ConfigManager } from '../../config/config-manager';
+import { getProgramName } from '../../config/constants';
 import { Logger } from '../../utils/logger';
 
 export const removeAccountCommand = defineSubCommand({
@@ -14,7 +15,7 @@ export const removeAccountCommand = defineSubCommand({
 
     if (accounts.length === 0) {
       Logger.warning('No accounts configured.');
-      Logger.info('Use: gsheet account add');
+      Logger.info(`Use: ${getProgramName()} account add`);
       process.exit(0);
     }
 

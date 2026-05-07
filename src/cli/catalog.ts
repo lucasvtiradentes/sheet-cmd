@@ -20,6 +20,7 @@ import { renameCommand } from '../commands/sheet/sheet_operations/rename';
 import { selectCommand } from '../commands/sheet/sheet_operations/select';
 import { activeSpreadsheetCommand } from '../commands/spreadsheet/active';
 import { addSpreadsheetCommand } from '../commands/spreadsheet/add';
+import { createSpreadsheetCommand } from '../commands/spreadsheet/create';
 import { listSpreadsheetsCommand } from '../commands/spreadsheet/list';
 import { removeSpreadsheetCommand } from '../commands/spreadsheet/remove';
 import { selectSpreadsheetCommand } from '../commands/spreadsheet/select';
@@ -43,6 +44,7 @@ const spreadsheetCommand = defineCommand({
   description: 'Manage spreadsheet configurations',
   subcommands: [
     addSpreadsheetCommand,
+    createSpreadsheetCommand,
     listSpreadsheetsCommand,
     removeSpreadsheetCommand,
     selectSpreadsheetCommand,

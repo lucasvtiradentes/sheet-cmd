@@ -9,7 +9,7 @@ import type { Program as CaporalProgram } from '@caporal/core';
 import { cliCommands } from './cli/catalog';
 import { registerProgram } from './cli/register';
 import { createCompletionCommand } from './commands/completion';
-import { APP_INFO } from './config/constants';
+import { APP_INFO, getProgramName } from './config/constants';
 
 const program = createProgram(getProgramBin());
 
@@ -48,7 +48,7 @@ function getProgramConstructor() {
 }
 
 function getProgramBin() {
-  if (process.env.SHEET_CMD_PROG_NAME) return process.env.SHEET_CMD_PROG_NAME;
+  if (process.env.SHEET_CMD_PROG_NAME) return getProgramName();
   if (isDirectRun() && process.argv[1]) return basename(process.argv[1]);
   return APP_INFO.name;
 }

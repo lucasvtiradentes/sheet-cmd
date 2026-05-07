@@ -1,6 +1,7 @@
 import { performOAuthFlow } from '../../auth/oauth-flow';
 import { defineSubCommand } from '../../cli/define';
 import { ConfigManager } from '../../config/config-manager';
+import { getProgramName } from '../../config/constants';
 import { Logger } from '../../utils/logger';
 
 export const reauthAccountCommand = defineSubCommand({
@@ -13,7 +14,7 @@ export const reauthAccountCommand = defineSubCommand({
 
     if (!activeAccount) {
       Logger.error('No active account set.');
-      Logger.info('Use: gsheet account switch <email>');
+      Logger.info(`Use: ${getProgramName()} account select`);
       process.exit(1);
     }
 

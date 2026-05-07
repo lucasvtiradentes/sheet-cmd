@@ -2,7 +2,7 @@ import { performOAuthFlow } from './auth/oauth-flow';
 import { refreshToken } from './auth/token-refresh';
 import { ConfigManager } from './config/config-manager';
 import type { Account, OAuthCredentials, SpreadsheetConfig } from './config/types';
-import { GoogleDriveService } from './core/google-drive.service';
+import { type CreatedDriveSpreadsheet, GoogleDriveService } from './core/google-drive.service';
 import { type GoogleSheetsConfig, GoogleSheetsService } from './core/google-sheets.service';
 
 export interface SheetCmdClientOptions {
@@ -112,6 +112,24 @@ export class SheetCmdClient {
 
   async addSpreadsheet(email: string, name: string, spreadsheetId: string): Promise<void> {
     await this.configManager.addSpreadsheet(email, name, spreadsheetId);
+  }
+
+  async createSpreadsheet(
+    name: string,
+    options: { accountEmail?: string; localName?: string; setActive?: boolean } = {}
+  ): Promise<CreatedDriveSpreadsheet> {
+    const account = options.accountEmail ? this.requireAccount(options.accountEmail) : this.requireActiveAccount();
+    const driveService = await this.getDriveService({ accountEmail: account.email });
+    const spreadsheet = await driveService.createSpreadsheet(name);
+    const localName = options.localName ?? spreadsheet.name;
+
+    await this.configManager.addSpreadsheet(account.email, localName, spreadsheet.id);
+
+    if (options.setActive ?? true) {
+      this.configManager.setActiveSpreadsheet(account.email, localName);
+    }
+
+    return spreadsheet;
   }
 
   async removeSpreadsheet(email: string, name: string): Promise<void> {

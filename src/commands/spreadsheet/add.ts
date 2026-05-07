@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
 import { defineSubCommand, flag } from '../../cli/define';
 import { ConfigManager } from '../../config/config-manager';
-import { GOOGLE_API_URLS } from '../../config/constants';
+import { GOOGLE_API_URLS, getProgramName } from '../../config/constants';
 import { GoogleDriveService } from '../../core/google-drive.service';
 import { getSpreadsheetTitle } from '../../core/spreadsheet-title';
 import { Logger } from '../../utils/logger';
@@ -21,7 +21,7 @@ export const addSpreadsheetCommand = defineSubCommand({
 
     if (!activeAccount) {
       Logger.error('No active account set.');
-      Logger.info('Use: gsheet account add');
+      Logger.info(`Use: ${getProgramName()} account add`);
       process.exit(1);
     }
 
@@ -105,7 +105,7 @@ export const addSpreadsheetCommand = defineSubCommand({
       Logger.success(`Spreadsheet '${name}' added and set as active!`);
     } else {
       Logger.success(`Spreadsheet '${name}' added successfully!`);
-      Logger.info(`Switch to this spreadsheet: gsheet spreadsheet select ${name}`);
+      Logger.info(`Switch to this spreadsheet: ${getProgramName()} spreadsheet select -i ${spreadsheetId}`);
     }
   }
 });

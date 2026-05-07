@@ -16,6 +16,10 @@ export const APP_INFO = {
   version: packageJson.version
 };
 
+export function getProgramName(): string {
+  return process.env.SHEET_CMD_PROG_NAME || APP_INFO.name;
+}
+
 enum SupportedOS {
   Linux = 'linux',
   Mac = 'mac',
@@ -64,6 +68,7 @@ export const CONFIG_PATHS = {
 
 export const OAUTH_SCOPES = {
   SPREADSHEETS: 'https://www.googleapis.com/auth/spreadsheets',
+  DRIVE_FILE: 'https://www.googleapis.com/auth/drive.file',
   DRIVE_READONLY: 'https://www.googleapis.com/auth/drive.readonly',
   USERINFO_EMAIL: 'https://www.googleapis.com/auth/userinfo.email'
 };

@@ -27,7 +27,12 @@ export async function performOAuthFlow(
 
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: OAUTH_CONFIG.ACCESS_TYPE,
-    scope: [OAUTH_SCOPES.SPREADSHEETS, OAUTH_SCOPES.DRIVE_READONLY, OAUTH_SCOPES.USERINFO_EMAIL],
+    scope: [
+      OAUTH_SCOPES.SPREADSHEETS,
+      OAUTH_SCOPES.DRIVE_READONLY,
+      OAUTH_SCOPES.DRIVE_FILE,
+      OAUTH_SCOPES.USERINFO_EMAIL
+    ],
     prompt: OAUTH_CONFIG.PROMPT,
     include_granted_scopes: true,
     login_hint: options.loginHint
