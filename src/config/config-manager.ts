@@ -1,4 +1,6 @@
 import * as fs from 'fs';
+import { OAuth2Client } from 'google-auth-library';
+import { assertRequiredOAuthScopes } from '../auth/oauth-scopes';
 import { refreshTokenIfNeeded } from '../auth/token-refresh';
 import { readJson, writeJson } from '../utils/json';
 import { CONFIG_PATHS } from './constants';
@@ -200,6 +202,7 @@ export class ConfigManager {
     }
 
     const refreshedCredentials = await refreshTokenIfNeeded(account.oauth);
+    await assertCredentialsHaveRequiredScopes(refreshedCredentials);
 
     if (refreshedCredentials !== account.oauth) {
       await this.updateAccountCredentials(email, refreshedCredentials);
@@ -385,4 +388,14 @@ export class ConfigManager {
     const config = this.loadConfig();
     return config.settings?.completion_installed === true;
   }
+}
+
+async function assertCredentialsHaveRequiredScopes(credentials: OAuthCredentials): Promise<void> {
+  if (!credentials.access_token) {
+    throw new Error('No access token available. Run `sheet-cmd account reauth`.');
+  }
+
+  const oauth2Client = new OAuth2Client(credentials.client_id, credentials.client_secret);
+  const tokenInfo = await oauth2Client.getTokenInfo(credentials.access_token);
+  assertRequiredOAuthScopes(tokenInfo.scopes);
 }

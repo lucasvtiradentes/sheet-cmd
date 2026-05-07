@@ -19,7 +19,9 @@ export function createReauthAccountCommand(): Command {
     Logger.info(`Re-authenticating account: ${activeAccount.email}`);
     Logger.info('Opening browser for authentication...\n');
 
-    const result = await performOAuthFlow(activeAccount.oauth.client_id, activeAccount.oauth.client_secret);
+    const result = await performOAuthFlow(activeAccount.oauth.client_id, activeAccount.oauth.client_secret, {
+      loginHint: activeAccount.email
+    });
 
     if (result.email !== activeAccount.email) {
       Logger.error(`Authentication email mismatch. Expected ${activeAccount.email}, got ${result.email}`);

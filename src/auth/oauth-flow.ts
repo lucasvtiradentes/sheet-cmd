@@ -3,13 +3,18 @@ import http from 'http';
 import { GOOGLE_API_URLS, OAUTH_CONFIG, OAUTH_SCOPES } from '../config/constants';
 import type { OAuthCredentials } from '../config/types';
 import { Logger } from '../utils/logger';
+import { assertRequiredOAuthScopes } from './oauth-scopes';
 
 interface OAuthFlowResult {
   email: string;
   credentials: OAuthCredentials;
 }
 
-export async function performOAuthFlow(clientId: string, clientSecret: string): Promise<OAuthFlowResult> {
+export async function performOAuthFlow(
+  clientId: string,
+  clientSecret: string,
+  options: { loginHint?: string } = {}
+): Promise<OAuthFlowResult> {
   const port = await getRandomAvailablePort();
   const redirectUri = `http://${OAUTH_CONFIG.REDIRECT_HOST}:${port}${OAUTH_CONFIG.REDIRECT_PATH}`;
 
@@ -18,7 +23,9 @@ export async function performOAuthFlow(clientId: string, clientSecret: string): 
   const authUrl = oauth2Client.generateAuthUrl({
     access_type: OAUTH_CONFIG.ACCESS_TYPE,
     scope: [OAUTH_SCOPES.SPREADSHEETS, OAUTH_SCOPES.DRIVE_READONLY, OAUTH_SCOPES.USERINFO_EMAIL],
-    prompt: OAUTH_CONFIG.PROMPT
+    prompt: OAUTH_CONFIG.PROMPT,
+    include_granted_scopes: true,
+    login_hint: options.loginHint
   });
 
   Logger.info(`Opening browser for authentication...`);
@@ -28,6 +35,13 @@ export async function performOAuthFlow(clientId: string, clientSecret: string): 
 
   const { tokens } = await oauth2Client.getToken(authCode);
   oauth2Client.setCredentials(tokens);
+
+  if (!tokens.access_token) {
+    throw new Error('No access token received. Try re-authenticating.');
+  }
+
+  const tokenInfo = await oauth2Client.getTokenInfo(tokens.access_token);
+  assertRequiredOAuthScopes(tokenInfo.scopes);
 
   const userInfo = await fetch(GOOGLE_API_URLS.USERINFO, {
     headers: { Authorization: `Bearer ${tokens.access_token}` }

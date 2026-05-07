@@ -58,6 +58,7 @@ export function createAddAccountCommand(): Command {
     Logger.info('  - Search and add:');
     Logger.info('    → .../auth/spreadsheets');
     Logger.info('    → .../auth/drive.readonly');
+    Logger.info('    → .../auth/userinfo.email');
     Logger.info('  - Click "UPDATE" then "SAVE AND CONTINUE"');
     Logger.plain('');
 

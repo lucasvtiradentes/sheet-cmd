@@ -2,6 +2,11 @@ import chalk from 'chalk';
 
 export class Logger {
   static error(message: string, error?: unknown): void {
+    if (error === undefined) {
+      console.error(chalk.red(`❌ ${message}`));
+      return;
+    }
+
     const errorText = error instanceof Error ? error.message : 'Unknown error';
     console.error(chalk.red(`❌ ${message}: ${errorText}`));
   }
