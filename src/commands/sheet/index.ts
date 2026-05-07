@@ -9,6 +9,7 @@ import { createListCommand } from './list';
 import { createReadCommand } from './read';
 import { createRowAddCommand } from './row_operations/add-row';
 import { createRowRemoveCommand } from './row_operations/remove-row';
+import { createActiveCommand } from './sheet_operations/active';
 import { createAddCommand } from './sheet_operations/add';
 import { createCopyCommand } from './sheet_operations/copy';
 import { createRemoveCommand } from './sheet_operations/remove';
@@ -19,6 +20,7 @@ export function createSheetCommand(): Command {
   const sheet = createCommandFromSchema(CommandNames.SHEET);
 
   sheet.addCommand(createListCommand());
+  sheet.addCommand(createActiveCommand());
   sheet.addCommand(createSelectCommand());
   sheet.addCommand(createReadCommand());
   sheet.addCommand(createAddCommand());

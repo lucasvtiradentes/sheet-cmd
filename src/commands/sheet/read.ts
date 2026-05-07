@@ -4,15 +4,15 @@ import { getActiveSheetName, getGoogleSheetsService } from '../../core/command-h
 import { createSubCommandFromSchema } from '../../definitions/command-builder';
 import type { SheetReadOptions } from '../../definitions/command-types';
 import { CommandNames, SubCommandNames } from '../../definitions/types';
-import { formatAsCSV, formatAsMarkdown } from '../../utils/formatters';
+import { formatAsCSV, formatAsJSON, formatAsMarkdown } from '../../utils/formatters';
 import { Logger } from '../../utils/logger';
 
-type OutputFormat = 'markdown' | 'csv';
+type OutputFormat = 'markdown' | 'csv' | 'json';
 
 export function createReadCommand(): Command {
   const sheetReadCommand = async (options: SheetReadOptions) => {
     const outputFormat = options.output ?? 'markdown';
-    const validFormats: OutputFormat[] = ['markdown', 'csv'];
+    const validFormats: OutputFormat[] = ['markdown', 'csv', 'json'];
     if (!validFormats.includes(outputFormat)) {
       Logger.error(`Invalid output format '${outputFormat}'. Valid formats: ${validFormats.join(', ')}`);
       process.exit(1);
@@ -21,7 +21,9 @@ export function createReadCommand(): Command {
     const sheetsService = await getGoogleSheetsService();
     const sheetName = getActiveSheetName(options.name);
 
-    Logger.loading(`Reading sheet '${sheetName}'...`);
+    if (outputFormat !== 'json' || options.export) {
+      Logger.loading(`Reading sheet '${sheetName}'...`);
+    }
     const includeFormulas = options.formulas ?? false;
     const data = options.range
       ? await sheetsService.getSheetDataRange(sheetName, options.range, includeFormulas)
@@ -35,13 +37,17 @@ export function createReadCommand(): Command {
     let output: string;
     if (outputFormat === 'markdown') {
       output = formatAsMarkdown(data);
-    } else {
+    } else if (outputFormat === 'csv') {
       output = formatAsCSV(data);
+    } else {
+      output = formatAsJSON(data);
     }
 
     if (options.export) {
       writeFileSync(options.export, output, 'utf-8');
       Logger.success(`Content exported to ${options.export}`);
+    } else if (outputFormat === 'json') {
+      Logger.plain(output);
     } else {
       Logger.success(`Content of sheet '${sheetName}':\n`);
       Logger.plain(output);

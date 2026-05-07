@@ -1,10 +1,12 @@
 import { Command } from 'commander';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager';
+import { GoogleSheetsService } from '../../../core/google-sheets.service';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder';
 import type { SpreadsheetSelectOptions } from '../../../definitions/command-types';
 import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
+import { parseSpreadsheetId } from '../../../utils/spreadsheet';
 
 export function createSelectSpreadsheetCommand(): Command {
   const spreadsheetSelectCommand = async (options: SpreadsheetSelectOptions) => {
@@ -17,7 +19,7 @@ export function createSelectSpreadsheetCommand(): Command {
       process.exit(1);
     }
 
-    let spreadsheetId = options.id;
+    let spreadsheetId = options.id ? parseSpreadsheetId(options.id) : undefined;
 
     if (!spreadsheetId) {
       const spreadsheets = configManager.listSpreadsheets(activeAccount.email);
@@ -49,10 +51,19 @@ export function createSelectSpreadsheetCommand(): Command {
       return;
     }
 
-    const spreadsheet = configManager.getSpreadsheetById(activeAccount.email, spreadsheetId);
+    let spreadsheet = configManager.getSpreadsheetById(activeAccount.email, spreadsheetId);
     if (!spreadsheet) {
-      Logger.error(`Spreadsheet with ID '${spreadsheetId}' not found`);
-      process.exit(1);
+      if (!options.add) {
+        Logger.error(`Spreadsheet with ID '${spreadsheetId}' not found`);
+        Logger.info('Use --add to add and select this spreadsheet.');
+        process.exit(1);
+      }
+
+      const name =
+        options.name?.trim() || (await getSpreadsheetTitle(configManager, activeAccount.email, spreadsheetId));
+      await configManager.addSpreadsheet(activeAccount.email, name, spreadsheetId);
+      spreadsheet = configManager.getSpreadsheetById(activeAccount.email, spreadsheetId);
+      Logger.success(`Added spreadsheet: ${name}`);
     }
 
     const spreadsheetName = Object.entries(configManager.listSpreadsheets(activeAccount.email)).find(
@@ -74,4 +85,18 @@ export function createSelectSpreadsheetCommand(): Command {
     spreadsheetSelectCommand,
     'Failed to select spreadsheet'
   );
+}
+
+async function getSpreadsheetTitle(
+  configManager: ConfigManager,
+  email: string,
+  spreadsheetId: string
+): Promise<string> {
+  const credentials = await configManager.getRefreshedCredentials(email);
+  const sheetsService = new GoogleSheetsService({
+    spreadsheetId,
+    oauthCredentials: credentials
+  });
+  const info = await sheetsService.getSheetInfo();
+  return info.title;
 }

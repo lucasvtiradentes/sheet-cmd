@@ -38,7 +38,13 @@ export type SubCommandOptions<T extends SubCommand> = T extends { flags: Readonl
 
 type UnionToIntersection<U> = (U extends unknown ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
 
-export type SheetListOptions = Record<string, never>;
+export type SheetListOptions = {
+  output?: 'text' | 'json';
+};
+
+export type SheetActiveOptions = {
+  output?: 'text' | 'json';
+};
 
 export type SheetSelectOptions = {
   name?: string;
@@ -46,7 +52,7 @@ export type SheetSelectOptions = {
 
 export type SheetReadOptions = {
   name?: string;
-  output?: 'markdown' | 'csv';
+  output?: 'markdown' | 'csv' | 'json';
   formulas?: boolean;
   export?: string;
   range?: string;
@@ -99,6 +105,15 @@ export type SheetExportOptions = {
 
 export type SpreadsheetAddOptions = {
   id?: string;
+  name?: string;
+};
+
+export type SpreadsheetListOptions = {
+  output?: 'text' | 'json';
+};
+
+export type SpreadsheetActiveOptions = {
+  output?: 'text' | 'json';
 };
 
 export type AccountSelectOptions = {
@@ -111,6 +126,8 @@ export type AccountRemoveOptions = {
 
 export type SpreadsheetSelectOptions = {
   id?: string;
+  add?: boolean;
+  name?: string;
 };
 
 export type SpreadsheetRemoveOptions = {

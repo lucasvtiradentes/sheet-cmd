@@ -253,7 +253,7 @@ export class ConfigManager {
     this.saveUserMetadata();
   }
 
-  listSpreadsheets(email: string): Array<{ name: string; spreadsheetId: string }> {
+  listSpreadsheets(email: string): Array<{ name: string; spreadsheetId: string; activeSheet?: string }> {
     if (!this.userMetadata) {
       throw new Error('User metadata not loaded');
     }
@@ -265,7 +265,8 @@ export class ConfigManager {
 
     return Object.entries(account.spreadsheets).map(([name, spreadsheet]) => ({
       name,
-      spreadsheetId: spreadsheet.spreadsheet_id
+      spreadsheetId: spreadsheet.spreadsheet_id,
+      activeSheet: spreadsheet.activeSheet
     }));
   }
 

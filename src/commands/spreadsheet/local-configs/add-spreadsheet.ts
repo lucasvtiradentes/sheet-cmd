@@ -3,10 +3,12 @@ import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager';
 import { GOOGLE_API_URLS } from '../../../config/constants';
 import { GoogleDriveService } from '../../../core/google-drive.service';
+import { GoogleSheetsService } from '../../../core/google-sheets.service';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder';
 import type { SpreadsheetAddOptions } from '../../../definitions/command-types';
 import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
+import { parseSpreadsheetId } from '../../../utils/spreadsheet';
 
 export function createAddSpreadsheetCommand(): Command {
   const spreadsheetAddCommand = async (options: SpreadsheetAddOptions) => {
@@ -23,23 +25,28 @@ export function createAddSpreadsheetCommand(): Command {
     let name: string;
 
     if (options.id) {
-      spreadsheetId = options.id;
+      spreadsheetId = parseSpreadsheetId(options.id);
+      name = options.name?.trim() || '';
 
-      const answer = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'name',
-          message: 'Enter a local name for this spreadsheet:',
-          validate: (input: string) => {
-            if (!input.trim()) {
-              return 'Name cannot be empty';
+      if (!name) {
+        const defaultName = await getSpreadsheetTitle(configManager, activeAccount.email, spreadsheetId);
+        const answer = await inquirer.prompt([
+          {
+            type: 'input',
+            name: 'name',
+            message: 'Enter a local name for this spreadsheet:',
+            default: defaultName,
+            validate: (input: string) => {
+              if (!input.trim()) {
+                return 'Name cannot be empty';
+              }
+              return true;
             }
-            return true;
           }
-        }
-      ]);
+        ]);
 
-      name = answer.name;
+        name = answer.name;
+      }
     } else {
       Logger.loading('Fetching your spreadsheets from Google Drive...');
 
@@ -102,4 +109,18 @@ export function createAddSpreadsheetCommand(): Command {
     spreadsheetAddCommand,
     'Failed to add spreadsheet'
   );
+}
+
+async function getSpreadsheetTitle(
+  configManager: ConfigManager,
+  email: string,
+  spreadsheetId: string
+): Promise<string> {
+  const credentials = await configManager.getRefreshedCredentials(email);
+  const sheetsService = new GoogleSheetsService({
+    spreadsheetId,
+    oauthCredentials: credentials
+  });
+  const info = await sheetsService.getSheetInfo();
+  return info.title;
 }

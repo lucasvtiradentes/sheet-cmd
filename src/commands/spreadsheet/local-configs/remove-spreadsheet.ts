@@ -5,6 +5,7 @@ import { createSubCommandFromSchema } from '../../../definitions/command-builder
 import type { SpreadsheetRemoveOptions } from '../../../definitions/command-types';
 import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
+import { parseSpreadsheetId } from '../../../utils/spreadsheet';
 
 export function createRemoveSpreadsheetCommand(): Command {
   const spreadsheetRemoveCommand = async (options: SpreadsheetRemoveOptions) => {
@@ -17,7 +18,7 @@ export function createRemoveSpreadsheetCommand(): Command {
       process.exit(1);
     }
 
-    let spreadsheetId = options.id;
+    let spreadsheetId = options.id ? parseSpreadsheetId(options.id) : undefined;
 
     if (!spreadsheetId) {
       const spreadsheets = configManager.listSpreadsheets(activeAccount.email);

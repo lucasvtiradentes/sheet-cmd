@@ -6,17 +6,25 @@ import { CommandNames, SubCommandNames } from '../../definitions/types';
 import { Logger } from '../../utils/logger';
 
 export function createListCommand(): Command {
-  const sheetListCommand = async (_options: SheetListOptions) => {
+  const sheetListCommand = async (options: SheetListOptions) => {
     const sheetsService = await getGoogleSheetsService();
 
-    Logger.loading('Fetching spreadsheet info...');
+    if (options.output !== 'json') {
+      Logger.loading('Fetching spreadsheet info...');
+    }
     const info = await sheetsService.getSheetInfo();
+
+    if (options.output === 'json') {
+      Logger.json(info);
+      return;
+    }
 
     Logger.success(`Connected to spreadsheet: ${info.title}`);
     Logger.bold(`\n📋 Sheets (${info.sheets.length}):\n`);
 
     info.sheets.forEach((sheet) => {
       Logger.plain(`  ${sheet.index + 1}. ${sheet.title}`);
+      Logger.dim(`     ID: ${sheet.sheetId}`);
     });
   };
 

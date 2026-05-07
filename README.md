@@ -141,6 +141,7 @@ sheet-cmd account reauth
 
 ```bash
 sheet-cmd spreadsheet add
+sheet-cmd spreadsheet add --id "https://docs.google.com/spreadsheets/d/abc123" --name "Budget"
 ```
 
 **list** - List all configured spreadsheets
@@ -153,6 +154,7 @@ sheet-cmd spreadsheet list
 
 ```bash
 sheet-cmd spreadsheet select
+sheet-cmd spreadsheet select --id "https://docs.google.com/spreadsheets/d/abc123" --add --name "Budget"
 ```
 
 **active** - Show the currently active spreadsheet
@@ -173,6 +175,12 @@ sheet-cmd spreadsheet remove
 
 ```bash
 sheet-cmd sheet list
+```
+
+**active** - Show the currently active sheet
+
+```bash
+sheet-cmd sheet active
 ```
 
 **select** - Select a sheet (sets as active)

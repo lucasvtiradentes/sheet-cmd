@@ -8,7 +8,30 @@ export const sheetCommandDefinition: Command = {
     {
       name: SubCommandNames.SHEET_LIST,
       description: 'List all sheets in a spreadsheet',
+      flags: [
+        {
+          name: '--output',
+          alias: '-o',
+          description: 'Output format',
+          type: 'string',
+          choices: ['text', 'json']
+        }
+      ],
       examples: [`${APP_INFO.name} sheet list`]
+    },
+    {
+      name: SubCommandNames.SHEET_ACTIVE,
+      description: 'Show the currently active sheet',
+      flags: [
+        {
+          name: '--output',
+          alias: '-o',
+          description: 'Output format',
+          type: 'string',
+          choices: ['text', 'json']
+        }
+      ],
+      examples: [`${APP_INFO.name} sheet active`]
     },
     {
       name: SubCommandNames.SHEET_SELECT,
@@ -38,7 +61,7 @@ export const sheetCommandDefinition: Command = {
           alias: '-o',
           description: 'Output format',
           type: 'string',
-          choices: ['markdown', 'csv']
+          choices: ['markdown', 'csv', 'json']
         },
         {
           name: '--formulas',
