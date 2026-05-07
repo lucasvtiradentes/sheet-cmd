@@ -7,7 +7,7 @@ import { parseSpreadsheetId } from '../../utils/spreadsheet';
 export const removeSpreadsheetCommand = defineSubCommand({
   name: 'remove',
   description: 'Remove a spreadsheet configuration',
-  flags: [flag.string('--id', 'Spreadsheet ID or URL (skips interactive selection)')],
+  flags: [flag.string('--id', 'Spreadsheet ID or URL (skips interactive selection)', { alias: '-i' })],
   errorMessage: 'Failed to remove spreadsheet',
   action: async ({ options }) => {
     const configManager = new ConfigManager();
@@ -19,7 +19,8 @@ export const removeSpreadsheetCommand = defineSubCommand({
       process.exit(1);
     }
 
-    let spreadsheetId = options.id ? parseSpreadsheetId(options.id) : undefined;
+    const spreadsheetIdOption = options.id ?? (options as Record<string, string | number | boolean | undefined>).i;
+    let spreadsheetId = spreadsheetIdOption !== undefined ? parseSpreadsheetId(String(spreadsheetIdOption)) : undefined;
 
     if (!spreadsheetId) {
       const spreadsheets = configManager.listSpreadsheets(activeAccount.email);

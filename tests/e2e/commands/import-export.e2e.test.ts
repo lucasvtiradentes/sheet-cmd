@@ -34,14 +34,14 @@ describe('Import/Export E2E', () => {
     const outputFile = path.join(tempTestDir, 'export.json');
 
     await execCommand(
-      `npm run dev -- sheet write-cell -n "${testTabName}" -r A1:E6 -v "ID,Name,Department,Salary,Years;101,John Doe,Engineering,85000,5;102,Jane Smith,Marketing,72000,3;103,Bob Johnson,Sales,68000,7;104,Alice Williams,HR,65000,4;105,Charlie Brown,Engineering,92000,8"`,
+      `sheet write -n "${testTabName}" -r A1:E6 -v "ID,Name,Department,Salary,Years;101,John Doe,Engineering,85000,5;102,Jane Smith,Marketing,72000,3;103,Bob Johnson,Sales,68000,7;104,Alice Williams,HR,65000,4;105,Charlie Brown,Engineering,92000,8"`,
       undefined,
       15000,
       testHomeDir
     );
 
     const exportResult = await execCommand(
-      `npm run dev -- sheet export -n "${testTabName}" -f json -o "${outputFile}"`,
+      `sheet export -n "${testTabName}" -f json -o "${outputFile}"`,
       undefined,
       15000,
       testHomeDir
@@ -62,14 +62,14 @@ describe('Import/Export E2E', () => {
     const outputFile = path.join(tempTestDir, 'export.csv');
 
     await execCommand(
-      `npm run dev -- sheet write-cell -n "${testTabName}" -r A1:D7 -v "Date,Product,Amount,Status;2024-01-15,Laptop,1299.99,Completed;2024-01-16,Mouse,29.99,Completed;2024-01-17,Keyboard,89.99,Pending;2024-01-18,Monitor,349.99,Completed;2024-01-19,Webcam,79.99,Shipped;2024-01-20,Headset,129.99,Completed"`,
+      `sheet write -n "${testTabName}" -r A1:D7 -v "Date,Product,Amount,Status;2024-01-15,Laptop,1299.99,Completed;2024-01-16,Mouse,29.99,Completed;2024-01-17,Keyboard,89.99,Pending;2024-01-18,Monitor,349.99,Completed;2024-01-19,Webcam,79.99,Shipped;2024-01-20,Headset,129.99,Completed"`,
       undefined,
       15000,
       testHomeDir
     );
 
     const exportResult = await execCommand(
-      `npm run dev -- sheet export -n "${testTabName}" -f csv -o "${outputFile}"`,
+      `sheet export -n "${testTabName}" -f csv -o "${outputFile}"`,
       undefined,
       15000,
       testHomeDir
@@ -104,10 +104,10 @@ Pierre Dubois,pierre@email.com,555-0110,Paris,France`;
 
     const importTabName = `Import-Test-${Date.now()}`;
 
-    await execCommand(`npm run dev -- sheet add-sheet -n "${importTabName}"`, undefined, 15000, testHomeDir);
+    await execCommand(`sheet add -n "${importTabName}"`, undefined, 15000, testHomeDir);
 
     const importResult = await execCommand(
-      `npm run dev -- sheet import-csv -n "${importTabName}" -f "${csvFile}"`,
+      `sheet import -n "${importTabName}" -f "${csvFile}"`,
       undefined,
       20000,
       testHomeDir
@@ -116,14 +116,14 @@ Pierre Dubois,pierre@email.com,555-0110,Paris,France`;
     expect(importResult.exitCode).toBe(0);
     expect(importResult.stdout.toLowerCase()).toMatch(/imported|success/);
 
-    await execCommand(`npm run dev -- sheet remove-sheet -n "${importTabName}"`, undefined, 15000, testHomeDir);
+    await execCommand(`sheet remove -n "${importTabName}"`, undefined, 15000, testHomeDir);
   }, 75000);
 
   it('should handle non-existent CSV file gracefully', async () => {
     const nonExistentFile = path.join(tempTestDir, 'does-not-exist.csv');
 
     const importResult = await execCommand(
-      `npm run dev -- sheet import-csv -n "${testTabName}" -f "${nonExistentFile}"`,
+      `sheet import -n "${testTabName}" -f "${nonExistentFile}"`,
       undefined,
       15000,
       testHomeDir
@@ -136,14 +136,14 @@ Pierre Dubois,pierre@email.com,555-0110,Paris,France`;
     const outputFile = path.join(tempTestDir, 'export-range.csv');
 
     await execCommand(
-      `npm run dev -- sheet write-cell -n "${testTabName}" -r A1:E5 -v "SKU,Product,Stock,Price,Location;A001,Widget,150,9.99,Warehouse A;B002,Gadget,75,24.99,Warehouse B;C003,Tool,200,49.99,Warehouse A;D004,Device,50,99.99,Warehouse C"`,
+      `sheet write -n "${testTabName}" -r A1:E5 -v "SKU,Product,Stock,Price,Location;A001,Widget,150,9.99,Warehouse A;B002,Gadget,75,24.99,Warehouse B;C003,Tool,200,49.99,Warehouse A;D004,Device,50,99.99,Warehouse C"`,
       undefined,
       15000,
       testHomeDir
     );
 
     const exportResult = await execCommand(
-      `npm run dev -- sheet export -n "${testTabName}" -r A1:C4 -f csv -o "${outputFile}"`,
+      `sheet export -n "${testTabName}" -r A1:C4 -f csv -o "${outputFile}"`,
       undefined,
       15000,
       testHomeDir

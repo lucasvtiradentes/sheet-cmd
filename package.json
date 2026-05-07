@@ -25,6 +25,7 @@
     "dev": "SHEET_CMD_PROG_NAME=gsheet tsx src/cli.ts",
     "dev:install": "tsx scripts/install-dev-version.ts",
     "dev:uninstall": "tsx scripts/uninstall-dev-version.ts",
+    "env:e2e:from-adc": "tsx scripts/create-e2e-env-from-adc.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsup",
     "postbuild": "pnpm gen:docs",

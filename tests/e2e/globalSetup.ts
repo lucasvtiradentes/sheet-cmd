@@ -8,10 +8,12 @@ import { execCommand } from './test-utils';
 
 export async function setup() {
   const spreadsheetId = process.env.SPREADSHEET_ID_E2E;
-  const serviceAccountEmail = process.env.SERVICE_ACCOUNT_EMAIL_E2E;
-  const privateKey = process.env.PRIVATE_KEY_E2E;
+  const accountEmail = process.env.ACCOUNT_EMAIL_E2E;
+  const clientId = process.env.OAUTH_CLIENT_ID_E2E;
+  const clientSecret = process.env.OAUTH_CLIENT_SECRET_E2E;
+  const refreshToken = process.env.OAUTH_REFRESH_TOKEN_E2E;
 
-  if (!spreadsheetId || !serviceAccountEmail || !privateKey) {
+  if (!spreadsheetId || !accountEmail || !clientId || !clientSecret || !refreshToken) {
     console.log('⚠️  Skipping global fixtures creation: Missing environment variables\n');
     return;
   }
@@ -19,7 +21,7 @@ export async function setup() {
   console.log('🌍 Creating global fixtures for all E2E tests...');
 
   const testHomeDir = path.join(os.tmpdir(), `gsheet-global-e2e-${Date.now()}`);
-  const testConfigDir = path.join(testHomeDir, '.config', 'gsheet');
+  const testConfigDir = getTestConfigDir(testHomeDir);
 
   try {
     fs.mkdirSync(testConfigDir, { recursive: true });
@@ -33,7 +35,23 @@ export async function setup() {
       userMetadataPath,
       JSON.stringify({
         config_path: configPath,
-        active_spreadsheet: spreadsheetName
+        activeAccount: accountEmail,
+        accounts: {
+          [accountEmail]: {
+            email: accountEmail,
+            oauth: {
+              client_id: clientId,
+              client_secret: clientSecret,
+              refresh_token: refreshToken
+            },
+            activeSpreadsheet: spreadsheetName,
+            spreadsheets: {
+              [spreadsheetName]: {
+                spreadsheet_id: spreadsheetId
+              }
+            }
+          }
+        }
       })
     );
 
@@ -41,13 +59,9 @@ export async function setup() {
       configPath,
       JSON.stringify(
         {
-          spreadsheets: {
-            [spreadsheetName]: {
-              name: spreadsheetName,
-              spreadsheet_id: spreadsheetId,
-              service_account_email: serviceAccountEmail,
-              private_key: privateKey
-            }
+          settings: {
+            max_results: 50,
+            default_columns: 'A:Z'
           }
         },
         null,
@@ -58,12 +72,7 @@ export async function setup() {
     console.log('  ✓ Created test configuration');
 
     const testTabName = `E2E-Test-Sheet-${Date.now()}`;
-    const addSheetResult = await execCommand(
-      `npm run dev -- sheet add-sheet -n "${testTabName}"`,
-      undefined,
-      15000,
-      testHomeDir
-    );
+    const addSheetResult = await execCommand(`sheet add -n "${testTabName}"`, undefined, 15000, testHomeDir);
 
     if (addSheetResult.exitCode !== 0) {
       throw new Error(`Failed to create test sheet: ${addSheetResult.stderr}`);
@@ -72,7 +81,7 @@ export async function setup() {
     console.log('  ✓ Created test sheet');
 
     const writeDataResult = await execCommand(
-      `npm run dev -- sheet write-cell -n "${testTabName}" -r A1:C3 -v "Name,Age,City;John,30,NYC;Jane,25,LA"`,
+      `sheet write -n "${testTabName}" -r A1:C3 -v "Name,Age,City;John,30,NYC;Jane,25,LA"`,
       undefined,
       15000,
       testHomeDir
@@ -106,10 +115,12 @@ export async function teardown() {
   console.log('\n🧹 Cleaning up global fixtures...');
 
   const spreadsheetId = process.env.SPREADSHEET_ID_E2E;
-  const serviceAccountEmail = process.env.SERVICE_ACCOUNT_EMAIL_E2E;
-  const privateKey = process.env.PRIVATE_KEY_E2E;
+  const accountEmail = process.env.ACCOUNT_EMAIL_E2E;
+  const clientId = process.env.OAUTH_CLIENT_ID_E2E;
+  const clientSecret = process.env.OAUTH_CLIENT_SECRET_E2E;
+  const refreshToken = process.env.OAUTH_REFRESH_TOKEN_E2E;
 
-  if (!spreadsheetId || !serviceAccountEmail || !privateKey) {
+  if (!spreadsheetId || !accountEmail || !clientId || !clientSecret || !refreshToken) {
     console.log('⚠️  Skipping cleanup: Missing environment variables');
     return;
   }
@@ -125,12 +136,7 @@ export async function teardown() {
     const { testTabName, testHomeDir } = fixtures;
 
     if (testTabName) {
-      const deleteResult = await execCommand(
-        `npm run dev -- sheet remove-sheet -n "${testTabName}"`,
-        undefined,
-        15000,
-        testHomeDir
-      );
+      const deleteResult = await execCommand(`sheet remove -n "${testTabName}"`, undefined, 15000, testHomeDir);
 
       if (deleteResult.exitCode === 0) {
         console.log('  ✓ Deleted test sheet');
@@ -153,4 +159,16 @@ export async function teardown() {
   }
 
   console.log('🧹 E2E tests completed\n');
+}
+
+function getTestConfigDir(homeDir: string): string {
+  if (process.platform === 'darwin') {
+    return path.join(homeDir, 'Library', 'Preferences', 'gsheet');
+  }
+
+  if (process.platform === 'win32') {
+    return path.join(homeDir, 'AppData', 'Roaming', 'gsheet');
+  }
+
+  return path.join(homeDir, '.config', 'gsheet');
 }

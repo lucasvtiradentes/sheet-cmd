@@ -31,36 +31,26 @@ describe('Advanced Features E2E', () => {
   });
 
   it('should read sheet with formulas flag', async () => {
-    await execCommand(
-      `npm run dev -- sheet write-cell -n "${testTabName}" -c B1 -v "=SUM(A1:A5)"`,
-      undefined,
-      15000,
-      testHomeDir
-    );
+    await execCommand(`sheet write -n "${testTabName}" -c B1 -v "=SUM(A1:A5)"`, undefined, 15000, testHomeDir);
 
-    const readResult = await execCommand(
-      `npm run dev -- sheet read-sheet -n "${testTabName}" -f`,
-      undefined,
-      15000,
-      testHomeDir
-    );
+    const readResult = await execCommand(`sheet read -n "${testTabName}" -f`, undefined, 15000, testHomeDir);
 
     expect(readResult.exitCode).toBe(0);
     expect(readResult.stdout).toContain('=SUM');
   }, 30000);
 
-  it('should export sheet content to file using read-sheet', async () => {
+  it('should export sheet content to file using sheet read', async () => {
     const outputFile = path.join(tempTestDir, 'exported-sheet.md');
 
     await execCommand(
-      `npm run dev -- sheet write-cell -n "${testTabName}" -r A1:B3 -v "Name,Age;Alice,30;Bob,25"`,
+      `sheet write -n "${testTabName}" -r A1:B3 -v "Name,Age;Alice,30;Bob,25"`,
       undefined,
       15000,
       testHomeDir
     );
 
     const exportResult = await execCommand(
-      `npm run dev -- sheet read-sheet -n "${testTabName}" -e "${outputFile}"`,
+      `sheet read -n "${testTabName}" -e "${outputFile}"`,
       undefined,
       15000,
       testHomeDir
@@ -82,19 +72,14 @@ describe('Advanced Features E2E', () => {
 
     const skipHeaderTab = `Skip-Header-${Date.now()}`;
 
-    const createResult = await execCommand(
-      `npm run dev -- sheet add-sheet -n "${skipHeaderTab}"`,
-      undefined,
-      15000,
-      testHomeDir
-    );
+    const createResult = await execCommand(`sheet add -n "${skipHeaderTab}"`, undefined, 15000, testHomeDir);
 
     if (createResult.exitCode !== 0) {
       console.log('Failed to create sheet:', createResult.stderr);
     }
 
     const importResult = await execCommand(
-      `npm run dev -- sheet import-csv -n "${skipHeaderTab}" -f "${csvFile}" --skip-header`,
+      `sheet import -n "${skipHeaderTab}" -f "${csvFile}" --skip-header`,
       undefined,
       20000,
       testHomeDir
@@ -108,6 +93,6 @@ describe('Advanced Features E2E', () => {
     expect(importResult.exitCode).toBe(0);
     expect(importResult.stdout.toLowerCase()).toMatch(/imported|success/);
 
-    await execCommand(`npm run dev -- sheet remove-sheet -n "${skipHeaderTab}"`, undefined, 15000, testHomeDir);
+    await execCommand(`sheet remove -n "${skipHeaderTab}"`, undefined, 15000, testHomeDir);
   }, 60000);
 });

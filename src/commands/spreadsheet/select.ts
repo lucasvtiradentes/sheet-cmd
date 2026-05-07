@@ -9,7 +9,7 @@ export const selectSpreadsheetCommand = defineSubCommand({
   name: 'select',
   description: 'Select a different spreadsheet (sets as active)',
   flags: [
-    flag.string('--id', 'Spreadsheet ID or URL (skips interactive selection)'),
+    flag.string('--id', 'Spreadsheet ID or URL (skips interactive selection)', { alias: '-i' }),
     flag.boolean('--add', 'Add the spreadsheet if it is not configured'),
     flag.string('--name', 'Local name to use with --add')
   ],
@@ -24,7 +24,8 @@ export const selectSpreadsheetCommand = defineSubCommand({
       process.exit(1);
     }
 
-    let spreadsheetId = options.id ? parseSpreadsheetId(options.id) : undefined;
+    const spreadsheetIdOption = options.id ?? (options as Record<string, string | number | boolean | undefined>).i;
+    let spreadsheetId = spreadsheetIdOption !== undefined ? parseSpreadsheetId(String(spreadsheetIdOption)) : undefined;
 
     if (!spreadsheetId) {
       const spreadsheets = configManager.listSpreadsheets(activeAccount.email);

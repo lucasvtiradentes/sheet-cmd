@@ -17,19 +17,14 @@ describe('Sheet Operations E2E', () => {
   });
 
   it('should add a new tab', async () => {
-    const addResult = await execCommand(
-      `npm run dev -- sheet add-sheet -n "${uniqueTabName}"`,
-      undefined,
-      15000,
-      testHomeDir
-    );
+    const addResult = await execCommand(`sheet add -n "${uniqueTabName}"`, undefined, 15000, testHomeDir);
 
     expect(addResult.exitCode).toBe(0);
     expect(addResult.stdout.toLowerCase()).toMatch(/created|success/);
   }, 30000);
 
   it('should list tabs including the newly created one', async () => {
-    const listResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
+    const listResult = await execCommand('sheet list', undefined, 15000, testHomeDir);
 
     expect(listResult.exitCode).toBe(0);
     expect(listResult.stdout).toContain(uniqueTabName);
@@ -38,7 +33,7 @@ describe('Sheet Operations E2E', () => {
   it('should rename a tab', async () => {
     const renamedTabName = `${uniqueTabName}-Renamed`;
     const renameResult = await execCommand(
-      `npm run dev -- sheet rename-sheet -n "${uniqueTabName}" --new-name "${renamedTabName}"`,
+      `sheet rename -n "${uniqueTabName}" --new-name "${renamedTabName}"`,
       undefined,
       15000,
       testHomeDir
@@ -49,7 +44,7 @@ describe('Sheet Operations E2E', () => {
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const listResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
+    const listResult = await execCommand('sheet list', undefined, 15000, testHomeDir);
     expect(listResult.stdout).toContain(renamedTabName);
   }, 45000);
 
@@ -58,7 +53,7 @@ describe('Sheet Operations E2E', () => {
     const copiedTabName = `${uniqueTabName}-Copy`;
 
     const copyResult = await execCommand(
-      `npm run dev -- sheet copy-sheet -n "${renamedTabName}" --to "${copiedTabName}"`,
+      `sheet copy -n "${renamedTabName}" --to "${copiedTabName}"`,
       undefined,
       15000,
       testHomeDir
@@ -67,7 +62,7 @@ describe('Sheet Operations E2E', () => {
     expect(copyResult.exitCode).toBe(0);
     expect(copyResult.stdout.toLowerCase()).toMatch(/copied|success/);
 
-    const listResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
+    const listResult = await execCommand('sheet list', undefined, 15000, testHomeDir);
     expect(listResult.stdout).toContain(copiedTabName);
   }, 45000);
 
@@ -75,23 +70,13 @@ describe('Sheet Operations E2E', () => {
     const renamedTabName = `${uniqueTabName}-Renamed`;
     const copiedTabName = `${uniqueTabName}-Copy`;
 
-    const removeResult1 = await execCommand(
-      `npm run dev -- sheet remove-sheet -n "${renamedTabName}"`,
-      undefined,
-      15000,
-      testHomeDir
-    );
+    const removeResult1 = await execCommand(`sheet remove -n "${renamedTabName}"`, undefined, 15000, testHomeDir);
     expect(removeResult1.exitCode).toBe(0);
 
-    const removeResult2 = await execCommand(
-      `npm run dev -- sheet remove-sheet -n "${copiedTabName}"`,
-      undefined,
-      15000,
-      testHomeDir
-    );
+    const removeResult2 = await execCommand(`sheet remove -n "${copiedTabName}"`, undefined, 15000, testHomeDir);
     expect(removeResult2.exitCode).toBe(0);
 
-    const listResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
+    const listResult = await execCommand('sheet list', undefined, 15000, testHomeDir);
     expect(listResult.stdout).not.toContain(renamedTabName);
     expect(listResult.stdout).not.toContain(copiedTabName);
   }, 60000);
@@ -100,7 +85,7 @@ describe('Sheet Operations E2E', () => {
     const nonExistentTab = 'NonExistentTab123456';
 
     const renameResult = await execCommand(
-      `npm run dev -- sheet rename-sheet -n "${nonExistentTab}" --new-name "NewName"`,
+      `sheet rename -n "${nonExistentTab}" --new-name "NewName"`,
       undefined,
       15000,
       testHomeDir

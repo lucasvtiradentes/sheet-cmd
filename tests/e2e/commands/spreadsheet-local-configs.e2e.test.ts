@@ -16,22 +16,22 @@ describe('Spreadsheet Local Configs E2E', () => {
   });
 
   it('should list all configured spreadsheets', async () => {
-    const listResult = await execCommand('npm run dev -- spreadsheet list', undefined, 15000, testHomeDir);
+    const listResult = await execCommand('spreadsheet list', undefined, 15000, testHomeDir);
 
     expect(listResult.exitCode).toBe(0);
-    expect(listResult.stdout).toContain('Configured spreadsheets');
+    expect(listResult.stdout).toContain('Spreadsheets for');
     expect(listResult.stdout).toContain('e2e-test-spreadsheet');
   }, 30000);
 
   it('should show active spreadsheet', async () => {
-    const activeResult = await execCommand('npm run dev -- spreadsheet active', undefined, 15000, testHomeDir);
+    const activeResult = await execCommand('spreadsheet active', undefined, 15000, testHomeDir);
 
     expect(activeResult.exitCode).toBe(0);
     expect(activeResult.stdout).toContain('e2e-test-spreadsheet');
   }, 30000);
 
   it('should switch between spreadsheets (if multiple exist)', async () => {
-    const listResult = await execCommand('npm run dev -- spreadsheet list', undefined, 15000, testHomeDir);
+    const listResult = await execCommand('spreadsheet list', undefined, 15000, testHomeDir);
 
     if (!listResult.stdout.includes('e2e-test-spreadsheet')) {
       console.log('Only one spreadsheet configured, skipping switch test');
@@ -39,19 +39,19 @@ describe('Spreadsheet Local Configs E2E', () => {
     }
 
     const switchResult = await execCommand(
-      'npm run dev -- spreadsheet select e2e-test-spreadsheet',
+      `spreadsheet select -i "${process.env.SPREADSHEET_ID_E2E}"`,
       undefined,
       15000,
       testHomeDir
     );
 
     expect(switchResult.exitCode).toBe(0);
-    expect(switchResult.stdout.toLowerCase()).toMatch(/switched|active/);
+    expect(switchResult.stdout.toLowerCase()).toMatch(/selected/);
   }, 30000);
 
   it('should handle non-existent spreadsheet gracefully', async () => {
     const switchResult = await execCommand(
-      'npm run dev -- spreadsheet select "NonExistentSpreadsheet123"',
+      'spreadsheet remove -i "NonExistentSpreadsheet123"',
       undefined,
       15000,
       testHomeDir

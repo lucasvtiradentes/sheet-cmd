@@ -35,7 +35,8 @@ export async function execCommand(
       parts.push(current);
     }
 
-    const [cmd, ...args] = parts;
+    const cmd = 'npm';
+    const args = ['run', 'dev', '--', ...parts];
     const child = spawn(cmd, args, {
       cwd: path.resolve(__dirname, '../../'),
       env: {

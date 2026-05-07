@@ -16,7 +16,7 @@ describe('Sheet List Sheets E2E', () => {
   });
 
   it('should list sheets from the test spreadsheet', async () => {
-    const listSheetsResult = await execCommand('npm run dev -- sheet list-sheets', undefined, 15000, testHomeDir);
+    const listSheetsResult = await execCommand('sheet list', undefined, 15000, testHomeDir);
 
     expect(listSheetsResult.exitCode).toBe(0);
     expect(listSheetsResult.stdout).toContain('Sheets');

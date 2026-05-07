@@ -11,7 +11,7 @@ export const addSpreadsheetCommand = defineSubCommand({
   name: 'add',
   description: 'Add a new spreadsheet (interactive by default, use --id for manual)',
   flags: [
-    flag.string('--id', 'Spreadsheet ID or URL (skips interactive selection)'),
+    flag.string('--id', 'Spreadsheet ID or URL (skips interactive selection)', { alias: '-i' }),
     flag.string('--name', 'Local name for the spreadsheet')
   ],
   errorMessage: 'Failed to add spreadsheet',
@@ -28,8 +28,10 @@ export const addSpreadsheetCommand = defineSubCommand({
     let spreadsheetId: string;
     let name: string;
 
-    if (options.id) {
-      spreadsheetId = parseSpreadsheetId(options.id);
+    const spreadsheetIdOption = options.id ?? (options as Record<string, string | number | boolean | undefined>).i;
+
+    if (spreadsheetIdOption !== undefined) {
+      spreadsheetId = parseSpreadsheetId(String(spreadsheetIdOption));
       name = options.name?.trim() || '';
 
       if (!name) {

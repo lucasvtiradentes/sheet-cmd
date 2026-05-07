@@ -22,7 +22,7 @@ export const selectCommand = defineSubCommand({
     const activeSpreadsheetName = configManager.getActiveSpreadsheetName(activeAccount.email);
     if (!activeSpreadsheetName) {
       Logger.error('No active spreadsheet set.');
-      Logger.info('Use: gsheet spreadsheet select <name>');
+      Logger.info('Use: gsheet spreadsheet select');
       process.exit(1);
     }
 

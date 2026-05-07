@@ -22,7 +22,7 @@ export const activeSpreadsheetCommand = defineSubCommand({
 
     if (!activeSpreadsheetName) {
       Logger.warning('No active spreadsheet set.');
-      Logger.info('Use "gsheet spreadsheet select <name>" to set one.');
+      Logger.info('Use "gsheet spreadsheet select" to set one.');
       return;
     }
 

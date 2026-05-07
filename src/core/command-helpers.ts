@@ -15,7 +15,7 @@ export async function getGoogleSheetsService(): Promise<GoogleSheetsService> {
   const activeSpreadsheetName = configManager.getActiveSpreadsheetName(activeAccount.email);
   if (!activeSpreadsheetName) {
     Logger.error('No active spreadsheet set.');
-    Logger.info('Use: gsheet spreadsheet select <name>');
+    Logger.info('Use: gsheet spreadsheet select');
     process.exit(1);
   }
 
@@ -51,7 +51,7 @@ export function getActiveSheetName(sheetName?: string): string {
   const activeSpreadsheetName = configManager.getActiveSpreadsheetName(activeAccount.email);
   if (!activeSpreadsheetName) {
     Logger.error('No active spreadsheet set.');
-    Logger.info('Use: gsheet spreadsheet select <name>');
+    Logger.info('Use: gsheet spreadsheet select');
     process.exit(1);
   }
 
