@@ -14,7 +14,7 @@ import {
   isVisibleCompletionCommand
 } from '../cli/completion/shared';
 import { getZshCompletionScript } from '../cli/completion/zsh';
-import { argument, defineCommand } from '../cli/define';
+import { defineCommand, defineSubCommand } from '../cli/define';
 import { ConfigManager } from '../config/config-manager';
 import { APP_INFO } from '../config/constants';
 import { Logger } from '../utils/logger';
@@ -25,13 +25,18 @@ enum CompletionShell {
   Zsh = 'zsh'
 }
 
-const completionShells = Object.values(CompletionShell);
+const completionShells = [CompletionShell.Zsh, CompletionShell.Bash, CompletionShell.Fish] as const;
 
 export const completionCommand = defineCommand({
   name: 'completion',
   description: 'Generate shell completion scripts',
-  arguments: [argument.string('shell', `Shell to generate completion for (${completionShells.join(', ')})`)],
-  subcommands: []
+  subcommands: completionShells.map((shell) =>
+    defineSubCommand({
+      name: shell,
+      description: `Generate ${shell} completion script`,
+      action: async () => {}
+    })
+  )
 });
 
 const completionScriptGenerators = {
@@ -67,26 +72,23 @@ let completionProgram: CaporalProgram | undefined;
 
 export function createCompletionCommand(program: CaporalProgram): void {
   completionProgram = program;
-  const shellArgument = completionCommand.arguments?.[0];
 
-  if (!shellArgument) {
-    throw new Error('Completion shell argument metadata is missing');
-  }
+  program.command(completionCommand.name, completionCommand.description).action(async () => {
+    Logger.info(`Available shells: ${completionShells.join(', ')}`);
+    Logger.info(`Usage: ${APP_INFO.name} completion <shell>`);
+  });
 
-  program
-    .command(completionCommand.name, completionCommand.description)
-    .argument(`[${shellArgument.name}]`, shellArgument.description)
-    .strict(false)
-    .action(async ({ args, program }) => {
-      const shell = args.shell ? String(args.shell) : '';
-      if (isCompletionShell(shell)) {
-        console.log(await getCompletionScript(program, shell));
+  for (const shellCommand of completionCommand.subcommands) {
+    program
+      .command(`${completionCommand.name} ${shellCommand.name}`, shellCommand.description)
+      .action(async ({ program }) => {
+        if (!isCompletionShell(shellCommand.name)) {
+          throw new Error(`Unsupported shell: ${shellCommand.name}`);
+        }
+        console.log(await getCompletionScript(program, shellCommand.name));
         return 0;
-      }
-      Logger.error(`Unsupported shell: ${shell || '<empty>'}`);
-      Logger.info(`Supported: ${completionShells.join(', ')}`);
-      return 1;
-    });
+      });
+  }
 }
 
 function detectShell(): CompletionShell {

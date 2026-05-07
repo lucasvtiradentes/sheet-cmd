@@ -30,9 +30,6 @@ function generateCommandDocs(commands: readonly CommandDefinition[]) {
 }
 
 function parentCommandDocs(command: ParentCommandDefinition) {
-  if (command.name === 'completion') {
-    return [`# ${command.name} commands`, ...completionShellUsages(command.name)];
-  }
   const parentUsage = command.arguments?.length ? [commandUsage(command.name, parentUsageSuffix(command))] : [];
   return [
     `# ${command.name} commands`,
@@ -43,14 +40,7 @@ function parentCommandDocs(command: ParentCommandDefinition) {
 
 function commandDocs(command: SubCommandDefinition, parent?: string) {
   const commandPath = parent ? `${parent} ${command.name}` : command.name;
-  if (commandPath === 'completion') {
-    return completionShellUsages(commandPath);
-  }
   return [commandUsage(commandPath, usageSuffix(command))];
-}
-
-function completionShellUsages(commandPath: string) {
-  return ['zsh', 'bash', 'fish'].map((shell) => commandUsage(commandPath, ` ${shell}`));
 }
 
 function commandUsage(commandPath: string, suffix: string) {

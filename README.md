@@ -27,13 +27,12 @@ Google Sheets is often the easiest place to store operational data, but the brow
 
 ## ⭐ Features
 
-- OAuth 2.0 login without service accounts
 - Multi-account support for personal, work, and other Google accounts
+- OAuth 2.0 login without service accounts
 - Interactive Google Drive spreadsheet selection
 - Active account, spreadsheet, and sheet context
 - Read, write, append, import, and export workflows
 - Markdown, CSV, and JSON output for CLI and AI-agent usage
-- npm library exports for scripts that need direct Google Sheets access
 
 ## 🚀 Quick Start
 
