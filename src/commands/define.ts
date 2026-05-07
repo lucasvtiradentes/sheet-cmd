@@ -1,4 +1,10 @@
-import type { CommandArgument, CommandFlag, ParentCommandDefinition, SubCommandDefinition } from './types';
+import {
+  type CommandArgument,
+  type CommandFlag,
+  CommandFlagType,
+  type ParentCommandDefinition,
+  type SubCommandDefinition
+} from './types';
 
 export function defineCommand<const Subcommands extends readonly SubCommandDefinition[]>(
   definition: Omit<ParentCommandDefinition<Subcommands>, 'kind'>
@@ -18,16 +24,16 @@ export const flag = {
     name: Name,
     description: string,
     options?: { alias?: string; required?: Required }
-  ): CommandFlag<Name, 'string', Required> {
-    return { name, description, type: 'string', ...options };
+  ): CommandFlag<Name, CommandFlagType.String, Required> {
+    return { name, description, type: CommandFlagType.String, ...options };
   },
 
   boolean<const Name extends string, const Required extends boolean | undefined = undefined>(
     name: Name,
     description: string,
     options?: { alias?: string; required?: Required }
-  ): CommandFlag<Name, 'boolean', Required> {
-    return { name, description, type: 'boolean', ...options };
+  ): CommandFlag<Name, CommandFlagType.Boolean, Required> {
+    return { name, description, type: CommandFlagType.Boolean, ...options };
   }
 };
 

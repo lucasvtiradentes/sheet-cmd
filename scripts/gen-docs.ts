@@ -1,11 +1,12 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { docsCommands } from '../src/commands/catalog';
-import type {
-  CommandArgument,
-  CommandDefinition,
-  CommandFlag,
-  ParentCommandDefinition,
-  SubCommandDefinition
+import {
+  type CommandArgument,
+  type CommandDefinition,
+  type CommandFlag,
+  CommandFlagType,
+  type ParentCommandDefinition,
+  type SubCommandDefinition
 } from '../src/commands/types';
 
 const readmePath = 'README.md';
@@ -79,7 +80,7 @@ function parentUsageSuffix(command: ParentCommandDefinition) {
 }
 
 function flagUsage(flag: CommandFlag) {
-  const value = flag.type === 'boolean' ? '' : ' <value>';
+  const value = flag.type === CommandFlagType.Boolean ? '' : ' <value>';
   return flag.required ? `${flag.name}${value}` : `[${flag.name}${value}]`;
 }
 
@@ -98,7 +99,7 @@ function argumentList(args: readonly CommandArgument[]) {
 }
 
 function flagLabel(flag: CommandFlag) {
-  const value = flag.type === 'boolean' ? '' : ' <value>';
+  const value = flag.type === CommandFlagType.Boolean ? '' : ' <value>';
   return flag.alias ? `${flag.alias}, ${flag.name}${value}` : `${flag.name}${value}`;
 }
 

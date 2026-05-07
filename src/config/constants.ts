@@ -15,7 +15,19 @@ export const APP_INFO = {
   version: packageJson.version
 };
 
-type SupportedOS = 'linux' | 'mac' | 'windows' | 'wsl';
+enum SupportedOS {
+  Linux = 'linux',
+  Mac = 'mac',
+  Windows = 'windows',
+  Wsl = 'wsl'
+}
+
+const configDirectoryByOS = {
+  [SupportedOS.Linux]: (homeDir: string) => path.join(homeDir, '.config', APP_INFO.name),
+  [SupportedOS.Wsl]: (homeDir: string) => path.join(homeDir, '.config', APP_INFO.name),
+  [SupportedOS.Mac]: (homeDir: string) => path.join(homeDir, 'Library', 'Preferences', APP_INFO.name),
+  [SupportedOS.Windows]: (homeDir: string) => path.join(homeDir, 'AppData', 'Roaming', APP_INFO.name)
+} as const satisfies Record<SupportedOS, (homeDir: string) => string>;
 
 export function getUserOS(): SupportedOS {
   const platform = os.platform();
@@ -24,14 +36,14 @@ export function getUserOS(): SupportedOS {
     try {
       const release = os.release().toLowerCase();
       if (release.includes('microsoft') || release.includes('wsl')) {
-        return 'wsl';
+        return SupportedOS.Wsl;
       }
     } catch {}
-    return 'linux';
+    return SupportedOS.Linux;
   }
 
-  if (platform === 'darwin') return 'mac';
-  if (platform === 'win32') return 'windows';
+  if (platform === 'darwin') return SupportedOS.Mac;
+  if (platform === 'win32') return SupportedOS.Windows;
 
   throw new Error(`Unsupported OS: ${platform}`);
 }
@@ -40,17 +52,7 @@ export function getConfigDirectory(): string {
   const userOS = getUserOS();
   const homeDir = os.homedir();
 
-  switch (userOS) {
-    case 'linux':
-    case 'wsl':
-      return path.join(homeDir, '.config', APP_INFO.name);
-    case 'mac':
-      return path.join(homeDir, 'Library', 'Preferences', APP_INFO.name);
-    case 'windows':
-      return path.join(homeDir, 'AppData', 'Roaming', APP_INFO.name);
-    default:
-      throw new Error(`Unsupported OS: ${userOS}`);
-  }
+  return configDirectoryByOS[userOS](homeDir);
 }
 
 export const CONFIG_PATHS = {

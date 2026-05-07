@@ -57,6 +57,27 @@ const completionScriptGenerators = {
   ) => string
 >;
 
+const shellMatchers = [
+  { shell: CompletionShell.Zsh, matches: (value: string) => value.includes(CompletionShell.Zsh) },
+  { shell: CompletionShell.Bash, matches: (value: string) => value.includes(CompletionShell.Bash) },
+  { shell: CompletionShell.Fish, matches: (value: string) => value.includes(CompletionShell.Fish) }
+] as const;
+
+const completionInstallers = {
+  [CompletionShell.Bash]: installBashCompletion,
+  [CompletionShell.Fish]: installFishCompletion,
+  [CompletionShell.Zsh]: installZshCompletion
+} as const satisfies Record<CompletionShell, () => Promise<void>>;
+
+const silentCompletionInstallers = {
+  [CompletionShell.Bash]: installBashCompletionSilent,
+  [CompletionShell.Fish]: installFishCompletionSilent,
+  [CompletionShell.Zsh]: async () => {
+    await installZshCompletionSilent();
+    await clearZshCompletionCache();
+  }
+} as const satisfies Record<CompletionShell, () => Promise<void>>;
+
 let completionProgram: CaporalProgram | undefined;
 
 export function createCompletionCommand(program: CaporalProgram): void {
@@ -88,39 +109,14 @@ export function createCompletionCommand(program: CaporalProgram): void {
     .action(async () => installCommand.action({ args: {}, options: {} }));
 }
 
-function detectShell(): string {
+function detectShell(): CompletionShell {
   const shell = process.env.SHELL || '';
-
-  if (shell.includes('zsh')) {
-    return 'zsh';
-  } else if (shell.includes('bash')) {
-    return 'bash';
-  } else if (shell.includes('fish')) {
-    return 'fish';
-  }
-
-  return 'zsh';
+  return shellMatchers.find((matcher) => matcher.matches(shell))?.shell ?? CompletionShell.Zsh;
 }
 
 async function installCompletion(): Promise<void> {
   const shell = detectShell();
-
-  switch (shell) {
-    case 'zsh':
-      await installZshCompletion();
-      break;
-    case 'bash':
-      await installBashCompletion();
-      break;
-    case 'fish':
-      await installFishCompletion();
-      break;
-    default:
-      Logger.error(`Unsupported shell: ${shell}`);
-      Logger.info('');
-      Logger.info('Supported shells: zsh, bash, fish');
-      process.exit(1);
-  }
+  await completionInstallers[shell]();
 
   const configManager = new ConfigManager();
   configManager.markCompletionInstalled();
@@ -228,20 +224,8 @@ export async function reinstallCompletionSilently(): Promise<boolean> {
   const shell = detectShell();
 
   try {
-    switch (shell) {
-      case 'zsh':
-        await installZshCompletionSilent();
-        await clearZshCompletionCache();
-        return true;
-      case 'bash':
-        await installBashCompletionSilent();
-        return true;
-      case 'fish':
-        await installFishCompletionSilent();
-        return true;
-      default:
-        return false;
-    }
+    await silentCompletionInstallers[shell]();
+    return true;
   } catch {
     return false;
   }

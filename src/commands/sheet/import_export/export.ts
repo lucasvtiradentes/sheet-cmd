@@ -4,7 +4,17 @@ import { formatAsCSV, formatAsJSON } from '../../../utils/formatters';
 import { Logger } from '../../../utils/logger';
 import { defineSubCommand, flag } from '../../define';
 
-type ExportFormat = 'json' | 'csv';
+enum ExportFormat {
+  Csv = 'csv',
+  Json = 'json'
+}
+
+const exportFormats = Object.values(ExportFormat);
+
+const exportFormatters = {
+  [ExportFormat.Csv]: formatAsCSV,
+  [ExportFormat.Json]: formatAsJSON
+} as const satisfies Record<ExportFormat, (data: string[][]) => string>;
 
 export const exportCommand = defineSubCommand({
   name: 'export',
@@ -17,9 +27,8 @@ export const exportCommand = defineSubCommand({
   ],
   errorMessage: 'Failed to export data',
   action: async ({ options }) => {
-    const validFormats: ExportFormat[] = ['json', 'csv'];
     if (!isExportFormat(options.format)) {
-      Logger.error(`Invalid format '${options.format}'. Valid formats: ${validFormats.join(', ')}`);
+      Logger.error(`Invalid format '${options.format}'. Valid formats: ${exportFormats.join(', ')}`);
       process.exit(1);
     }
 
@@ -40,12 +49,7 @@ export const exportCommand = defineSubCommand({
       process.exit(0);
     }
 
-    let output: string;
-    if (options.format === 'json') {
-      output = formatAsJSON(data);
-    } else {
-      output = formatAsCSV(data);
-    }
+    const output = exportFormatters[options.format](data);
 
     if (options.output) {
       writeFileSync(options.output, output, 'utf-8');
@@ -58,5 +62,5 @@ export const exportCommand = defineSubCommand({
 });
 
 function isExportFormat(value: string): value is ExportFormat {
-  return ['json', 'csv'].includes(value);
+  return (exportFormats as readonly string[]).includes(value);
 }

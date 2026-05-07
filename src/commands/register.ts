@@ -1,12 +1,13 @@
 import type { Command as CaporalCommand, Program as CaporalProgram } from '@caporal/core';
 import { APP_INFO } from '../config/constants';
 import { handleCommandError } from '../utils/error-handler';
-import type {
-  CommandArgument,
-  CommandDefinition,
-  CommandFlag,
-  ParentCommandDefinition,
-  SubCommandDefinition
+import {
+  type CommandArgument,
+  type CommandDefinition,
+  type CommandFlag,
+  CommandFlagType,
+  type ParentCommandDefinition,
+  type SubCommandDefinition
 } from './types';
 
 export function registerProgram(program: CaporalProgram, commands: readonly CommandDefinition[]): void {
@@ -97,7 +98,7 @@ function applyFlags(command: CaporalCommand, flags: readonly CommandFlag[] | und
       flagString = `${flag.alias}, ${flagString}`;
     }
 
-    if (flag.type === 'string') {
+    if (flag.type === CommandFlagType.String) {
       flagString += ' <value>';
     }
 

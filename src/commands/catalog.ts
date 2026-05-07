@@ -1,7 +1,7 @@
-import { accountCommand } from './account';
+import { accountCommand } from './account/command';
 import { completionCommand } from './completion';
-import { sheetCommand } from './sheet';
-import { spreadsheetCommand } from './spreadsheet';
+import { sheetCommand } from './sheet/command';
+import { spreadsheetCommand } from './spreadsheet/command';
 import { updateCommand } from './update';
 
 export const cliCommands = [accountCommand, spreadsheetCommand, sheetCommand, updateCommand] as const;

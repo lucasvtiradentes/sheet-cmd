@@ -1,19 +1,16 @@
-import { execFileSync } from 'node:child_process';
 import { chmodSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
-import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { APP_INFO } from '../src/config/constants';
+import { devBinNames, getDevBinDir, isWindows } from './dev-bin';
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(scriptDir, '..');
-const binDir = getBinDir();
-const devBinNames = [`${APP_INFO.name}d`, 'sheetd'];
+const binDir = getDevBinDir();
 
 mkdirSync(binDir, { recursive: true });
 
 for (const binName of devBinNames) {
-  if (process.platform === 'win32') {
+  if (isWindows()) {
     const target = join(binDir, `${binName}.cmd`);
     rmSync(target, { force: true });
     writeFileSync(target, getWindowsShim(binName));
@@ -22,27 +19,6 @@ for (const binName of devBinNames) {
     rmSync(target, { force: true });
     writeFileSync(target, getPosixShim(binName));
     chmodSync(target, 0o755);
-  }
-}
-
-function getBinDir() {
-  if (process.env.SHEET_CMD_DEV_BIN_DIR) return process.env.SHEET_CMD_DEV_BIN_DIR;
-
-  if (process.platform === 'win32') {
-    return getNpmPrefix() ?? join(homedir(), 'AppData', 'Roaming', 'npm');
-  }
-
-  return join(homedir(), '.local', 'bin');
-}
-
-function getNpmPrefix() {
-  try {
-    return execFileSync(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['config', 'get', 'prefix'], {
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore']
-    }).trim();
-  } catch {
-    return null;
   }
 }
 

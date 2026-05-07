@@ -11,6 +11,18 @@ import { defineSubCommand } from './define';
 const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+enum PackageManager {
+  Npm = 'npm',
+  Pnpm = 'pnpm',
+  Yarn = 'yarn'
+}
+
+const updateCommandsByPackageManager = {
+  [PackageManager.Npm]: 'npm update -g sheet-cmd',
+  [PackageManager.Pnpm]: 'pnpm update -g sheet-cmd',
+  [PackageManager.Yarn]: 'yarn global upgrade sheet-cmd'
+} as const satisfies Record<PackageManager, string>;
+
 export const updateCommand = defineSubCommand({
   name: 'update',
   description: 'Update sheet-cmd to latest version',
@@ -85,7 +97,7 @@ export const updateCommand = defineSubCommand({
   }
 });
 
-async function detectPackageManager(): Promise<string | null> {
+async function detectPackageManager(): Promise<PackageManager | null> {
   const npmPath = await getGlobalNpmPath();
 
   if (!npmPath) {
@@ -93,9 +105,9 @@ async function detectPackageManager(): Promise<string | null> {
   }
 
   const possiblePaths = [
-    { manager: 'npm', patterns: ['/npm/', '\\npm\\', '/node/', '\\node\\'] },
-    { manager: 'yarn', patterns: ['/yarn/', '\\yarn\\', '/.yarn/', '\\.yarn\\'] },
-    { manager: 'pnpm', patterns: ['/pnpm/', '\\pnpm\\', '/.pnpm/', '\\.pnpm\\'] }
+    { manager: PackageManager.Npm, patterns: ['/npm/', '\\npm\\', '/node/', '\\node\\'] },
+    { manager: PackageManager.Yarn, patterns: ['/yarn/', '\\yarn\\', '/.yarn/', '\\.yarn\\'] },
+    { manager: PackageManager.Pnpm, patterns: ['/pnpm/', '\\pnpm\\', '/.pnpm/', '\\.pnpm\\'] }
   ];
 
   for (const { manager, patterns } of possiblePaths) {
@@ -104,7 +116,7 @@ async function detectPackageManager(): Promise<string | null> {
     }
   }
 
-  return 'npm';
+  return PackageManager.Npm;
 }
 
 async function getGlobalNpmPath(): Promise<string | null> {
@@ -130,7 +142,7 @@ async function getGlobalNpmPath(): Promise<string | null> {
     try {
       const { stdout } = await execAsync('npm list -g --depth=0 sheet-cmd');
       if (stdout.includes('sheet-cmd')) {
-        return 'npm';
+        return PackageManager.Npm;
       }
     } catch {}
   }
@@ -157,15 +169,6 @@ async function getLatestVersion(): Promise<string | null> {
   }
 }
 
-function getUpdateCommand(packageManager: string): string {
-  switch (packageManager) {
-    case 'npm':
-      return 'npm update -g sheet-cmd';
-    case 'yarn':
-      return 'yarn global upgrade sheet-cmd';
-    case 'pnpm':
-      return 'pnpm update -g sheet-cmd';
-    default:
-      return 'npm update -g sheet-cmd';
-  }
+function getUpdateCommand(packageManager: PackageManager): string {
+  return updateCommandsByPackageManager[packageManager];
 }

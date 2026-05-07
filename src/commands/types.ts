@@ -1,4 +1,7 @@
-type CommandFlagType = 'string' | 'boolean';
+export enum CommandFlagType {
+  Boolean = 'boolean',
+  String = 'string'
+}
 
 export type CommandFlag<
   Name extends string = string,
@@ -79,7 +82,7 @@ type ArgFromDefinition<Arg extends CommandArgument> = Arg extends unknown
     : { [Key in CamelCase<Arg['name']>]?: ArgValue }
   : never;
 
-type FlagValue<Type extends CommandFlagType> = Type extends 'boolean' ? boolean : string;
+type FlagValue<Type extends CommandFlagType> = Type extends CommandFlagType.Boolean ? boolean : string;
 
 type ArgValue = string;
 

@@ -1,9 +1,9 @@
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager';
-import { GoogleSheetsService } from '../../../core/google-sheets.service';
 import { Logger } from '../../../utils/logger';
 import { parseSpreadsheetId } from '../../../utils/spreadsheet';
 import { defineSubCommand, flag } from '../../define';
+import { getSpreadsheetTitle } from './helpers';
 
 export const selectSpreadsheetCommand = defineSubCommand({
   name: 'select',
@@ -84,17 +84,3 @@ export const selectSpreadsheetCommand = defineSubCommand({
     Logger.success(`Selected spreadsheet: ${spreadsheetName}`);
   }
 });
-
-async function getSpreadsheetTitle(
-  configManager: ConfigManager,
-  email: string,
-  spreadsheetId: string
-): Promise<string> {
-  const credentials = await configManager.getRefreshedCredentials(email);
-  const sheetsService = new GoogleSheetsService({
-    spreadsheetId,
-    oauthCredentials: credentials
-  });
-  const info = await sheetsService.getSheetInfo();
-  return info.title;
-}

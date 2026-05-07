@@ -4,7 +4,19 @@ import { formatAsCSV, formatAsJSON, formatAsMarkdown } from '../../utils/formatt
 import { Logger } from '../../utils/logger';
 import { defineSubCommand, flag } from '../define';
 
-type OutputFormat = 'markdown' | 'csv' | 'json';
+enum OutputFormat {
+  Csv = 'csv',
+  Json = 'json',
+  Markdown = 'markdown'
+}
+
+const outputFormats = Object.values(OutputFormat);
+
+const outputFormatters = {
+  [OutputFormat.Csv]: formatAsCSV,
+  [OutputFormat.Json]: formatAsJSON,
+  [OutputFormat.Markdown]: formatAsMarkdown
+} as const satisfies Record<OutputFormat, (data: string[][]) => string>;
 
 export const readCommand = defineSubCommand({
   name: 'read',
@@ -18,17 +30,16 @@ export const readCommand = defineSubCommand({
   ],
   errorMessage: 'Failed to read sheet',
   action: async ({ options }) => {
-    const validFormats: OutputFormat[] = ['markdown', 'csv', 'json'];
-    const outputFormat = options.output ?? 'markdown';
+    const outputFormat = options.output ?? OutputFormat.Markdown;
     if (!isOutputFormat(outputFormat)) {
-      Logger.error(`Invalid output format '${outputFormat}'. Valid formats: ${validFormats.join(', ')}`);
+      Logger.error(`Invalid output format '${outputFormat}'. Valid formats: ${outputFormats.join(', ')}`);
       process.exit(1);
     }
 
     const sheetsService = await getGoogleSheetsService();
     const sheetName = getActiveSheetName(options.name);
 
-    if (outputFormat !== 'json' || options.export) {
+    if (outputFormat !== OutputFormat.Json || options.export) {
       Logger.loading(`Reading sheet '${sheetName}'...`);
     }
     const includeFormulas = options.formulas ?? false;
@@ -41,19 +52,12 @@ export const readCommand = defineSubCommand({
       process.exit(0);
     }
 
-    let output: string;
-    if (outputFormat === 'markdown') {
-      output = formatAsMarkdown(data);
-    } else if (outputFormat === 'csv') {
-      output = formatAsCSV(data);
-    } else {
-      output = formatAsJSON(data);
-    }
+    const output = outputFormatters[outputFormat](data);
 
     if (options.export) {
       writeFileSync(options.export, output, 'utf-8');
       Logger.success(`Content exported to ${options.export}`);
-    } else if (outputFormat === 'json') {
+    } else if (outputFormat === OutputFormat.Json) {
       Logger.plain(output);
     } else {
       Logger.success(`Content of sheet '${sheetName}':\n`);
@@ -63,5 +67,5 @@ export const readCommand = defineSubCommand({
 });
 
 function isOutputFormat(value: string): value is OutputFormat {
-  return ['markdown', 'csv', 'json'].includes(value);
+  return (outputFormats as readonly string[]).includes(value);
 }
