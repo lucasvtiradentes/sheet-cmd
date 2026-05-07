@@ -1,0 +1,31 @@
+name: _callable e2e tests
+
+on:
+  workflow_call:
+    secrets:
+      SPREADSHEET_ID_E2E:
+        required: true
+      ACCOUNT_EMAIL_E2E:
+        required: true
+      OAUTH_CLIENT_ID_E2E:
+        required: true
+      OAUTH_CLIENT_SECRET_E2E:
+        required: true
+      OAUTH_REFRESH_TOKEN_E2E:
+        required: true
+
+jobs:
+  test-e2e:
+    runs-on: ubuntu-latest
+    env:
+      SPREADSHEET_ID_E2E: ${{ secrets.SPREADSHEET_ID_E2E }}
+      ACCOUNT_EMAIL_E2E: ${{ secrets.ACCOUNT_EMAIL_E2E }}
+      OAUTH_CLIENT_ID_E2E: ${{ secrets.OAUTH_CLIENT_ID_E2E }}
+      OAUTH_CLIENT_SECRET_E2E: ${{ secrets.OAUTH_CLIENT_SECRET_E2E }}
+      OAUTH_REFRESH_TOKEN_E2E: ${{ secrets.OAUTH_REFRESH_TOKEN_E2E }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-and-install
+
+      - name: Run E2E tests
+        run: pnpm run test:e2e
