@@ -1,5 +1,5 @@
-import { argument, flag } from '../../src/commands/define';
-import type { InferArgs, InferOptions } from '../../src/commands/types';
+import { argument, flag } from '../../src/cli/define';
+import type { InferArgs, InferOptions } from '../../src/cli/types';
 
 const flags = [
   flag.string('--new-name', 'New name', { required: true }),

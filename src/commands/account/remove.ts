@@ -1,7 +1,7 @@
 import inquirer from 'inquirer';
+import { argument, defineSubCommand } from '../../cli/define';
 import { ConfigManager } from '../../config/config-manager';
 import { Logger } from '../../utils/logger';
-import { argument, defineSubCommand } from '../define';
 
 export const removeAccountCommand = defineSubCommand({
   name: 'remove',

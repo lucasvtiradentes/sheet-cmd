@@ -1,9 +1,9 @@
 import inquirer from 'inquirer';
-import { ConfigManager } from '../../../config/config-manager';
-import { Logger } from '../../../utils/logger';
-import { parseSpreadsheetId } from '../../../utils/spreadsheet';
-import { defineSubCommand, flag } from '../../define';
-import { getSpreadsheetTitle } from './helpers';
+import { defineSubCommand, flag } from '../../cli/define';
+import { ConfigManager } from '../../config/config-manager';
+import { getSpreadsheetTitle } from '../../core/spreadsheet-title';
+import { Logger } from '../../utils/logger';
+import { parseSpreadsheetId } from '../../utils/spreadsheet';
 
 export const selectSpreadsheetCommand = defineSubCommand({
   name: 'select',

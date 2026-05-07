@@ -1,8 +1,8 @@
 import { createRequire } from 'node:module';
 import type { Program as CaporalProgram } from '@caporal/core';
 import { describe, expect, it } from 'vitest';
-import { defineSubCommand, flag } from '../../src/commands/define';
-import { registerProgram } from '../../src/commands/register';
+import { defineSubCommand, flag } from '../../src/cli/define';
+import { registerProgram } from '../../src/cli/register';
 
 describe('registerProgram', () => {
   it('registers --no-* flags with true default and false when passed', async () => {

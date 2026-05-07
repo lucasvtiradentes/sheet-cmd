@@ -1,8 +1,8 @@
 import inquirer from 'inquirer';
+import { defineSubCommand, flag } from '../../../cli/define';
 import { ConfigManager } from '../../../config/config-manager';
 import { getGoogleSheetsService } from '../../../core/command-helpers';
 import { Logger } from '../../../utils/logger';
-import { defineSubCommand, flag } from '../../define';
 
 export const selectCommand = defineSubCommand({
   name: 'select',

@@ -3,11 +3,8 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { Program as CaporalProgram } from '@caporal/core';
 import chalk from 'chalk';
-
-import { ConfigManager } from '../config/config-manager';
-import { Logger } from '../utils/logger';
-import { getBashCompletionScript } from './completion/bash';
-import { getFishCompletionScript } from './completion/fish';
+import { getBashCompletionScript } from '../cli/completion/bash';
+import { getFishCompletionScript } from '../cli/completion/fish';
 import {
   type CompletionGroup,
   type CompletionOption,
@@ -16,9 +13,11 @@ import {
   getRootCommands,
   getSubcommandGroups,
   isVisibleCompletionCommand
-} from './completion/shared';
-import { getZshCompletionScript } from './completion/zsh';
-import { argument, defineCommand, defineSubCommand } from './define';
+} from '../cli/completion/shared';
+import { getZshCompletionScript } from '../cli/completion/zsh';
+import { argument, defineCommand, defineSubCommand } from '../cli/define';
+import { ConfigManager } from '../config/config-manager';
+import { Logger } from '../utils/logger';
 
 enum CompletionShell {
   Bash = 'bash',

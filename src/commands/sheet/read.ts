@@ -1,8 +1,8 @@
 import { writeFileSync } from 'fs';
+import { defineSubCommand, flag } from '../../cli/define';
 import { getActiveSheetName, getGoogleSheetsService } from '../../core/command-helpers';
 import { formatAsCSV, formatAsJSON, formatAsMarkdown } from '../../utils/formatters';
 import { Logger } from '../../utils/logger';
-import { defineSubCommand, flag } from '../define';
 
 enum OutputFormat {
   Csv = 'csv',

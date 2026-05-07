@@ -1,7 +1,7 @@
-import { ConfigManager } from '../../../config/config-manager';
-import { Logger } from '../../../utils/logger';
-import { getSpreadsheetUrl } from '../../../utils/spreadsheet';
-import { defineSubCommand, flag } from '../../define';
+import { defineSubCommand, flag } from '../../cli/define';
+import { ConfigManager } from '../../config/config-manager';
+import { Logger } from '../../utils/logger';
+import { getSpreadsheetUrl } from '../../utils/spreadsheet';
 
 export const activeSpreadsheetCommand = defineSubCommand({
   name: 'active',

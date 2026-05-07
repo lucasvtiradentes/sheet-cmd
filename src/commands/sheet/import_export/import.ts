@@ -1,8 +1,8 @@
 import { readFileSync } from 'fs';
+import { defineSubCommand, flag } from '../../../cli/define';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
 import { parseCSV } from '../../../utils/csv';
 import { Logger } from '../../../utils/logger';
-import { defineSubCommand, flag } from '../../define';
 
 export const importCommand = defineSubCommand({
   name: 'import',

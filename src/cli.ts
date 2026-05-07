@@ -6,9 +6,9 @@ import { basename } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import type { Program as CaporalProgram } from '@caporal/core';
 
-import { cliCommands } from './commands/catalog';
+import { cliCommands } from './cli/catalog';
+import { registerProgram } from './cli/register';
 import { createCompletionCommand } from './commands/completion';
-import { registerProgram } from './commands/register';
 import { APP_INFO } from './config/constants';
 
 const program = createProgram(getProgramBin());

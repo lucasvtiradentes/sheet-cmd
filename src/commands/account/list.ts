@@ -1,6 +1,6 @@
+import { defineSubCommand } from '../../cli/define';
 import { ConfigManager } from '../../config/config-manager';
 import { Logger } from '../../utils/logger';
-import { defineSubCommand } from '../define';
 
 export const listAccountsCommand = defineSubCommand({
   name: 'list',

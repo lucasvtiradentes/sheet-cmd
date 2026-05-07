@@ -1,5 +1,5 @@
-import { ConfigManager } from '../../../config/config-manager';
-import { GoogleSheetsService } from '../../../core/google-sheets.service';
+import { ConfigManager } from '../config/config-manager';
+import { GoogleSheetsService } from './google-sheets.service';
 
 export async function getSpreadsheetTitle(
   configManager: ConfigManager,

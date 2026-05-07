@@ -1,8 +1,8 @@
 import inquirer from 'inquirer';
-import { ConfigManager } from '../../../config/config-manager';
-import { Logger } from '../../../utils/logger';
-import { parseSpreadsheetId } from '../../../utils/spreadsheet';
-import { defineSubCommand, flag } from '../../define';
+import { defineSubCommand, flag } from '../../cli/define';
+import { ConfigManager } from '../../config/config-manager';
+import { Logger } from '../../utils/logger';
+import { parseSpreadsheetId } from '../../utils/spreadsheet';
 
 export const removeSpreadsheetCommand = defineSubCommand({
   name: 'remove',

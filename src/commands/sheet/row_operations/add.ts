@@ -1,7 +1,7 @@
+import { defineSubCommand, flag } from '../../../cli/define';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
 import { Logger } from '../../../utils/logger';
 import { validatePositiveInteger, validateRequired } from '../../../utils/validators';
-import { defineSubCommand, flag } from '../../define';
 
 export const rowAddCommand = defineSubCommand({
   name: 'row-add',

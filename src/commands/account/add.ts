@@ -1,9 +1,9 @@
 import * as readline from 'readline';
 import { performOAuthFlow } from '../../auth/oauth-flow';
+import { defineSubCommand } from '../../cli/define';
 import { ConfigManager } from '../../config/config-manager';
 import { GOOGLE_CLOUD_CONSOLE_URLS } from '../../config/constants';
 import { Logger } from '../../utils/logger';
-import { defineSubCommand } from '../define';
 
 async function promptInput(question: string): Promise<string> {
   const rl = readline.createInterface({

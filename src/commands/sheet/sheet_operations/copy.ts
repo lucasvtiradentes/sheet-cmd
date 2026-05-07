@@ -1,6 +1,6 @@
+import { defineSubCommand, flag } from '../../../cli/define';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
 import { Logger } from '../../../utils/logger';
-import { defineSubCommand, flag } from '../../define';
 
 export const copyCommand = defineSubCommand({
   name: 'copy',

@@ -1,6 +1,6 @@
+import { defineSubCommand, flag } from '../../cli/define';
 import { getGoogleSheetsService } from '../../core/command-helpers';
 import { Logger } from '../../utils/logger';
-import { defineSubCommand, flag } from '../define';
 
 export const listCommand = defineSubCommand({
   name: 'list',

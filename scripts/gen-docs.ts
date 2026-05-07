@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-import { docsCommands } from '../src/commands/catalog';
+import { docsCommands } from '../src/cli/catalog';
 import {
   type CommandArgument,
   type CommandDefinition,
@@ -7,7 +7,7 @@ import {
   CommandFlagType,
   type ParentCommandDefinition,
   type SubCommandDefinition
-} from '../src/commands/types';
+} from '../src/cli/types';
 
 const readmePath = 'README.md';
 const startMarker = '<!-- COMMANDS:START -->';

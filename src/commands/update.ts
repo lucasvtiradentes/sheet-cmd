@@ -4,9 +4,9 @@ import { platform } from 'os';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
+import { defineSubCommand } from '../cli/define';
 import { Logger } from '../utils/logger';
 import { reinstallCompletionSilently } from './completion';
-import { defineSubCommand } from './define';
 
 const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
