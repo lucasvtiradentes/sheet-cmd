@@ -2,9 +2,9 @@ import { OAUTH_SCOPES } from '../config/constants';
 
 const DRIVE_SCOPES = new Set([OAUTH_SCOPES.DRIVE_READONLY, 'https://www.googleapis.com/auth/drive']);
 
-export const REQUIRED_OAUTH_SCOPES = [OAUTH_SCOPES.SPREADSHEETS, OAUTH_SCOPES.DRIVE_READONLY] as const;
+const REQUIRED_OAUTH_SCOPES = [OAUTH_SCOPES.SPREADSHEETS, OAUTH_SCOPES.DRIVE_READONLY] as const;
 
-export function getMissingOAuthScopes(grantedScopes: string[]): string[] {
+function getMissingOAuthScopes(grantedScopes: string[]): string[] {
   return REQUIRED_OAUTH_SCOPES.filter((scope) => {
     if (scope === OAUTH_SCOPES.DRIVE_READONLY) {
       return !grantedScopes.some((grantedScope) => DRIVE_SCOPES.has(grantedScope));

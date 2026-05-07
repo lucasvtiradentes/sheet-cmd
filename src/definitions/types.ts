@@ -1,11 +1,11 @@
-export interface CommandArgument {
+interface CommandArgument {
   name: string;
   description: string;
   type: 'string' | 'number';
   required?: boolean;
 }
 
-export interface CommandFlag {
+interface CommandFlag {
   name: string;
   alias?: string;
   description: string;

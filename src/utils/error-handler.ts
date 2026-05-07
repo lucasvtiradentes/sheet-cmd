@@ -1,6 +1,6 @@
 import { Logger } from './logger';
 
-export function formatError(error: unknown): string {
+function formatError(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
   }

@@ -13,10 +13,6 @@ export const COMMANDS_SCHEMA: Command[] = [
   completionCommandDefinition
 ];
 
-export function getAllCommands(): Command[] {
-  return COMMANDS_SCHEMA;
-}
-
 export function getCommand(name: string): Command | undefined {
   return COMMANDS_SCHEMA.find((cmd) => cmd.name === name || cmd.aliases?.includes(name));
 }

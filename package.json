@@ -20,6 +20,8 @@
     "dist"
   ],
   "scripts": {
+    "check": "biome check src/ scripts/ tests/",
+    "check:fix": "biome check --fix src/ scripts/ tests/",
     "dev": "SHEET_CMD_PROG_NAME=sheet-cmd tsx src/cli.ts",
     "dev:install": "tsx scripts/install-dev-version.ts",
     "dev:uninstall": "tsx scripts/uninstall-dev-version.ts",
@@ -30,7 +32,10 @@
     "start": "SHEET_CMD_PROG_NAME=sheet-cmd node dist/cli.js",
     "test:e2e": "vitest run --config tests/e2e/vitest.config.ts",
     "format": "biome format --write .",
+    "knip": "knip",
     "lint": "biome check --write .",
+    "lint-staged": "lint-staged",
+    "prepare": "husky",
     "changeset": "changeset",
     "release": "pnpm run build && changeset publish"
   },
@@ -62,10 +67,11 @@
   "devDependencies": {
     "@biomejs/biome": "^2.1.2",
     "@changesets/cli": "^2.29.7",
-    "@types/inquirer": "^9.0.8",
     "@types/node": "^22.18.8",
     "dotenv": "^17.2.3",
-    "rimraf": "^5.0.5",
+    "husky": "^9.1.7",
+    "knip": "^6.4.1",
+    "lint-staged": "^15.4.3",
     "tsup": "^8.5.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
