@@ -2,8 +2,8 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { loadGlobalFixtures } from '../global-fixtures';
-import { execCommand } from '../test-utils';
+import { loadGlobalFixtures } from '../../configs/e2e-global-fixtures';
+import { execCommand } from '../../configs/e2e-test-utils';
 
 describe('Advanced Features E2E', () => {
   let testHomeDir: string;

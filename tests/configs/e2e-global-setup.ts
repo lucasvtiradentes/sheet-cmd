@@ -1,10 +1,10 @@
-import './load-env';
+import './e2e-load-env';
 
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { clearGlobalFixtures, loadGlobalFixtures, saveGlobalFixtures } from './global-fixtures';
-import { execCommand } from './test-utils';
+import { clearGlobalFixtures, loadGlobalFixtures, saveGlobalFixtures } from './e2e-global-fixtures';
+import { execCommand } from './e2e-test-utils';
 
 export async function setup() {
   const spreadsheetId = process.env.SPREADSHEET_ID_E2E;

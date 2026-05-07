@@ -12,8 +12,8 @@ export default defineConfig({
     globals: true,
     environment: 'node',
     include: ['tests/e2e/**/*.e2e.test.ts'],
-    setupFiles: [path.resolve(__dirname, './setup.ts')],
-    globalSetup: [path.resolve(__dirname, './globalSetup.ts')],
+    setupFiles: [path.resolve(__dirname, './e2e-setup.ts')],
+    globalSetup: [path.resolve(__dirname, './e2e-global-setup.ts')],
     testTimeout: 60000, // 1 minute for API calls
     env: {
       NODE_ENV: 'e2e'

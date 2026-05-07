@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { loadGlobalFixtures } from '../global-fixtures';
-import { execCommand } from '../test-utils';
+import { loadGlobalFixtures } from '../../configs/e2e-global-fixtures';
+import { execCommand } from '../../configs/e2e-test-utils';
 
 describe('Sheet Operations E2E', () => {
   let testHomeDir: string;

@@ -1,4 +1,4 @@
-import './load-env';
+import './e2e-load-env';
 
 import { beforeEach } from 'vitest';
 
