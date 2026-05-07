@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder';
 import type { RowAddOptions } from '../../../definitions/command-types';
@@ -6,7 +6,7 @@ import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 import { validatePositiveInteger, validateRequired } from '../../../utils/validators';
 
-export function createRowAddCommand(): Command {
+export function createRowAddCommand(program: CaporalProgram): void {
   const rowAddCommand = async (options: RowAddOptions) => {
     const rowValue = validateRequired(options.row, 'Row number');
     const rowNumber = validatePositiveInteger(rowValue, 'Row number');
@@ -58,5 +58,5 @@ export function createRowAddCommand(): Command {
     }
   };
 
-  return createSubCommandFromSchema(CommandNames.SHEET, SubCommandNames.ROW_ADD, rowAddCommand, 'Failed to add row');
+  createSubCommandFromSchema(program, CommandNames.SHEET, SubCommandNames.ROW_ADD, rowAddCommand, 'Failed to add row');
 }

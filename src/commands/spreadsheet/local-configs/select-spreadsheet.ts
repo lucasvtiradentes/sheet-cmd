@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager';
 import { GoogleSheetsService } from '../../../core/google-sheets.service';
@@ -8,7 +8,7 @@ import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 import { parseSpreadsheetId } from '../../../utils/spreadsheet';
 
-export function createSelectSpreadsheetCommand(): Command {
+export function createSelectSpreadsheetCommand(program: CaporalProgram): void {
   const spreadsheetSelectCommand = async (options: SpreadsheetSelectOptions) => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
@@ -79,7 +79,8 @@ export function createSelectSpreadsheetCommand(): Command {
     Logger.success(`Selected spreadsheet: ${spreadsheetName}`);
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.SPREADSHEET,
     SubCommandNames.SPREADSHEET_SELECT,
     spreadsheetSelectCommand,

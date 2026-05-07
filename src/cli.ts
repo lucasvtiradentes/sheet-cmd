@@ -1,39 +1,69 @@
 #!/usr/bin/env node
 
-import { Command } from 'commander';
+import { realpathSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { basename } from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import type { Program as CaporalProgram } from '@caporal/core';
 
 import { createAccountCommand } from './commands/account/index';
 import { createCompletionCommand } from './commands/completion';
-import { displayHelpText } from './commands/help-text';
 import { createSheetCommand } from './commands/sheet/index';
 import { createSpreadsheetCommand } from './commands/spreadsheet/index';
 import { createUpdateCommand } from './commands/update';
 import { APP_INFO } from './config/constants';
 
-const program = new Command();
+const program = createProgram(getProgramBin());
 
-program
-  .name('sheet-cmd')
-  .description('Google Sheets CLI - A tool to interact with Google Sheets')
-  .version(APP_INFO.version);
+createAccountCommand(program);
+createSpreadsheetCommand(program);
+createSheetCommand(program);
+createUpdateCommand(program);
+createCompletionCommand(program);
 
-program.addCommand(createAccountCommand());
-program.addCommand(createSpreadsheetCommand());
-program.addCommand(createSheetCommand());
-program.addCommand(createUpdateCommand());
-program.addCommand(createCompletionCommand());
+try {
+  await program.run(process.argv.slice(2).length === 0 ? ['--help'] : process.argv.slice(2));
+} catch (error) {
+  const message = error instanceof Error ? error.message : String(error);
+  console.log(`error: ${message}`);
+  process.exitCode = 1;
+}
 
-program.configureHelp({
-  sortSubcommands: true,
-  subcommandTerm: (cmd) => cmd.name()
-});
+function createProgram(binName: string): CaporalProgram {
+  return new (getProgramConstructor())()
+    .bin(binName)
+    .name(binName)
+    .description('Google Sheets CLI - A tool to interact with Google Sheets')
+    .version(APP_INFO.version)
+    .disableGlobalOption('--no-color')
+    .disableGlobalOption('--quiet')
+    .disableGlobalOption('--silent')
+    .disableGlobalOption('-v');
+}
 
-program.on('--help', () => {
-  displayHelpText();
-});
+function getProgramConstructor() {
+  const require = createRequire(import.meta.url);
+  const module = require('@caporal/core') as {
+    Program?: new () => CaporalProgram;
+    default?: { Program?: new () => CaporalProgram };
+  };
+  const Program = module.Program ?? module.default?.Program;
+  if (!Program) throw new Error('Caporal Program constructor not found');
+  return Program;
+}
 
-program.parse();
+function getProgramBin() {
+  if (process.env.SHEET_CMD_PROG_NAME) return process.env.SHEET_CMD_PROG_NAME;
+  if (isDirectRun() && process.argv[1]) return basename(process.argv[1]);
+  return APP_INFO.name;
+}
 
-if (!process.argv.slice(2).length) {
-  program.outputHelp();
+function isDirectRun() {
+  if (!process.argv[1]) return false;
+
+  try {
+    return realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+  } catch {
+    return import.meta.url === pathToFileURL(process.argv[1]).href;
+  }
 }

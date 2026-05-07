@@ -1,5 +1,5 @@
+import type { Program as CaporalProgram } from '@caporal/core';
 import { exec } from 'child_process';
-import { Command } from 'commander';
 import { readFileSync } from 'fs';
 import { platform } from 'os';
 import { dirname, join } from 'path';
@@ -14,7 +14,7 @@ import { reinstallCompletionSilently } from './completion';
 const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export function createUpdateCommand(): Command {
+export function createUpdateCommand(program: CaporalProgram): void {
   const updateCommand = async () => {
     Logger.loading('Checking current version...');
 
@@ -84,7 +84,7 @@ export function createUpdateCommand(): Command {
     }
   };
 
-  return createCommandFromSchema(CommandNames.UPDATE, updateCommand, 'Failed to check for updates');
+  createCommandFromSchema(program, CommandNames.UPDATE, updateCommand, 'Failed to check for updates');
 }
 
 async function detectPackageManager(): Promise<string | null> {

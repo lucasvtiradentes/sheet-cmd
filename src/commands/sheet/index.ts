@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { createCommandFromSchema } from '../../definitions/command-builder';
 import { CommandNames } from '../../definitions/types';
 import { createAppendCommand } from './data_operations/append';
@@ -16,23 +16,20 @@ import { createRemoveCommand } from './sheet_operations/remove';
 import { createRenameCommand } from './sheet_operations/rename';
 import { createSelectCommand } from './sheet_operations/select';
 
-export function createSheetCommand(): Command {
-  const sheet = createCommandFromSchema(CommandNames.SHEET);
-
-  sheet.addCommand(createListCommand());
-  sheet.addCommand(createActiveCommand());
-  sheet.addCommand(createSelectCommand());
-  sheet.addCommand(createReadCommand());
-  sheet.addCommand(createAddCommand());
-  sheet.addCommand(createRemoveCommand());
-  sheet.addCommand(createRenameCommand());
-  sheet.addCommand(createCopyCommand());
-  sheet.addCommand(createWriteCommand());
-  sheet.addCommand(createAppendCommand());
-  sheet.addCommand(createImportCommand());
-  sheet.addCommand(createExportCommand());
-  sheet.addCommand(createRowAddCommand());
-  sheet.addCommand(createRowRemoveCommand());
-
-  return sheet;
+export function createSheetCommand(program: CaporalProgram): void {
+  createCommandFromSchema(program, CommandNames.SHEET);
+  createListCommand(program);
+  createActiveCommand(program);
+  createSelectCommand(program);
+  createReadCommand(program);
+  createAddCommand(program);
+  createRemoveCommand(program);
+  createRenameCommand(program);
+  createCopyCommand(program);
+  createWriteCommand(program);
+  createAppendCommand(program);
+  createImportCommand(program);
+  createExportCommand(program);
+  createRowAddCommand(program);
+  createRowRemoveCommand(program);
 }

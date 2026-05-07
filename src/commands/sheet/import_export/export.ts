@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { writeFileSync } from 'fs';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder';
@@ -9,7 +9,7 @@ import { Logger } from '../../../utils/logger';
 
 type ExportFormat = 'json' | 'csv';
 
-export function createExportCommand(): Command {
+export function createExportCommand(program: CaporalProgram): void {
   const sheetExportCommand = async (options: SheetExportOptions) => {
     const validFormats: ExportFormat[] = ['json', 'csv'];
     if (!validFormats.includes(options.format)) {
@@ -50,7 +50,8 @@ export function createExportCommand(): Command {
     }
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.SHEET,
     SubCommandNames.SHEET_EXPORT,
     sheetExportCommand,

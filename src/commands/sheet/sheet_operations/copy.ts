@@ -1,11 +1,11 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder';
 import type { SheetCopyOptions } from '../../../definitions/command-types';
 import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 
-export function createCopyCommand(): Command {
+export function createCopyCommand(program: CaporalProgram): void {
   const sheetCopyCommand = async (options: SheetCopyOptions) => {
     const sheetsService = await getGoogleSheetsService();
     const sheetName = getActiveSheetName(options.name);
@@ -16,7 +16,8 @@ export function createCopyCommand(): Command {
     Logger.success(`Sheet '${sheetName}' copied to '${options.to}' successfully`);
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.SHEET,
     SubCommandNames.SHEET_COPY,
     sheetCopyCommand,

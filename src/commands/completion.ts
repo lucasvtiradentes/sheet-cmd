@@ -1,54 +1,74 @@
 import { accessSync, constants, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import type { Program as CaporalProgram } from '@caporal/core';
 import chalk from 'chalk';
-import { Command } from 'commander';
 
 import { ConfigManager } from '../config/config-manager';
-import { createCommandFromSchema, createSubCommandFromSchema } from '../definitions/command-builder';
-import { generateBashCompletion, generateZshCompletion } from '../definitions/generators/completion-generator';
-import { CommandNames, SubCommandNames } from '../definitions/types';
 import { Logger } from '../utils/logger';
+import { getBashCompletionScript } from './completion/bash';
+import { getFishCompletionScript } from './completion/fish';
+import {
+  type CompletionGroup,
+  type CompletionOption,
+  getCompletionBinNames,
+  getOptionGroups,
+  getRootCommands,
+  getSubcommandGroups,
+  isVisibleCompletionCommand
+} from './completion/shared';
+import { getZshCompletionScript } from './completion/zsh';
 
-const ZSH_COMPLETION_SCRIPT = generateZshCompletion();
+const COMPLETION_COMMAND_NAME = 'completion';
 
-const BASH_COMPLETION_SCRIPT = generateBashCompletion();
-
-function createInstallCommand(): Command {
-  const installCompletionCommand = async () => {
-    const shell = detectShell();
-
-    switch (shell) {
-      case 'zsh':
-        await installZshCompletion();
-        break;
-      case 'bash':
-        await installBashCompletion();
-        break;
-      default:
-        Logger.error(`Unsupported shell: ${shell}`);
-        Logger.info('');
-        Logger.info('🐚 Supported shells: zsh, bash');
-        Logger.info('💡 Please switch to a supported shell to use autocompletion');
-        process.exit(1);
-    }
-
-    const configManager = new ConfigManager();
-    configManager.markCompletionInstalled();
-  };
-
-  return createSubCommandFromSchema(
-    CommandNames.COMPLETION,
-    SubCommandNames.COMPLETION_INSTALL,
-    installCompletionCommand,
-    'Failed to install completion'
-  );
+enum CompletionShell {
+  Bash = 'bash',
+  Fish = 'fish',
+  Zsh = 'zsh'
 }
 
-export function createCompletionCommand(): Command {
-  const completion = createCommandFromSchema(CommandNames.COMPLETION);
-  completion.addCommand(createInstallCommand());
-  return completion;
+const completionShells = Object.values(CompletionShell);
+
+const completionScriptGenerators = {
+  [CompletionShell.Bash]: getBashCompletionScript,
+  [CompletionShell.Fish]: getFishCompletionScript,
+  [CompletionShell.Zsh]: getZshCompletionScript
+} as const satisfies Record<
+  CompletionShell,
+  (
+    binNames: string[],
+    roots: CompletionGroup[],
+    subcommands: Map<string, CompletionGroup[]>,
+    options: Map<string, CompletionOption[]>
+  ) => string
+>;
+
+let completionProgram: CaporalProgram | undefined;
+
+export function createCompletionCommand(program: CaporalProgram): void {
+  completionProgram = program;
+
+  program
+    .command(COMPLETION_COMMAND_NAME, 'Generate shell completion scripts')
+    .argument('[shell]', 'Shell to generate completion for')
+    .strict(false)
+    .action(async ({ args, program }) => {
+      const shell = args.shell ? String(args.shell) : '';
+      if (isCompletionShell(shell)) {
+        console.log(await getCompletionScript(program, shell));
+        return 0;
+      }
+      Logger.error(`Unsupported shell: ${shell || '<empty>'}`);
+      Logger.info(`Supported: ${completionShells.join(', ')}`);
+      return 1;
+    });
+
+  program
+    .command(`${COMPLETION_COMMAND_NAME} install`, 'Install shell completion for your current shell')
+    .action(async () => {
+      await installCompletion();
+      return 0;
+    });
 }
 
 function detectShell(): string {
@@ -58,9 +78,35 @@ function detectShell(): string {
     return 'zsh';
   } else if (shell.includes('bash')) {
     return 'bash';
+  } else if (shell.includes('fish')) {
+    return 'fish';
   }
 
   return 'zsh';
+}
+
+async function installCompletion(): Promise<void> {
+  const shell = detectShell();
+
+  switch (shell) {
+    case 'zsh':
+      await installZshCompletion();
+      break;
+    case 'bash':
+      await installBashCompletion();
+      break;
+    case 'fish':
+      await installFishCompletion();
+      break;
+    default:
+      Logger.error(`Unsupported shell: ${shell}`);
+      Logger.info('');
+      Logger.info('Supported shells: zsh, bash, fish');
+      process.exit(1);
+  }
+
+  const configManager = new ConfigManager();
+  configManager.markCompletionInstalled();
 }
 
 async function installZshCompletion(): Promise<void> {
@@ -92,7 +138,7 @@ async function installZshCompletion(): Promise<void> {
   }
 
   const completionFile = join(targetDir, '_sheet-cmd');
-  writeFileSync(completionFile, ZSH_COMPLETION_SCRIPT);
+  writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Zsh));
 
   Logger.success(`Zsh completion installed to ${completionFile}`);
   Logger.info('');
@@ -144,7 +190,7 @@ async function installBashCompletion(): Promise<void> {
   }
 
   const completionFile = join(targetDir, 'sheet-cmd');
-  writeFileSync(completionFile, BASH_COMPLETION_SCRIPT);
+  writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Bash));
 
   Logger.success(`Bash completion installed to ${completionFile}`);
   Logger.info('');
@@ -172,6 +218,9 @@ export async function reinstallCompletionSilently(): Promise<boolean> {
         return true;
       case 'bash':
         await installBashCompletionSilent();
+        return true;
+      case 'fish':
+        await installFishCompletionSilent();
         return true;
       default:
         return false;
@@ -210,7 +259,7 @@ async function installZshCompletionSilent(): Promise<void> {
   }
 
   const completionFile = join(targetDir, '_sheet-cmd');
-  writeFileSync(completionFile, ZSH_COMPLETION_SCRIPT);
+  writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Zsh));
 }
 
 async function installBashCompletionSilent(): Promise<void> {
@@ -241,7 +290,30 @@ async function installBashCompletionSilent(): Promise<void> {
   }
 
   const completionFile = join(targetDir, 'sheet-cmd');
-  writeFileSync(completionFile, BASH_COMPLETION_SCRIPT);
+  writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Bash));
+}
+
+async function installFishCompletion(): Promise<void> {
+  const homeDir = homedir();
+  const targetDir = join(homeDir, '.config', 'fish', 'completions');
+  mkdirSync(targetDir, { recursive: true });
+
+  const completionFile = join(targetDir, 'sheet-cmd.fish');
+  writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Fish));
+
+  Logger.success(`Fish completion installed to ${completionFile}`);
+  Logger.info('');
+  Logger.info('Then restart your shell or run:');
+  Logger.info(chalk.cyan('  source ~/.config/fish/config.fish'));
+}
+
+async function installFishCompletionSilent(): Promise<void> {
+  const homeDir = homedir();
+  const targetDir = join(homeDir, '.config', 'fish', 'completions');
+  mkdirSync(targetDir, { recursive: true });
+
+  const completionFile = join(targetDir, 'sheet-cmd.fish');
+  writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Fish));
 }
 
 async function clearZshCompletionCache(): Promise<void> {
@@ -254,4 +326,28 @@ async function clearZshCompletionCache(): Promise<void> {
       fs.unlinkSync(zshCacheFile);
     }
   } catch {}
+}
+
+function isCompletionShell(value: string): value is CompletionShell {
+  return (completionShells as readonly string[]).includes(value);
+}
+
+async function getCurrentCompletionScript(shell: CompletionShell) {
+  if (!completionProgram) {
+    throw new Error('Completion program not initialized');
+  }
+
+  return getCompletionScript(completionProgram, shell);
+}
+
+async function getCompletionScript(program: CaporalProgram, shell: CompletionShell) {
+  const commands = (await program.getAllCommands()).filter(isVisibleCompletionCommand);
+  const roots = getRootCommands(commands);
+  const subcommands = getSubcommandGroups(commands);
+  subcommands.set(
+    COMPLETION_COMMAND_NAME,
+    completionShells.map((shell) => ({ name: shell, description: `Generate ${shell} completion` }))
+  );
+  const options = getOptionGroups(commands);
+  return completionScriptGenerators[shell](getCompletionBinNames(program.getBin()), roots, subcommands, options);
 }

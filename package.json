@@ -10,7 +10,7 @@
     "sheet": "./dist/cli.js"
   },
   "scripts": {
-    "dev": "tsx src/cli.ts",
+    "dev": "SHEET_CMD_PROG_NAME=sheet-cmd tsx src/cli.ts",
     "dev:install": "tsx scripts/install-dev-version.ts",
     "dev:uninstall": "tsx scripts/uninstall-dev-version.ts",
     "typecheck": "tsc --noEmit",
@@ -41,8 +41,8 @@
     "url": "https://github.com/lucasvtiradentes/sheet-cmd/issues"
   },
   "dependencies": {
+    "@caporal/core": "^2.0.7",
     "chalk": "^5.4.1",
-    "commander": "^14.0.0",
     "google-auth-library": "^9.14.2",
     "google-spreadsheet": "^4.1.4",
     "googleapis": "^164.1.0",

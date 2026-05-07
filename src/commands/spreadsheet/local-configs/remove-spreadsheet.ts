@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder';
@@ -7,7 +7,7 @@ import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 import { parseSpreadsheetId } from '../../../utils/spreadsheet';
 
-export function createRemoveSpreadsheetCommand(): Command {
+export function createRemoveSpreadsheetCommand(program: CaporalProgram): void {
   const spreadsheetRemoveCommand = async (options: SpreadsheetRemoveOptions) => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
@@ -81,7 +81,8 @@ export function createRemoveSpreadsheetCommand(): Command {
     Logger.success(`Spreadsheet '${spreadsheetName}' removed successfully!`);
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.SPREADSHEET,
     SubCommandNames.SPREADSHEET_REMOVE,
     spreadsheetRemoveCommand,

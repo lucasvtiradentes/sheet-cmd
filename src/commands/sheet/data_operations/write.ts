@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder';
 import type { SheetWriteOptions } from '../../../definitions/command-types';
@@ -6,7 +6,7 @@ import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { columnLetterToNumber } from '../../../utils/cell';
 import { Logger } from '../../../utils/logger';
 
-export function createWriteCommand(): Command {
+export function createWriteCommand(program: CaporalProgram): void {
   const sheetWriteCommand = async (options: SheetWriteOptions) => {
     if (!options.cell && !options.range) {
       Logger.error('Either --cell or --range must be specified');
@@ -91,7 +91,8 @@ export function createWriteCommand(): Command {
     }
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.SHEET,
     SubCommandNames.SHEET_WRITE,
     sheetWriteCommand,

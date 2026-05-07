@@ -1,20 +1,21 @@
-import { Command } from 'commander';
+import type { Command as CaporalCommand, Program as CaporalProgram } from '@caporal/core';
+import { APP_INFO } from '../config/constants';
 import { handleCommandError } from '../utils/error-handler';
 import { getCommand, getSubCommand } from './commands';
 
 export function createCommandFromSchema(
+  program: CaporalProgram,
   commandName: string,
   action?: () => void | Promise<void>,
   errorMessageFn?: string | ((error: unknown) => string)
-): Command {
+): CaporalCommand {
   const schema = getCommand(commandName);
 
   if (!schema) {
     throw new Error(`Command "${commandName}" not found in schema`);
   }
 
-  const command = new Command(schema.name);
-  command.description(schema.description);
+  const command = program.command(schema.name, schema.description);
 
   if (schema.aliases && schema.aliases.length > 0) {
     for (const alias of schema.aliases) {
@@ -22,10 +23,20 @@ export function createCommandFromSchema(
     }
   }
 
-  if (action) {
+  const commandAction =
+    action ??
+    (schema.subcommands
+      ? () => {
+          console.log(`Usage: ${APP_INFO.name} ${schema.name} <command>`);
+          console.log('');
+          console.log(`Available commands: ${schema.subcommands?.map((subcommand) => subcommand.name).join(', ')}`);
+        }
+      : undefined);
+
+  if (commandAction) {
     const wrappedAction = async () => {
       const commandPromise = async () => {
-        await action();
+        await commandAction();
       };
 
       const baseMessage = errorMessageFn
@@ -44,19 +55,19 @@ export function createCommandFromSchema(
 }
 
 export function createSubCommandFromSchema<TArgs extends unknown[] = unknown[]>(
+  program: CaporalProgram,
   commandName: string,
   subCommandName: string,
   action: (...args: TArgs) => void | Promise<void>,
   errorMessageFn?: string | ((error: unknown) => string)
-): Command {
+): CaporalCommand {
   const schema = getSubCommand(commandName, subCommandName);
 
   if (!schema) {
     throw new Error(`SubCommand "${commandName} ${subCommandName}" not found in schema`);
   }
 
-  const command = new Command(schema.name);
-  command.description(schema.description);
+  const command = program.command(`${commandName} ${schema.name}`, schema.description);
 
   if (schema.aliases && schema.aliases.length > 0) {
     for (const alias of schema.aliases) {
@@ -85,17 +96,14 @@ export function createSubCommandFromSchema<TArgs extends unknown[] = unknown[]>(
         flagString += ' <number>';
       }
 
-      if (flag.required) {
-        command.requiredOption(flagString, flag.description);
-      } else {
-        command.option(flagString, flag.description);
-      }
+      command.option(flagString, flag.description, { required: flag.required });
     }
   }
 
-  const wrappedAction = async (...args: TArgs) => {
+  const wrappedAction = async ({ args, options }: { args: Record<string, unknown>; options: unknown }) => {
     const commandPromise = async () => {
-      await action(...args);
+      const argsValues = Object.values(args);
+      await action(...((argsValues.length > 0 ? argsValues : [options]) as TArgs));
     };
 
     const baseMessage = errorMessageFn

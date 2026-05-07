@@ -1,11 +1,11 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder';
 import type { SheetRemoveOptions } from '../../../definitions/command-types';
 import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 
-export function createRemoveCommand(): Command {
+export function createRemoveCommand(program: CaporalProgram): void {
   const sheetRemoveCommand = async (options: SheetRemoveOptions) => {
     const sheetsService = await getGoogleSheetsService();
     const sheetName = getActiveSheetName(options.name);
@@ -16,7 +16,8 @@ export function createRemoveCommand(): Command {
     Logger.success(`Sheet '${sheetName}' removed successfully`);
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.SHEET,
     SubCommandNames.SHEET_REMOVE,
     sheetRemoveCommand,

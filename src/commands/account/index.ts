@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { createCommandFromSchema } from '../../definitions/command-builder';
 import { CommandNames } from '../../definitions/types';
 import { createAddAccountCommand } from './add-account';
@@ -7,14 +7,11 @@ import { createReauthAccountCommand } from './reauth-account';
 import { createRemoveAccountCommand } from './remove-account';
 import { createSelectAccountCommand } from './select-account';
 
-export function createAccountCommand(): Command {
-  const command = createCommandFromSchema(CommandNames.ACCOUNT);
-
-  command.addCommand(createAddAccountCommand());
-  command.addCommand(createListAccountsCommand());
-  command.addCommand(createSelectAccountCommand());
-  command.addCommand(createRemoveAccountCommand());
-  command.addCommand(createReauthAccountCommand());
-
-  return command;
+export function createAccountCommand(program: CaporalProgram): void {
+  createCommandFromSchema(program, CommandNames.ACCOUNT);
+  createAddAccountCommand(program);
+  createListAccountsCommand(program);
+  createSelectAccountCommand(program);
+  createRemoveAccountCommand(program);
+  createReauthAccountCommand(program);
 }

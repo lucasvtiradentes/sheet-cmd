@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import * as readline from 'readline';
 import { performOAuthFlow } from '../../auth/oauth-flow';
 import { ConfigManager } from '../../config/config-manager';
@@ -21,7 +21,7 @@ async function promptInput(question: string): Promise<string> {
   });
 }
 
-export function createAddAccountCommand(): Command {
+export function createAddAccountCommand(program: CaporalProgram): void {
   const accountAddCommand = async () => {
     Logger.bold('='.repeat(70));
     Logger.bold('  GOOGLE CLOUD CONSOLE SETUP');
@@ -111,7 +111,8 @@ export function createAddAccountCommand(): Command {
     process.exit(0);
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.ACCOUNT,
     SubCommandNames.ACCOUNT_ADD,
     accountAddCommand,

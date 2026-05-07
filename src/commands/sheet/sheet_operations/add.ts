@@ -1,11 +1,11 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { getGoogleSheetsService } from '../../../core/command-helpers';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder';
 import type { SheetAddOptions } from '../../../definitions/command-types';
 import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 
-export function createAddCommand(): Command {
+export function createAddCommand(program: CaporalProgram): void {
   const sheetAddCommand = async (options: SheetAddOptions) => {
     const sheetsService = await getGoogleSheetsService();
 
@@ -15,7 +15,8 @@ export function createAddCommand(): Command {
     Logger.success(`Sheet '${options.name}' created successfully`);
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.SHEET,
     SubCommandNames.SHEET_ADD,
     sheetAddCommand,

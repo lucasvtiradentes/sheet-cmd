@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { ConfigManager } from '../../../config/config-manager';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder';
 import type { SpreadsheetListOptions } from '../../../definitions/command-types';
@@ -6,7 +6,7 @@ import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 import { getSpreadsheetUrl } from '../../../utils/spreadsheet';
 
-export function createListSpreadsheetsCommand(): Command {
+export function createListSpreadsheetsCommand(program: CaporalProgram): void {
   const spreadsheetListCommand = async (options: SpreadsheetListOptions) => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
@@ -58,7 +58,8 @@ export function createListSpreadsheetsCommand(): Command {
     }
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.SPREADSHEET,
     SubCommandNames.SPREADSHEET_LIST,
     spreadsheetListCommand,

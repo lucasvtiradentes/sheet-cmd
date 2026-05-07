@@ -2,9 +2,10 @@ import { execFileSync } from 'node:child_process';
 import { rmSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
+import { APP_INFO } from '../src/config/constants';
 
 const binDir = getBinDir();
-const devBinNames = ['sheet-cmdd', 'sheetd'];
+const devBinNames = [`${APP_INFO.name}d`, 'sheetd'];
 
 for (const binName of devBinNames) {
   rmSync(join(binDir, binName), { force: true });

@@ -1,10 +1,10 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { ConfigManager } from '../../config/config-manager';
 import { createSubCommandFromSchema } from '../../definitions/command-builder';
 import { CommandNames, SubCommandNames } from '../../definitions/types';
 import { Logger } from '../../utils/logger';
 
-export function createListAccountsCommand(): Command {
+export function createListAccountsCommand(program: CaporalProgram): void {
   const accountListCommand = () => {
     const configManager = new ConfigManager();
     const accounts = configManager.getAllAccounts();
@@ -25,7 +25,8 @@ export function createListAccountsCommand(): Command {
     });
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.ACCOUNT,
     SubCommandNames.ACCOUNT_LIST,
     accountListCommand,

@@ -1,11 +1,11 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../config/config-manager';
 import { createSubCommandFromSchema } from '../../definitions/command-builder';
 import { CommandNames, SubCommandNames } from '../../definitions/types';
 import { Logger } from '../../utils/logger';
 
-export function createRemoveAccountCommand(): Command {
+export function createRemoveAccountCommand(program: CaporalProgram): void {
   const accountRemoveCommand = async (email?: string) => {
     const configManager = new ConfigManager();
     const accounts = configManager.getAllAccounts();
@@ -73,6 +73,7 @@ export function createRemoveAccountCommand(): Command {
   };
 
   const command = createSubCommandFromSchema(
+    program,
     CommandNames.ACCOUNT,
     SubCommandNames.ACCOUNT_REMOVE,
     accountRemoveCommand,
@@ -80,6 +81,4 @@ export function createRemoveAccountCommand(): Command {
   );
 
   command.argument('[email]', 'Account email to remove (optional - interactive if not provided)');
-
-  return command;
 }

@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { ConfigManager } from '../../../config/config-manager';
 import { getGoogleSheetsService } from '../../../core/command-helpers';
 import { createSubCommandFromSchema } from '../../../definitions/command-builder';
@@ -6,7 +6,7 @@ import type { SheetActiveOptions } from '../../../definitions/command-types';
 import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 
-export function createActiveCommand(): Command {
+export function createActiveCommand(program: CaporalProgram): void {
   const sheetActiveCommand = async (options: SheetActiveOptions) => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
@@ -62,7 +62,8 @@ export function createActiveCommand(): Command {
     }
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.SHEET,
     SubCommandNames.SHEET_ACTIVE,
     sheetActiveCommand,

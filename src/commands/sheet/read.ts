@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { writeFileSync } from 'fs';
 import { getActiveSheetName, getGoogleSheetsService } from '../../core/command-helpers';
 import { createSubCommandFromSchema } from '../../definitions/command-builder';
@@ -9,7 +9,7 @@ import { Logger } from '../../utils/logger';
 
 type OutputFormat = 'markdown' | 'csv' | 'json';
 
-export function createReadCommand(): Command {
+export function createReadCommand(program: CaporalProgram): void {
   const sheetReadCommand = async (options: SheetReadOptions) => {
     const outputFormat = options.output ?? 'markdown';
     const validFormats: OutputFormat[] = ['markdown', 'csv', 'json'];
@@ -54,7 +54,8 @@ export function createReadCommand(): Command {
     }
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.SHEET,
     SubCommandNames.SHEET_READ,
     sheetReadCommand,

@@ -1,11 +1,11 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import { performOAuthFlow } from '../../auth/oauth-flow';
 import { ConfigManager } from '../../config/config-manager';
 import { createSubCommandFromSchema } from '../../definitions/command-builder';
 import { CommandNames, SubCommandNames } from '../../definitions/types';
 import { Logger } from '../../utils/logger';
 
-export function createReauthAccountCommand(): Command {
+export function createReauthAccountCommand(program: CaporalProgram): void {
   const accountReauthCommand = async () => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
@@ -33,7 +33,8 @@ export function createReauthAccountCommand(): Command {
     process.exit(0);
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.ACCOUNT,
     SubCommandNames.ACCOUNT_REAUTH,
     accountReauthCommand,

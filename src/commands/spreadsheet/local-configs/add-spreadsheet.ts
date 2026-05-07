@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import type { Program as CaporalProgram } from '@caporal/core';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager';
 import { GOOGLE_API_URLS } from '../../../config/constants';
@@ -10,7 +10,7 @@ import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 import { parseSpreadsheetId } from '../../../utils/spreadsheet';
 
-export function createAddSpreadsheetCommand(): Command {
+export function createAddSpreadsheetCommand(program: CaporalProgram): void {
   const spreadsheetAddCommand = async (options: SpreadsheetAddOptions) => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
@@ -103,7 +103,8 @@ export function createAddSpreadsheetCommand(): Command {
     }
   };
 
-  return createSubCommandFromSchema(
+  createSubCommandFromSchema(
+    program,
     CommandNames.SPREADSHEET,
     SubCommandNames.SPREADSHEET_ADD,
     spreadsheetAddCommand,
