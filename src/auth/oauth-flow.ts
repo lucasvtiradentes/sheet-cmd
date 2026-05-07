@@ -5,15 +5,20 @@ import type { OAuthCredentials } from '../config/types';
 import { Logger } from '../utils/logger';
 import { assertRequiredOAuthScopes } from './oauth-scopes';
 
-interface OAuthFlowResult {
+export interface OAuthFlowResult {
   email: string;
   credentials: OAuthCredentials;
+}
+
+export interface OAuthFlowOptions {
+  loginHint?: string;
+  onAuthUrl?: (url: string) => void;
 }
 
 export async function performOAuthFlow(
   clientId: string,
   clientSecret: string,
-  options: { loginHint?: string } = {}
+  options: OAuthFlowOptions = {}
 ): Promise<OAuthFlowResult> {
   const port = await getRandomAvailablePort();
   const redirectUri = `http://${OAUTH_CONFIG.REDIRECT_HOST}:${port}${OAUTH_CONFIG.REDIRECT_PATH}`;
@@ -28,8 +33,12 @@ export async function performOAuthFlow(
     login_hint: options.loginHint
   });
 
-  Logger.info(`Opening browser for authentication...`);
-  Logger.info(`Visit: ${authUrl}`);
+  if (options.onAuthUrl) {
+    options.onAuthUrl(authUrl);
+  } else {
+    Logger.info('Opening browser for authentication...');
+    Logger.info(`Visit: ${authUrl}`);
+  }
 
   const authCode = await startCallbackServer(port);
 

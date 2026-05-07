@@ -212,17 +212,9 @@ export class GoogleSheetsService {
           const newValue = values[valueRowIndex][valueColIndex];
           const isNewValueEmpty = newValue === '' || newValue === null;
 
-          // Commander.js automatically handles --no-* flags by:
-          // - Converting "--no-preserve" to property "noPreserve" (camelCase without "no" prefix)
-          // - Setting noPreserve=true when flag is present, undefined when not present
-          // This is different from regular boolean flags which would be preserve=true/false
           if (noPreserve) {
-            // --no-preserve flag: overwrite everything including formulas and data validation
             cell.value = newValue;
           } else {
-            // Default behavior: preserve formulas and skip empty values for cells with data validation
-            // Skip updating if: cell has data validation AND cell is empty AND new value is empty
-            // Skip updating if: cell has a formula (preserve it)
             if (!(hasDataValidation && isCellEmpty && isNewValueEmpty) && !hasFormula) {
               cell.value = newValue;
             }
