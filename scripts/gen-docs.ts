@@ -1,18 +1,16 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { docsCommands } from '../src/cli/catalog';
 import {
-  type CommandArgument,
   type CommandDefinition,
-  type CommandFlag,
   CommandFlagType,
   type ParentCommandDefinition,
   type SubCommandDefinition
 } from '../src/cli/types';
-import { APP_INFO } from '../src/config/constants';
 
 const readmePath = 'README.md';
-const startMarker = '<!-- COMMANDS:START -->';
-const endMarker = '<!-- COMMANDS:END -->';
+const startMarker = '<!-- <DYNFIELD:COMMANDS> -->';
+const endMarker = '<!-- </DYNFIELD:COMMANDS> -->';
+const docsBinName = 'gs';
 
 const readme = readFileSync(readmePath, 'utf-8');
 const generated = generateCommandDocs(docsCommands);
@@ -24,49 +22,39 @@ if (countOccurrences(readme, startMarker) !== 1 || countOccurrences(readme, endM
 writeFileSync(readmePath, replaceBetween(readme, startMarker, endMarker, generated), 'utf-8');
 
 function generateCommandDocs(commands: readonly CommandDefinition[]) {
-  return commands
-    .map((command) => (command.kind === 'command' ? parentCommandDocs(command) : commandDocs(command)))
-    .join('\n\n');
+  const lines = commands.flatMap((command, index) => {
+    const commandLines = command.kind === 'command' ? parentCommandDocs(command) : commandDocs(command);
+    return index === 0 ? commandLines : ['', ...commandLines];
+  });
+  return ['```sh', ...lines, '```'].join('\n');
 }
 
 function parentCommandDocs(command: ParentCommandDefinition) {
-  const title = command.name[0].toUpperCase() + command.name.slice(1);
-  const parentUsage = command.arguments?.length
-    ? [
-        `**${command.name}** - ${command.description}`,
-        '',
-        '```bash',
-        `${APP_INFO.name} ${command.name}${parentUsageSuffix(command)}`,
-        '```',
-        '',
-        argumentList(command.arguments)
-      ].join('\n')
-    : '';
-  const subcommands = command.subcommands.map((subcommand) => commandDocs(subcommand, command.name)).join('\n\n');
-
-  return `### ${title} Commands\n\n${parentUsage}${parentUsage ? '\n\n' : ''}${subcommands}`;
+  if (command.name === 'completion') {
+    return [`# ${command.name} commands`, ...completionShellUsages(command.name)];
+  }
+  const parentUsage = command.arguments?.length ? [commandUsage(command.name, parentUsageSuffix(command))] : [];
+  return [
+    `# ${command.name} commands`,
+    ...parentUsage,
+    ...command.subcommands.flatMap((subcommand) => commandDocs(subcommand, command.name))
+  ];
 }
 
 function commandDocs(command: SubCommandDefinition, parent?: string) {
-  const heading = parent ? '' : `### ${command.name[0].toUpperCase() + command.name.slice(1)}\n\n`;
   const commandPath = parent ? `${parent} ${command.name}` : command.name;
-  const lines = [
-    `**${command.name}** - ${command.description}`,
-    '',
-    '```bash',
-    `${APP_INFO.name} ${commandPath}${usageSuffix(command)}`,
-    '```'
-  ];
-
-  if (command.flags && command.flags.length > 0) {
-    lines.push('', optionList(command.flags));
+  if (commandPath === 'completion') {
+    return completionShellUsages(commandPath);
   }
+  return [commandUsage(commandPath, usageSuffix(command))];
+}
 
-  if (command.arguments && command.arguments.length > 0) {
-    lines.push('', argumentList(command.arguments));
-  }
+function completionShellUsages(commandPath: string) {
+  return ['zsh', 'bash', 'fish'].map((shell) => commandUsage(commandPath, ` ${shell}`));
+}
 
-  return `${heading}${lines.join('\n')}`;
+function commandUsage(commandPath: string, suffix: string) {
+  return `${docsBinName} ${commandPath}${suffix}`;
 }
 
 function usageSuffix(command: SubCommandDefinition) {
@@ -80,28 +68,9 @@ function parentUsageSuffix(command: ParentCommandDefinition) {
   return args.length > 0 ? ` ${args.join(' ')}` : '';
 }
 
-function flagUsage(flag: CommandFlag) {
+function flagUsage(flag: NonNullable<SubCommandDefinition['flags']>[number]) {
   const value = flag.type === CommandFlagType.Boolean ? '' : ' <value>';
   return flag.required ? `${flag.name}${value}` : `[${flag.name}${value}]`;
-}
-
-function optionList(flags: readonly CommandFlag[]) {
-  return [
-    'Options:',
-    ...flags.map((flag) => `- \`${flagLabel(flag)}\`: ${flag.description}${flag.required ? ' (required)' : ''}`)
-  ].join('\n');
-}
-
-function argumentList(args: readonly CommandArgument[]) {
-  return [
-    'Arguments:',
-    ...args.map((arg) => `- \`${arg.name}\`: ${arg.description}${arg.required ? ' (required)' : ''}`)
-  ].join('\n');
-}
-
-function flagLabel(flag: CommandFlag) {
-  const value = flag.type === CommandFlagType.Boolean ? '' : ' <value>';
-  return flag.alias ? `${flag.alias}, ${flag.name}${value}` : `${flag.name}${value}`;
 }
 
 function replaceBetween(source: string, start: string, end: string, replacement: string) {

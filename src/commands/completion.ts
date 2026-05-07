@@ -2,7 +2,6 @@ import { accessSync, constants, existsSync, mkdirSync, writeFileSync } from 'nod
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import type { Program as CaporalProgram } from '@caporal/core';
-import chalk from 'chalk';
 import { getBashCompletionScript } from '../cli/completion/bash';
 import { getFishCompletionScript } from '../cli/completion/fish';
 import {
@@ -15,7 +14,7 @@ import {
   isVisibleCompletionCommand
 } from '../cli/completion/shared';
 import { getZshCompletionScript } from '../cli/completion/zsh';
-import { argument, defineCommand, defineSubCommand } from '../cli/define';
+import { argument, defineCommand } from '../cli/define';
 import { ConfigManager } from '../config/config-manager';
 import { APP_INFO } from '../config/constants';
 import { Logger } from '../utils/logger';
@@ -32,15 +31,7 @@ export const completionCommand = defineCommand({
   name: 'completion',
   description: 'Generate shell completion scripts',
   arguments: [argument.string('shell', `Shell to generate completion for (${completionShells.join(', ')})`)],
-  subcommands: [
-    defineSubCommand({
-      name: 'install',
-      description: 'Install shell completion for your current shell',
-      action: async () => {
-        await installCompletion();
-      }
-    })
-  ]
+  subcommands: []
 });
 
 const completionScriptGenerators = {
@@ -63,12 +54,6 @@ const shellMatchers = [
   { shell: CompletionShell.Fish, matches: (value: string) => value.includes(CompletionShell.Fish) }
 ] as const;
 
-const completionInstallers = {
-  [CompletionShell.Bash]: installBashCompletion,
-  [CompletionShell.Fish]: installFishCompletion,
-  [CompletionShell.Zsh]: installZshCompletion
-} as const satisfies Record<CompletionShell, () => Promise<void>>;
-
 const silentCompletionInstallers = {
   [CompletionShell.Bash]: installBashCompletionSilent,
   [CompletionShell.Fish]: installFishCompletionSilent,
@@ -83,7 +68,6 @@ let completionProgram: CaporalProgram | undefined;
 export function createCompletionCommand(program: CaporalProgram): void {
   completionProgram = program;
   const shellArgument = completionCommand.arguments?.[0];
-  const installCommand = completionCommand.subcommands[0];
 
   if (!shellArgument) {
     throw new Error('Completion shell argument metadata is missing');
@@ -103,115 +87,11 @@ export function createCompletionCommand(program: CaporalProgram): void {
       Logger.info(`Supported: ${completionShells.join(', ')}`);
       return 1;
     });
-
-  program
-    .command(`${completionCommand.name} ${installCommand.name}`, installCommand.description)
-    .action(async () => installCommand.action({ args: {}, options: {} }));
 }
 
 function detectShell(): CompletionShell {
   const shell = process.env.SHELL || '';
   return shellMatchers.find((matcher) => matcher.matches(shell))?.shell ?? CompletionShell.Zsh;
-}
-
-async function installCompletion(): Promise<void> {
-  const shell = detectShell();
-  await completionInstallers[shell]();
-
-  const configManager = new ConfigManager();
-  configManager.markCompletionInstalled();
-}
-
-async function installZshCompletion(): Promise<void> {
-  const homeDir = homedir();
-
-  const possibleDirs = [
-    join(homeDir, '.oh-my-zsh', 'completions'),
-    join(homeDir, '.zsh', 'completions'),
-    join(homeDir, '.config', 'zsh', 'completions'),
-    join(homeDir, '.local', 'share', 'zsh', 'site-functions'),
-    '/usr/local/share/zsh/site-functions'
-  ];
-
-  let targetDir: string | null = null;
-
-  for (const dir of possibleDirs) {
-    if (existsSync(dir)) {
-      try {
-        accessSync(dir, constants.W_OK);
-        targetDir = dir;
-        break;
-      } catch {}
-    }
-  }
-
-  if (!targetDir) {
-    targetDir = join(homeDir, '.zsh', 'completions');
-    mkdirSync(targetDir, { recursive: true });
-  }
-
-  const completionFile = join(targetDir, `_${APP_INFO.name}`);
-  writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Zsh));
-
-  Logger.success(`Zsh completion installed to ${completionFile}`);
-  Logger.info('');
-  Logger.info('To activate completion, add this to your ~/.zshrc:');
-  Logger.info(chalk.cyan(`  fpath=(${targetDir} $fpath)`));
-  Logger.info(chalk.cyan('  autoload -U compinit && compinit'));
-  Logger.info('');
-  Logger.info('Then restart your shell or run:');
-  Logger.info(chalk.cyan('  source ~/.zshrc'));
-
-  try {
-    const zshrc = join(homeDir, '.zshrc');
-    if (existsSync(zshrc)) {
-      const fs = await import('fs');
-      const zshrcContent = fs.readFileSync(zshrc, 'utf8');
-      if (!zshrcContent.includes(targetDir)) {
-        Logger.info('');
-        Logger.warning('Remember to add the fpath line to your ~/.zshrc for autocompletion to work!');
-      }
-    }
-  } catch (_error) {}
-}
-
-async function installBashCompletion(): Promise<void> {
-  const homeDir = homedir();
-
-  const possibleDirs = [
-    join(homeDir, '.bash_completion.d'),
-    join(homeDir, '.local', 'share', 'bash-completion', 'completions'),
-    '/usr/local/etc/bash_completion.d',
-    '/etc/bash_completion.d'
-  ];
-
-  let targetDir: string | null = null;
-
-  for (const dir of possibleDirs) {
-    if (existsSync(dir)) {
-      try {
-        accessSync(dir, constants.W_OK);
-        targetDir = dir;
-        break;
-      } catch {}
-    }
-  }
-
-  if (!targetDir) {
-    targetDir = join(homeDir, '.bash_completion.d');
-    mkdirSync(targetDir, { recursive: true });
-  }
-
-  const completionFile = join(targetDir, APP_INFO.name);
-  writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Bash));
-
-  Logger.success(`Bash completion installed to ${completionFile}`);
-  Logger.info('');
-  Logger.info('To activate completion, add this to your ~/.bashrc:');
-  Logger.info(chalk.cyan(`  source ${completionFile}`));
-  Logger.info('');
-  Logger.info('Then restart your shell or run:');
-  Logger.info(chalk.cyan('  source ~/.bashrc'));
 }
 
 export async function reinstallCompletionSilently(): Promise<boolean> {
@@ -292,20 +172,6 @@ async function installBashCompletionSilent(): Promise<void> {
 
   const completionFile = join(targetDir, APP_INFO.name);
   writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Bash));
-}
-
-async function installFishCompletion(): Promise<void> {
-  const homeDir = homedir();
-  const targetDir = join(homeDir, '.config', 'fish', 'completions');
-  mkdirSync(targetDir, { recursive: true });
-
-  const completionFile = join(targetDir, `${APP_INFO.name}.fish`);
-  writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Fish));
-
-  Logger.success(`Fish completion installed to ${completionFile}`);
-  Logger.info('');
-  Logger.info('Then restart your shell or run:');
-  Logger.info(chalk.cyan('  source ~/.config/fish/config.fish'));
 }
 
 async function installFishCompletionSilent(): Promise<void> {
