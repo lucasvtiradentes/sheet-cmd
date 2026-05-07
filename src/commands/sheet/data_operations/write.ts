@@ -1,13 +1,20 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { SheetWriteOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { columnLetterToNumber } from '../../../utils/cell';
 import { Logger } from '../../../utils/logger';
+import { defineSubCommand, flag } from '../../define';
 
-export function createWriteCommand(program: CaporalProgram): void {
-  const sheetWriteCommand = async (options: SheetWriteOptions) => {
+export const writeCommand = defineSubCommand({
+  name: 'write',
+  description: 'Write to a specific cell or range of cells',
+  flags: [
+    flag.string('--name', 'Tab name (uses active if not provided)', { alias: '-n' }),
+    flag.string('--cell', 'Cell address (e.g., A1) - required if --range not provided', { alias: '-c' }),
+    flag.string('--range', 'Range (e.g., A1:B2) - required if --cell not provided', { alias: '-r' }),
+    flag.string('--value', 'Value to write (use , for columns, ; for rows)', { alias: '-v', required: true }),
+    flag.boolean('--no-preserve', 'Overwrite cells with formulas or data validation')
+  ],
+  errorMessage: 'Failed to write to sheet',
+  action: async ({ options }) => {
     if (!options.cell && !options.range) {
       Logger.error('Either --cell or --range must be specified');
       process.exit(1);
@@ -82,20 +89,11 @@ export function createWriteCommand(program: CaporalProgram): void {
         }
       }
 
-      // Commander.js converts --no-preserve flag to preserve: false
-      // We need to invert it to get noPreserve: true when flag is present
+      // Caporal converts --no-preserve to preserve: false.
       const noPreserve = options.preserve === false;
       Logger.loading(`Writing to range ${options.range}...`);
       await sheetsService.writeCellRange(sheetName, options.range, values, noPreserve);
       Logger.success(`Range ${options.range} updated successfully`);
     }
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SHEET,
-    SubCommandNames.SHEET_WRITE,
-    sheetWriteCommand,
-    'Failed to write to sheet'
-  );
-}
+  }
+});

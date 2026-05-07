@@ -1,13 +1,14 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { ConfigManager } from '../../../config/config-manager';
 import { getGoogleSheetsService } from '../../../core/command-helpers';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { SheetActiveOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
+import { defineSubCommand, flag } from '../../define';
 
-export function createActiveCommand(program: CaporalProgram): void {
-  const sheetActiveCommand = async (options: SheetActiveOptions) => {
+export const activeCommand = defineSubCommand({
+  name: 'active',
+  description: 'Show the currently active sheet',
+  flags: [flag.string('--output', 'Output format', { alias: '-o' })],
+  errorMessage: 'Failed to get active sheet',
+  action: async ({ options }) => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
 
@@ -60,13 +61,5 @@ export function createActiveCommand(program: CaporalProgram): void {
       Logger.dim(`  Index: ${activeSheet.index + 1}`);
       Logger.dim(`  ID: ${activeSheet.sheetId}`);
     }
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SHEET,
-    SubCommandNames.SHEET_ACTIVE,
-    sheetActiveCommand,
-    'Failed to get active sheet'
-  );
-}
+  }
+});

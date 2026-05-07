@@ -1,13 +1,20 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { RowRemoveOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 import { validatePositiveInteger, validateRequired } from '../../../utils/validators';
+import { defineSubCommand, flag } from '../../define';
 
-export function createRowRemoveCommand(program: CaporalProgram): void {
-  const rowRemoveCommand = async (options: RowRemoveOptions) => {
+export const rowRemoveCommand = defineSubCommand({
+  name: 'row-remove',
+  description: 'Remove a row from the sheet',
+  flags: [
+    flag.string('--row', 'Row number (1-indexed)', { alias: '-r', required: true }),
+    flag.string('--name', 'Tab name (uses active if not provided)', { alias: '-n' }),
+    flag.boolean('--above', 'Remove rows above the specified row'),
+    flag.boolean('--below', 'Remove rows below the specified row'),
+    flag.string('--count', 'Number of rows to remove (default: 1)', { alias: '-c' })
+  ],
+  errorMessage: 'Failed to remove row',
+  action: async ({ options }) => {
     const rowValue = validateRequired(options.row, 'Row number');
     const rowNumber = validatePositiveInteger(rowValue, 'Row number');
 
@@ -49,13 +56,5 @@ export function createRowRemoveCommand(program: CaporalProgram): void {
     });
 
     Logger.success(`${count} ${rowWord} removed successfully`);
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SHEET,
-    SubCommandNames.ROW_REMOVE,
-    rowRemoveCommand,
-    'Failed to remove row'
-  );
-}
+  }
+});

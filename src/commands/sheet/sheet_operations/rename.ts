@@ -1,12 +1,16 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { SheetRenameOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
+import { defineSubCommand, flag } from '../../define';
 
-export function createRenameCommand(program: CaporalProgram): void {
-  const sheetRenameCommand = async (options: SheetRenameOptions) => {
+export const renameCommand = defineSubCommand({
+  name: 'rename',
+  description: 'Rename a sheet in the spreadsheet',
+  flags: [
+    flag.string('--name', 'Current tab name (uses active if not provided)', { alias: '-n' }),
+    flag.string('--new-name', 'New tab name', { required: true })
+  ],
+  errorMessage: 'Failed to rename sheet',
+  action: async ({ options }) => {
     const sheetsService = await getGoogleSheetsService();
     const sheetName = getActiveSheetName(options.name);
 
@@ -14,13 +18,5 @@ export function createRenameCommand(program: CaporalProgram): void {
     await sheetsService.renameSheet(sheetName, options.newName);
 
     Logger.success(`Sheet '${sheetName}' renamed to '${options.newName}' successfully`);
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SHEET,
-    SubCommandNames.SHEET_RENAME,
-    sheetRenameCommand,
-    'Failed to rename sheet'
-  );
-}
+  }
+});

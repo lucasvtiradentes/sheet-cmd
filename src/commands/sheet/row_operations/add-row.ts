@@ -1,13 +1,21 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { RowAddOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 import { validatePositiveInteger, validateRequired } from '../../../utils/validators';
+import { defineSubCommand, flag } from '../../define';
 
-export function createRowAddCommand(program: CaporalProgram): void {
-  const rowAddCommand = async (options: RowAddOptions) => {
+export const rowAddCommand = defineSubCommand({
+  name: 'row-add',
+  description: 'Add a row to the sheet',
+  flags: [
+    flag.string('--row', 'Row number (1-indexed)', { alias: '-r', required: true }),
+    flag.string('--name', 'Tab name (uses active if not provided)', { alias: '-n' }),
+    flag.boolean('--above', 'Insert row above the specified row'),
+    flag.boolean('--below', 'Insert row below the specified row'),
+    flag.boolean('--formulas', 'Copy formatting, formulas, and data validation from adjacent row', { alias: '-f' }),
+    flag.string('--count', 'Number of rows to add (default: 1)', { alias: '-c' })
+  ],
+  errorMessage: 'Failed to add row',
+  action: async ({ options }) => {
     const rowValue = validateRequired(options.row, 'Row number');
     const rowNumber = validatePositiveInteger(rowValue, 'Row number');
 
@@ -56,7 +64,5 @@ export function createRowAddCommand(program: CaporalProgram): void {
     if (options.formulas) {
       Logger.info(`Formatting, formulas, and dropdowns copied from row ${sourceRowForFormulas + 1}`);
     }
-  };
-
-  createSubCommandFromSchema(program, CommandNames.SHEET, SubCommandNames.ROW_ADD, rowAddCommand, 'Failed to add row');
-}
+  }
+});

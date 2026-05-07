@@ -1,14 +1,19 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { readFileSync } from 'fs';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { SheetImportOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { parseCSV } from '../../../utils/csv';
 import { Logger } from '../../../utils/logger';
+import { defineSubCommand, flag } from '../../define';
 
-export function createImportCommand(program: CaporalProgram): void {
-  const sheetImportCommand = async (options: SheetImportOptions) => {
+export const importCommand = defineSubCommand({
+  name: 'import',
+  description: 'Import CSV file to a sheet',
+  flags: [
+    flag.string('--name', 'Tab name (uses active if not provided)', { alias: '-n' }),
+    flag.string('--file', 'CSV file path', { alias: '-f', required: true }),
+    flag.boolean('--skip-header', 'Skip header row when importing')
+  ],
+  errorMessage: 'Failed to import data',
+  action: async ({ options }) => {
     const sheetsService = await getGoogleSheetsService();
     const sheetName = getActiveSheetName(options.name);
 
@@ -57,13 +62,5 @@ export function createImportCommand(program: CaporalProgram): void {
     }
 
     Logger.success(`Successfully imported ${dataToImport.length} rows to '${sheetName}'`);
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SHEET,
-    SubCommandNames.SHEET_IMPORT,
-    sheetImportCommand,
-    'Failed to import data'
-  );
-}
+  }
+});

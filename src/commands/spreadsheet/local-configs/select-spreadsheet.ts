@@ -1,15 +1,20 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager';
 import { GoogleSheetsService } from '../../../core/google-sheets.service';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { SpreadsheetSelectOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 import { parseSpreadsheetId } from '../../../utils/spreadsheet';
+import { defineSubCommand, flag } from '../../define';
 
-export function createSelectSpreadsheetCommand(program: CaporalProgram): void {
-  const spreadsheetSelectCommand = async (options: SpreadsheetSelectOptions) => {
+export const selectSpreadsheetCommand = defineSubCommand({
+  name: 'select',
+  description: 'Select a different spreadsheet (sets as active)',
+  flags: [
+    flag.string('--id', 'Spreadsheet ID or URL (skips interactive selection)'),
+    flag.boolean('--add', 'Add the spreadsheet if it is not configured'),
+    flag.string('--name', 'Local name to use with --add')
+  ],
+  errorMessage: 'Failed to select spreadsheet',
+  action: async ({ options }) => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
 
@@ -77,16 +82,8 @@ export function createSelectSpreadsheetCommand(program: CaporalProgram): void {
 
     configManager.setActiveSpreadsheet(activeAccount.email, spreadsheetName);
     Logger.success(`Selected spreadsheet: ${spreadsheetName}`);
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SPREADSHEET,
-    SubCommandNames.SPREADSHEET_SELECT,
-    spreadsheetSelectCommand,
-    'Failed to select spreadsheet'
-  );
-}
+  }
+});
 
 async function getSpreadsheetTitle(
   configManager: ConfigManager,

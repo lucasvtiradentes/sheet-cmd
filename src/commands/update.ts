@@ -1,21 +1,21 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { exec } from 'child_process';
 import { readFileSync } from 'fs';
 import { platform } from 'os';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
-
-import { createCommandFromSchema } from '../definitions/command-builder';
-import { CommandNames } from '../definitions/types';
 import { Logger } from '../utils/logger';
 import { reinstallCompletionSilently } from './completion';
+import { defineSubCommand } from './define';
 
 const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export function createUpdateCommand(program: CaporalProgram): void {
-  const updateCommand = async () => {
+export const updateCommand = defineSubCommand({
+  name: 'update',
+  description: 'Update sheet-cmd to latest version',
+  errorMessage: 'Failed to check for updates',
+  action: async () => {
     Logger.loading('Checking current version...');
 
     const currentVersion = getCurrentVersion();
@@ -82,10 +82,8 @@ export function createUpdateCommand(program: CaporalProgram): void {
         Logger.info('  # Restart your shell');
       }
     }
-  };
-
-  createCommandFromSchema(program, CommandNames.UPDATE, updateCommand, 'Failed to check for updates');
-}
+  }
+});
 
 async function detectPackageManager(): Promise<string | null> {
   const npmPath = await getGlobalNpmPath();

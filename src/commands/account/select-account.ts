@@ -1,12 +1,14 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../config/config-manager';
-import { createSubCommandFromSchema } from '../../definitions/command-builder';
-import { CommandNames, SubCommandNames } from '../../definitions/types';
 import { Logger } from '../../utils/logger';
+import { argument, defineSubCommand } from '../define';
 
-export function createSelectAccountCommand(program: CaporalProgram): void {
-  const accountSelectCommand = async (email?: string) => {
+export const selectAccountCommand = defineSubCommand({
+  name: 'select',
+  description: 'Select active Google account',
+  arguments: [argument.string('email', 'Account email to select (optional - interactive if not provided)')],
+  errorMessage: 'Failed to select account',
+  action: async ({ args }) => {
     const configManager = new ConfigManager();
     const accounts = configManager.getAllAccounts();
 
@@ -16,7 +18,7 @@ export function createSelectAccountCommand(program: CaporalProgram): void {
       process.exit(0);
     }
 
-    let selectedEmail = email;
+    let selectedEmail = args.email;
 
     if (!selectedEmail) {
       const activeAccount = configManager.getActiveAccount();
@@ -45,15 +47,5 @@ export function createSelectAccountCommand(program: CaporalProgram): void {
 
     configManager.setActiveAccount(selectedEmail);
     Logger.success(`Selected account: ${selectedEmail}`);
-  };
-
-  const command = createSubCommandFromSchema(
-    program,
-    CommandNames.ACCOUNT,
-    SubCommandNames.ACCOUNT_SELECT,
-    accountSelectCommand,
-    'Failed to select account'
-  );
-
-  command.argument('[email]', 'Account email to select (optional - interactive if not provided)');
-}
+  }
+});

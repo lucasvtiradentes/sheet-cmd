@@ -6,19 +6,14 @@ import { basename } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import type { Program as CaporalProgram } from '@caporal/core';
 
-import { createAccountCommand } from './commands/account/index';
+import { cliCommands } from './commands/catalog';
 import { createCompletionCommand } from './commands/completion';
-import { createSheetCommand } from './commands/sheet/index';
-import { createSpreadsheetCommand } from './commands/spreadsheet/index';
-import { createUpdateCommand } from './commands/update';
+import { registerProgram } from './commands/register';
 import { APP_INFO } from './config/constants';
 
 const program = createProgram(getProgramBin());
 
-createAccountCommand(program);
-createSpreadsheetCommand(program);
-createSheetCommand(program);
-createUpdateCommand(program);
+registerProgram(program, cliCommands);
 createCompletionCommand(program);
 
 try {

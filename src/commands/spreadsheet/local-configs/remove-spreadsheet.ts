@@ -1,14 +1,15 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { SpreadsheetRemoveOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 import { parseSpreadsheetId } from '../../../utils/spreadsheet';
+import { defineSubCommand, flag } from '../../define';
 
-export function createRemoveSpreadsheetCommand(program: CaporalProgram): void {
-  const spreadsheetRemoveCommand = async (options: SpreadsheetRemoveOptions) => {
+export const removeSpreadsheetCommand = defineSubCommand({
+  name: 'remove',
+  description: 'Remove a spreadsheet configuration',
+  flags: [flag.string('--id', 'Spreadsheet ID or URL (skips interactive selection)')],
+  errorMessage: 'Failed to remove spreadsheet',
+  action: async ({ options }) => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
 
@@ -79,13 +80,5 @@ export function createRemoveSpreadsheetCommand(program: CaporalProgram): void {
 
     await configManager.removeSpreadsheet(activeAccount.email, spreadsheetName);
     Logger.success(`Spreadsheet '${spreadsheetName}' removed successfully!`);
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SPREADSHEET,
-    SubCommandNames.SPREADSHEET_REMOVE,
-    spreadsheetRemoveCommand,
-    'Failed to remove spreadsheet'
-  );
-}
+  }
+});

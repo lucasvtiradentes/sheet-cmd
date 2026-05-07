@@ -1,19 +1,26 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { writeFileSync } from 'fs';
 import { getActiveSheetName, getGoogleSheetsService } from '../../core/command-helpers';
-import { createSubCommandFromSchema } from '../../definitions/command-builder';
-import type { SheetReadOptions } from '../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../definitions/types';
 import { formatAsCSV, formatAsJSON, formatAsMarkdown } from '../../utils/formatters';
 import { Logger } from '../../utils/logger';
+import { defineSubCommand, flag } from '../define';
 
 type OutputFormat = 'markdown' | 'csv' | 'json';
 
-export function createReadCommand(program: CaporalProgram): void {
-  const sheetReadCommand = async (options: SheetReadOptions) => {
-    const outputFormat = options.output ?? 'markdown';
+export const readCommand = defineSubCommand({
+  name: 'read',
+  description: 'Read the complete content of a sheet',
+  flags: [
+    flag.string('--name', 'Tab name (uses active if not provided)', { alias: '-n' }),
+    flag.string('--output', 'Output format', { alias: '-o' }),
+    flag.boolean('--formulas', 'Include formulas instead of values', { alias: '-f' }),
+    flag.string('--export', 'Export to file', { alias: '-e' }),
+    flag.string('--range', 'Range to read (e.g., A1:B10)', { alias: '-r' })
+  ],
+  errorMessage: 'Failed to read sheet',
+  action: async ({ options }) => {
     const validFormats: OutputFormat[] = ['markdown', 'csv', 'json'];
-    if (!validFormats.includes(outputFormat)) {
+    const outputFormat = options.output ?? 'markdown';
+    if (!isOutputFormat(outputFormat)) {
       Logger.error(`Invalid output format '${outputFormat}'. Valid formats: ${validFormats.join(', ')}`);
       process.exit(1);
     }
@@ -52,13 +59,9 @@ export function createReadCommand(program: CaporalProgram): void {
       Logger.success(`Content of sheet '${sheetName}':\n`);
       Logger.plain(output);
     }
-  };
+  }
+});
 
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SHEET,
-    SubCommandNames.SHEET_READ,
-    sheetReadCommand,
-    'Failed to read sheet'
-  );
+function isOutputFormat(value: string): value is OutputFormat {
+  return ['markdown', 'csv', 'json'].includes(value);
 }

@@ -102,7 +102,7 @@ To use sheet-cmd, you need OAuth 2.0 credentials from Google Cloud Console:
 
 All commands use the **active account**, **active spreadsheet**, and **active sheet** by default. Set once, use everywhere.
 
-<!-- BEGIN:COMMANDS -->
+<!-- COMMANDS:START -->
 ### Account Commands
 
 **add** - Add a Google account via OAuth
@@ -120,14 +120,20 @@ sheet-cmd account list
 **select** - Select active Google account
 
 ```bash
-sheet-cmd account select
+sheet-cmd account select [email]
 ```
+
+Arguments:
+- `email`: Account email to select (optional - interactive if not provided)
 
 **remove** - Remove a Google account
 
 ```bash
-sheet-cmd account remove
+sheet-cmd account remove [email]
 ```
+
+Arguments:
+- `email`: Account email to remove (optional - interactive if not provided)
 
 **reauth** - Re-authenticate the active account
 
@@ -140,135 +146,207 @@ sheet-cmd account reauth
 **add** - Add a new spreadsheet (interactive by default, use --id for manual)
 
 ```bash
-sheet-cmd spreadsheet add
-sheet-cmd spreadsheet add --id "https://docs.google.com/spreadsheets/d/abc123" --name "Budget"
+sheet-cmd spreadsheet add [--id <value>] [--name <value>]
 ```
+
+Options:
+- `--id <value>`: Spreadsheet ID or URL (skips interactive selection)
+- `--name <value>`: Local name for the spreadsheet
 
 **list** - List all configured spreadsheets
 
 ```bash
-sheet-cmd spreadsheet list
+sheet-cmd spreadsheet list [--output <value>]
 ```
 
-**select** - Select a different spreadsheet (sets as active)
-
-```bash
-sheet-cmd spreadsheet select
-sheet-cmd spreadsheet select --id "https://docs.google.com/spreadsheets/d/abc123" --add --name "Budget"
-```
-
-**active** - Show the currently active spreadsheet
-
-```bash
-sheet-cmd spreadsheet active
-```
+Options:
+- `-o, --output <value>`: Output format
 
 **remove** - Remove a spreadsheet configuration
 
 ```bash
-sheet-cmd spreadsheet remove
+sheet-cmd spreadsheet remove [--id <value>]
 ```
+
+Options:
+- `--id <value>`: Spreadsheet ID or URL (skips interactive selection)
+
+**select** - Select a different spreadsheet (sets as active)
+
+```bash
+sheet-cmd spreadsheet select [--id <value>] [--add] [--name <value>]
+```
+
+Options:
+- `--id <value>`: Spreadsheet ID or URL (skips interactive selection)
+- `--add`: Add the spreadsheet if it is not configured
+- `--name <value>`: Local name to use with --add
+
+**active** - Show the currently active spreadsheet
+
+```bash
+sheet-cmd spreadsheet active [--output <value>]
+```
+
+Options:
+- `-o, --output <value>`: Output format
 
 ### Sheet Commands
 
 **list** - List all sheets in a spreadsheet
 
 ```bash
-sheet-cmd sheet list
+sheet-cmd sheet list [--output <value>]
 ```
+
+Options:
+- `-o, --output <value>`: Output format
 
 **active** - Show the currently active sheet
 
 ```bash
-sheet-cmd sheet active
+sheet-cmd sheet active [--output <value>]
 ```
+
+Options:
+- `-o, --output <value>`: Output format
 
 **select** - Select a sheet (sets as active)
 
 ```bash
-sheet-cmd sheet select
+sheet-cmd sheet select [--name <value>]
 ```
+
+Options:
+- `-n, --name <value>`: Tab name (skips interactive selection)
 
 **read** - Read the complete content of a sheet
 
 ```bash
-sheet-cmd sheet read -n "Sheet1"
-sheet-cmd sheet read -n "Sheet1" -o markdown
-sheet-cmd sheet read -n "Sheet1" -r "A1:B10"
-sheet-cmd sheet read -n "Sheet1" -e output.csv
+sheet-cmd sheet read [--name <value>] [--output <value>] [--formulas] [--export <value>] [--range <value>]
 ```
+
+Options:
+- `-n, --name <value>`: Tab name (uses active if not provided)
+- `-o, --output <value>`: Output format
+- `-f, --formulas`: Include formulas instead of values
+- `-e, --export <value>`: Export to file
+- `-r, --range <value>`: Range to read (e.g., A1:B10)
 
 **add** - Add a new sheet to the spreadsheet
 
 ```bash
-sheet-cmd sheet add -n "NewSheet"
+sheet-cmd sheet add --name <value>
 ```
+
+Options:
+- `-n, --name <value>`: Tab name (required)
 
 **remove** - Remove a sheet from the spreadsheet
 
 ```bash
-sheet-cmd sheet remove -n "OldSheet"
+sheet-cmd sheet remove [--name <value>]
 ```
+
+Options:
+- `-n, --name <value>`: Tab name (uses active if not provided)
 
 **rename** - Rename a sheet in the spreadsheet
 
 ```bash
-sheet-cmd sheet rename -n "OldName" --new-name "NewName"
+sheet-cmd sheet rename [--name <value>] --new-name <value>
 ```
+
+Options:
+- `-n, --name <value>`: Current tab name (uses active if not provided)
+- `--new-name <value>`: New tab name (required)
 
 **copy** - Copy a sheet to a new sheet
 
 ```bash
-sheet-cmd sheet copy -n "Sheet1" --to "Sheet1 Copy"
+sheet-cmd sheet copy [--name <value>] --to <value>
 ```
+
+Options:
+- `-n, --name <value>`: Source tab name (uses active if not provided)
+- `--to <value>`: Destination tab name (required)
 
 **write** - Write to a specific cell or range of cells
 
 ```bash
-sheet-cmd sheet write -n "Sheet1" -c A1 -v "Hello"
-sheet-cmd sheet write -n "Sheet1" -r A1:B2 -v "v1,v2;v3,v4"
-sheet-cmd sheet write -n "Sheet1" -r A1:B2 -v "v1,v2;v3,v4" --no-preserve
+sheet-cmd sheet write [--name <value>] [--cell <value>] [--range <value>] --value <value> [--no-preserve]
 ```
+
+Options:
+- `-n, --name <value>`: Tab name (uses active if not provided)
+- `-c, --cell <value>`: Cell address (e.g., A1) - required if --range not provided
+- `-r, --range <value>`: Range (e.g., A1:B2) - required if --cell not provided
+- `-v, --value <value>`: Value to write (use , for columns, ; for rows) (required)
+- `--no-preserve`: Overwrite cells with formulas or data validation
 
 **append** - Append a new row to the end of the sheet
 
 ```bash
-sheet-cmd sheet append -n "Sheet1" -v "val1,val2,val3"
+sheet-cmd sheet append [--name <value>] --value <value>
 ```
+
+Options:
+- `-n, --name <value>`: Tab name (uses active if not provided)
+- `-v, --value <value>`: Values to append (comma-separated) (required)
 
 **import** - Import CSV file to a sheet
 
 ```bash
-sheet-cmd sheet import -n "Sheet1" -f data.csv
-sheet-cmd sheet import -n "Sheet1" -f data.csv --skip-header
+sheet-cmd sheet import [--name <value>] --file <value> [--skip-header]
 ```
+
+Options:
+- `-n, --name <value>`: Tab name (uses active if not provided)
+- `-f, --file <value>`: CSV file path (required)
+- `--skip-header`: Skip header row when importing
 
 **export** - Export sheet data to JSON or CSV format
 
 ```bash
-sheet-cmd sheet export -n "Sheet1" -f json -o output.json
-sheet-cmd sheet export -n "Sheet1" -f csv -o output.csv
+sheet-cmd sheet export [--name <value>] [--range <value>] --format <value> [--output <value>]
 ```
+
+Options:
+- `-n, --name <value>`: Tab name (uses active if not provided)
+- `-r, --range <value>`: Range to export (optional)
+- `-f, --format <value>`: Export format (required)
+- `-o, --output <value>`: Output file path
 
 **row-add** - Add a row to the sheet
 
 ```bash
-sheet-cmd sheet row-add -r 5 --above
-sheet-cmd sheet row-add -r 5 --below --formulas
-sheet-cmd sheet row-add -r 5 --below --formulas --count 3
+sheet-cmd sheet row-add --row <value> [--name <value>] [--above] [--below] [--formulas] [--count <value>]
 ```
+
+Options:
+- `-r, --row <value>`: Row number (1-indexed) (required)
+- `-n, --name <value>`: Tab name (uses active if not provided)
+- `--above`: Insert row above the specified row
+- `--below`: Insert row below the specified row
+- `-f, --formulas`: Copy formatting, formulas, and data validation from adjacent row
+- `-c, --count <value>`: Number of rows to add (default: 1)
 
 **row-remove** - Remove a row from the sheet
 
 ```bash
-sheet-cmd sheet row-remove -r 5
-sheet-cmd sheet row-remove -r 5 --count 3
-sheet-cmd sheet row-remove -r 10 --above --count 5
+sheet-cmd sheet row-remove --row <value> [--name <value>] [--above] [--below] [--count <value>]
 ```
+
+Options:
+- `-r, --row <value>`: Row number (1-indexed) (required)
+- `-n, --name <value>`: Tab name (uses active if not provided)
+- `--above`: Remove rows above the specified row
+- `--below`: Remove rows below the specified row
+- `-c, --count <value>`: Number of rows to remove (default: 1)
 
 ### Update
 
-Update sheet-cmd to latest version
+**update** - Update sheet-cmd to latest version
 
 ```bash
 sheet-cmd update
@@ -276,162 +354,21 @@ sheet-cmd update
 
 ### Completion Commands
 
+**completion** - Generate shell completion scripts
+
+```bash
+sheet-cmd completion [shell]
+```
+
+Arguments:
+- `shell`: Shell to generate completion for (bash, fish, zsh)
+
 **install** - Install shell completion for your current shell
 
 ```bash
 sheet-cmd completion install
 ```
-
-
-<!-- END:COMMANDS -->
-
-<details>
-<summary><b>Account Management</b></summary>
-
-```bash
-# Add Google account via OAuth
-sheet-cmd account add
-
-# List all accounts (* = active)
-sheet-cmd account list
-
-# Select active account (interactive)
-sheet-cmd account select
-
-# Remove account (interactive)
-sheet-cmd account remove
-
-# Re-authenticate active account
-sheet-cmd account reauth
-```
-
-</details>
-
-<details>
-<summary><b>Spreadsheet Management</b></summary>
-
-```bash
-# Add spreadsheet (interactive - browse Google Drive)
-sheet-cmd spreadsheet add
-
-# Add spreadsheet manually by ID
-sheet-cmd spreadsheet add --id "1ABC..."
-
-# List all spreadsheets (* = active)
-sheet-cmd spreadsheet list
-
-# Select active spreadsheet (interactive)
-sheet-cmd spreadsheet select
-
-# Select spreadsheet by ID
-sheet-cmd spreadsheet select --id "1ABC..."
-
-# Show currently active spreadsheet
-sheet-cmd spreadsheet active
-
-# Remove spreadsheet (interactive)
-sheet-cmd spreadsheet remove
-
-# Remove spreadsheet by ID
-sheet-cmd spreadsheet remove --id "1ABC..."
-```
-
-</details>
-
-<details>
-<summary><b>Sheet Management</b></summary>
-
-```bash
-# List all sheets in spreadsheet
-sheet-cmd sheet list
-
-# Select active sheet (interactive)
-sheet-cmd sheet select
-
-# Select sheet by name
-sheet-cmd sheet select --name "Sheet1"
-
-# Add a new sheet
-sheet-cmd sheet add --name "NewSheet"
-
-# Remove a sheet (uses active if --name not provided)
-sheet-cmd sheet remove
-sheet-cmd sheet remove --name "OldSheet"
-
-# Rename a sheet (uses active if --name not provided)
-sheet-cmd sheet rename --new-name "NewName"
-sheet-cmd sheet rename --name "OldName" --new-name "NewName"
-
-# Copy a sheet (uses active if --name not provided)
-sheet-cmd sheet copy --to "Sheet1 Copy"
-sheet-cmd sheet copy --name "Sheet1" --to "Sheet1 Copy"
-```
-
-</details>
-
-<details>
-<summary><b>Data Operations</b></summary>
-
-```bash
-# Read sheet content (uses active sheet if --name not provided)
-sheet-cmd sheet read
-sheet-cmd sheet read --name "Sheet1"
-sheet-cmd sheet read --output csv
-sheet-cmd sheet read --formulas
-sheet-cmd sheet read --export output.md
-
-# Write to single cell (uses active sheet if --name not provided)
-sheet-cmd sheet write --cell A1 --value "Hello"
-sheet-cmd sheet write --name "Sheet1" --cell A1 --value "Hello"
-
-# Write to range (uses active sheet if --name not provided)
-sheet-cmd sheet write --range A1:B2 --value "v1,v2;v3,v4"
-sheet-cmd sheet write --name "Sheet1" --range A1:B2 --value "v1,v2;v3,v4"
-
-# Append row (uses active sheet if --name not provided)
-sheet-cmd sheet append --value "col1,col2,col3"
-sheet-cmd sheet append --name "Sheet1" --value "col1,col2,col3"
-```
-
-**Note**: For `write` command, use `,` to separate columns and `;` to separate rows
-
-</details>
-
-<details>
-<summary><b>Import/Export</b></summary>
-
-```bash
-# Import CSV (uses active sheet if --name not provided)
-sheet-cmd sheet import --file data.csv
-sheet-cmd sheet import --name "Sheet1" --file data.csv
-sheet-cmd sheet import --file data.csv --skip-header
-
-# Export to JSON (uses active sheet if --name not provided)
-sheet-cmd sheet export --format json --output output.json
-sheet-cmd sheet export --name "Sheet1" --format json --output output.json
-
-# Export to CSV (uses active sheet if --name not provided)
-sheet-cmd sheet export --format csv --output output.csv
-sheet-cmd sheet export --name "Sheet1" --format csv --output output.csv
-
-# Export specific range
-sheet-cmd sheet export --range B2:I25 --format csv --output output.csv
-```
-
-</details>
-
-<details>
-<summary><b>System Commands</b></summary>
-
-```bash
-# Update to latest version
-sheet-cmd update
-
-# Install shell completion (bash/zsh)
-sheet-cmd completion install
-```
-
-</details>
+<!-- COMMANDS:END -->
 
 ## :package: Additional Information
 

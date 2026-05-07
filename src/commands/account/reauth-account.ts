@@ -1,12 +1,13 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { performOAuthFlow } from '../../auth/oauth-flow';
 import { ConfigManager } from '../../config/config-manager';
-import { createSubCommandFromSchema } from '../../definitions/command-builder';
-import { CommandNames, SubCommandNames } from '../../definitions/types';
 import { Logger } from '../../utils/logger';
+import { defineSubCommand } from '../define';
 
-export function createReauthAccountCommand(program: CaporalProgram): void {
-  const accountReauthCommand = async () => {
+export const reauthAccountCommand = defineSubCommand({
+  name: 'reauth',
+  description: 'Re-authenticate the active account',
+  errorMessage: 'Failed to re-authenticate account',
+  action: async () => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
 
@@ -31,13 +32,5 @@ export function createReauthAccountCommand(program: CaporalProgram): void {
     await configManager.updateAccountCredentials(result.email, result.credentials);
     Logger.success(`Account '${result.email}' re-authenticated successfully!`);
     process.exit(0);
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.ACCOUNT,
-    SubCommandNames.ACCOUNT_REAUTH,
-    accountReauthCommand,
-    'Failed to re-authenticate account'
-  );
-}
+  }
+});

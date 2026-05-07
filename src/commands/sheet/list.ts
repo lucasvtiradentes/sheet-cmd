@@ -1,12 +1,13 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { getGoogleSheetsService } from '../../core/command-helpers';
-import { createSubCommandFromSchema } from '../../definitions/command-builder';
-import type { SheetListOptions } from '../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../definitions/types';
 import { Logger } from '../../utils/logger';
+import { defineSubCommand, flag } from '../define';
 
-export function createListCommand(program: CaporalProgram): void {
-  const sheetListCommand = async (options: SheetListOptions) => {
+export const listCommand = defineSubCommand({
+  name: 'list',
+  description: 'List all sheets in a spreadsheet',
+  flags: [flag.string('--output', 'Output format', { alias: '-o' })],
+  errorMessage: 'Failed to list sheets',
+  action: async ({ options }) => {
     const sheetsService = await getGoogleSheetsService();
 
     if (options.output !== 'json') {
@@ -26,13 +27,5 @@ export function createListCommand(program: CaporalProgram): void {
       Logger.plain(`  ${sheet.index + 1}. ${sheet.title}`);
       Logger.dim(`     ID: ${sheet.sheetId}`);
     });
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SHEET,
-    SubCommandNames.SHEET_LIST,
-    sheetListCommand,
-    'Failed to list sheets'
-  );
-}
+  }
+});

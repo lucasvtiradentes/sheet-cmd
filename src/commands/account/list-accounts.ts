@@ -1,11 +1,12 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { ConfigManager } from '../../config/config-manager';
-import { createSubCommandFromSchema } from '../../definitions/command-builder';
-import { CommandNames, SubCommandNames } from '../../definitions/types';
 import { Logger } from '../../utils/logger';
+import { defineSubCommand } from '../define';
 
-export function createListAccountsCommand(program: CaporalProgram): void {
-  const accountListCommand = () => {
+export const listAccountsCommand = defineSubCommand({
+  name: 'list',
+  description: 'List all configured Google accounts',
+  errorMessage: 'Failed to list accounts',
+  action: () => {
     const configManager = new ConfigManager();
     const accounts = configManager.getAllAccounts();
     const activeAccountEmail = configManager.getActiveAccountEmail();
@@ -23,13 +24,5 @@ export function createListAccountsCommand(program: CaporalProgram): void {
       const prefix = isActive ? '->' : '  ';
       Logger.info(`${prefix} ${account.email} (${spreadsheetCount} spreadsheet${spreadsheetCount !== 1 ? 's' : ''})`);
     });
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.ACCOUNT,
-    SubCommandNames.ACCOUNT_LIST,
-    accountListCommand,
-    'Failed to list accounts'
-  );
-}
+  }
+});

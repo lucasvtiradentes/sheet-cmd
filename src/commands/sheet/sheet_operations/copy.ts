@@ -1,12 +1,16 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { SheetCopyOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
+import { defineSubCommand, flag } from '../../define';
 
-export function createCopyCommand(program: CaporalProgram): void {
-  const sheetCopyCommand = async (options: SheetCopyOptions) => {
+export const copyCommand = defineSubCommand({
+  name: 'copy',
+  description: 'Copy a sheet to a new sheet',
+  flags: [
+    flag.string('--name', 'Source tab name (uses active if not provided)', { alias: '-n' }),
+    flag.string('--to', 'Destination tab name', { required: true })
+  ],
+  errorMessage: 'Failed to copy sheet',
+  action: async ({ options }) => {
     const sheetsService = await getGoogleSheetsService();
     const sheetName = getActiveSheetName(options.name);
 
@@ -14,13 +18,5 @@ export function createCopyCommand(program: CaporalProgram): void {
     await sheetsService.copySheet(sheetName, options.to);
 
     Logger.success(`Sheet '${sheetName}' copied to '${options.to}' successfully`);
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SHEET,
-    SubCommandNames.SHEET_COPY,
-    sheetCopyCommand,
-    'Failed to copy sheet'
-  );
-}
+  }
+});

@@ -1,17 +1,21 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager';
 import { GOOGLE_API_URLS } from '../../../config/constants';
 import { GoogleDriveService } from '../../../core/google-drive.service';
 import { GoogleSheetsService } from '../../../core/google-sheets.service';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { SpreadsheetAddOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
 import { parseSpreadsheetId } from '../../../utils/spreadsheet';
+import { defineSubCommand, flag } from '../../define';
 
-export function createAddSpreadsheetCommand(program: CaporalProgram): void {
-  const spreadsheetAddCommand = async (options: SpreadsheetAddOptions) => {
+export const addSpreadsheetCommand = defineSubCommand({
+  name: 'add',
+  description: 'Add a new spreadsheet (interactive by default, use --id for manual)',
+  flags: [
+    flag.string('--id', 'Spreadsheet ID or URL (skips interactive selection)'),
+    flag.string('--name', 'Local name for the spreadsheet')
+  ],
+  errorMessage: 'Failed to add spreadsheet',
+  action: async ({ options }) => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
 
@@ -101,16 +105,8 @@ export function createAddSpreadsheetCommand(program: CaporalProgram): void {
       Logger.success(`Spreadsheet '${name}' added successfully!`);
       Logger.info(`Switch to this spreadsheet: sheet-cmd spreadsheet select ${name}`);
     }
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SPREADSHEET,
-    SubCommandNames.SPREADSHEET_ADD,
-    spreadsheetAddCommand,
-    'Failed to add spreadsheet'
-  );
-}
+  }
+});
 
 async function getSpreadsheetTitle(
   configManager: ConfigManager,

@@ -1,18 +1,24 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import { writeFileSync } from 'fs';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { SheetExportOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { formatAsCSV, formatAsJSON } from '../../../utils/formatters';
 import { Logger } from '../../../utils/logger';
+import { defineSubCommand, flag } from '../../define';
 
 type ExportFormat = 'json' | 'csv';
 
-export function createExportCommand(program: CaporalProgram): void {
-  const sheetExportCommand = async (options: SheetExportOptions) => {
+export const exportCommand = defineSubCommand({
+  name: 'export',
+  description: 'Export sheet data to JSON or CSV format',
+  flags: [
+    flag.string('--name', 'Tab name (uses active if not provided)', { alias: '-n' }),
+    flag.string('--range', 'Range to export (optional)', { alias: '-r' }),
+    flag.string('--format', 'Export format', { alias: '-f', required: true }),
+    flag.string('--output', 'Output file path', { alias: '-o' })
+  ],
+  errorMessage: 'Failed to export data',
+  action: async ({ options }) => {
     const validFormats: ExportFormat[] = ['json', 'csv'];
-    if (!validFormats.includes(options.format)) {
+    if (!isExportFormat(options.format)) {
       Logger.error(`Invalid format '${options.format}'. Valid formats: ${validFormats.join(', ')}`);
       process.exit(1);
     }
@@ -48,13 +54,9 @@ export function createExportCommand(program: CaporalProgram): void {
       Logger.success('Exported data:\n');
       Logger.plain(output);
     }
-  };
+  }
+});
 
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SHEET,
-    SubCommandNames.SHEET_EXPORT,
-    sheetExportCommand,
-    'Failed to export data'
-  );
+function isExportFormat(value: string): value is ExportFormat {
+  return ['json', 'csv'].includes(value);
 }

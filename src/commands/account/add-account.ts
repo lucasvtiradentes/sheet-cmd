@@ -1,11 +1,9 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import * as readline from 'readline';
 import { performOAuthFlow } from '../../auth/oauth-flow';
 import { ConfigManager } from '../../config/config-manager';
 import { GOOGLE_CLOUD_CONSOLE_URLS } from '../../config/constants';
-import { createSubCommandFromSchema } from '../../definitions/command-builder';
-import { CommandNames, SubCommandNames } from '../../definitions/types';
 import { Logger } from '../../utils/logger';
+import { defineSubCommand } from '../define';
 
 async function promptInput(question: string): Promise<string> {
   const rl = readline.createInterface({
@@ -21,8 +19,11 @@ async function promptInput(question: string): Promise<string> {
   });
 }
 
-export function createAddAccountCommand(program: CaporalProgram): void {
-  const accountAddCommand = async () => {
+export const addAccountCommand = defineSubCommand({
+  name: 'add',
+  description: 'Add a Google account via OAuth',
+  errorMessage: 'Failed to add account',
+  action: async () => {
     Logger.bold('='.repeat(70));
     Logger.bold('  GOOGLE CLOUD CONSOLE SETUP');
     Logger.bold('='.repeat(70));
@@ -109,13 +110,5 @@ export function createAddAccountCommand(program: CaporalProgram): void {
       Logger.info('Switch to this account: sheet-cmd account select');
     }
     process.exit(0);
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.ACCOUNT,
-    SubCommandNames.ACCOUNT_ADD,
-    accountAddCommand,
-    'Failed to add account'
-  );
-}
+  }
+});

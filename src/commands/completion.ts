@@ -18,8 +18,7 @@ import {
   isVisibleCompletionCommand
 } from './completion/shared';
 import { getZshCompletionScript } from './completion/zsh';
-
-const COMPLETION_COMMAND_NAME = 'completion';
+import { argument, defineCommand, defineSubCommand } from './define';
 
 enum CompletionShell {
   Bash = 'bash',
@@ -28,6 +27,21 @@ enum CompletionShell {
 }
 
 const completionShells = Object.values(CompletionShell);
+
+export const completionCommand = defineCommand({
+  name: 'completion',
+  description: 'Generate shell completion scripts',
+  arguments: [argument.string('shell', `Shell to generate completion for (${completionShells.join(', ')})`)],
+  subcommands: [
+    defineSubCommand({
+      name: 'install',
+      description: 'Install shell completion for your current shell',
+      action: async () => {
+        await installCompletion();
+      }
+    })
+  ]
+});
 
 const completionScriptGenerators = {
   [CompletionShell.Bash]: getBashCompletionScript,
@@ -47,10 +61,16 @@ let completionProgram: CaporalProgram | undefined;
 
 export function createCompletionCommand(program: CaporalProgram): void {
   completionProgram = program;
+  const shellArgument = completionCommand.arguments?.[0];
+  const installCommand = completionCommand.subcommands[0];
+
+  if (!shellArgument) {
+    throw new Error('Completion shell argument metadata is missing');
+  }
 
   program
-    .command(COMPLETION_COMMAND_NAME, 'Generate shell completion scripts')
-    .argument('[shell]', 'Shell to generate completion for')
+    .command(completionCommand.name, completionCommand.description)
+    .argument(`[${shellArgument.name}]`, shellArgument.description)
     .strict(false)
     .action(async ({ args, program }) => {
       const shell = args.shell ? String(args.shell) : '';
@@ -64,11 +84,8 @@ export function createCompletionCommand(program: CaporalProgram): void {
     });
 
   program
-    .command(`${COMPLETION_COMMAND_NAME} install`, 'Install shell completion for your current shell')
-    .action(async () => {
-      await installCompletion();
-      return 0;
-    });
+    .command(`${completionCommand.name} ${installCommand.name}`, installCommand.description)
+    .action(async () => installCommand.action({ args: {}, options: {} }));
 }
 
 function detectShell(): string {
@@ -345,7 +362,7 @@ async function getCompletionScript(program: CaporalProgram, shell: CompletionShe
   const roots = getRootCommands(commands);
   const subcommands = getSubcommandGroups(commands);
   subcommands.set(
-    COMPLETION_COMMAND_NAME,
+    completionCommand.name,
     completionShells.map((shell) => ({ name: shell, description: `Generate ${shell} completion` }))
   );
   const options = getOptionGroups(commands);

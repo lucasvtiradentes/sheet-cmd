@@ -1,14 +1,15 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../../config/config-manager';
 import { getGoogleSheetsService } from '../../../core/command-helpers';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder';
-import type { SheetSelectOptions } from '../../../definitions/command-types';
-import { CommandNames, SubCommandNames } from '../../../definitions/types';
 import { Logger } from '../../../utils/logger';
+import { defineSubCommand, flag } from '../../define';
 
-export function createSelectCommand(program: CaporalProgram): void {
-  const sheetSelectCommand = async (options: SheetSelectOptions) => {
+export const selectCommand = defineSubCommand({
+  name: 'select',
+  description: 'Select a sheet (sets as active)',
+  flags: [flag.string('--name', 'Tab name (skips interactive selection)', { alias: '-n' })],
+  errorMessage: 'Failed to select sheet',
+  action: async ({ options }) => {
     const configManager = new ConfigManager();
     const activeAccount = configManager.getActiveAccount();
 
@@ -61,13 +62,5 @@ export function createSelectCommand(program: CaporalProgram): void {
 
     configManager.setActiveSheet(activeAccount.email, activeSpreadsheetName, sheetName);
     Logger.success(`Selected sheet: ${sheetName}`);
-  };
-
-  createSubCommandFromSchema(
-    program,
-    CommandNames.SHEET,
-    SubCommandNames.SHEET_SELECT,
-    sheetSelectCommand,
-    'Failed to select sheet'
-  );
-}
+  }
+});

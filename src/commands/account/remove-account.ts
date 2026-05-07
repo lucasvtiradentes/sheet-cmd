@@ -1,12 +1,14 @@
-import type { Program as CaporalProgram } from '@caporal/core';
 import inquirer from 'inquirer';
 import { ConfigManager } from '../../config/config-manager';
-import { createSubCommandFromSchema } from '../../definitions/command-builder';
-import { CommandNames, SubCommandNames } from '../../definitions/types';
 import { Logger } from '../../utils/logger';
+import { argument, defineSubCommand } from '../define';
 
-export function createRemoveAccountCommand(program: CaporalProgram): void {
-  const accountRemoveCommand = async (email?: string) => {
+export const removeAccountCommand = defineSubCommand({
+  name: 'remove',
+  description: 'Remove a Google account',
+  arguments: [argument.string('email', 'Account email to remove (optional - interactive if not provided)')],
+  errorMessage: 'Failed to remove account',
+  action: async ({ args }) => {
     const configManager = new ConfigManager();
     const accounts = configManager.getAllAccounts();
 
@@ -16,7 +18,7 @@ export function createRemoveAccountCommand(program: CaporalProgram): void {
       process.exit(0);
     }
 
-    let selectedEmail = email;
+    let selectedEmail = args.email;
 
     if (!selectedEmail) {
       const choices = accounts.map((acc) => ({
@@ -70,15 +72,5 @@ export function createRemoveAccountCommand(program: CaporalProgram): void {
 
     await configManager.removeAccount(selectedEmail);
     Logger.success(`Account '${selectedEmail}' removed successfully`);
-  };
-
-  const command = createSubCommandFromSchema(
-    program,
-    CommandNames.ACCOUNT,
-    SubCommandNames.ACCOUNT_REMOVE,
-    accountRemoveCommand,
-    'Failed to remove account'
-  );
-
-  command.argument('[email]', 'Account email to remove (optional - interactive if not provided)');
-}
+  }
+});
