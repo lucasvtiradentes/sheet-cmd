@@ -78,6 +78,7 @@ gs account reauth
 
 # spreadsheet commands
 gs spreadsheet add [--id <value>] [--name <value>]
+gs spreadsheet create --name <value> [--local-name <value>] [--no-select]
 gs spreadsheet list [--output <value>]
 gs spreadsheet remove [--id <value>]
 gs spreadsheet select [--id <value>] [--add] [--name <value>]
@@ -143,7 +144,7 @@ OAuth tokens are stored locally and refreshed automatically before expiry.
 
 ## 📜 License
 
-[MIT](https://github.com/lucasvtiradentes/sheet-cmd/blob/main/LICENSE)
+[MIT](https://github.com/lucasvtiradentes/gsheet/blob/main/LICENSE)
 
 <!-- <DYNFIELD:FOOTER> -->
 <div width="100%" align="center">

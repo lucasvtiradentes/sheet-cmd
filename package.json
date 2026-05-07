@@ -47,13 +47,13 @@
   ],
   "author": "Lucas Vieira",
   "license": "MIT",
-  "homepage": "https://github.com/lucasvtiradentes/sheet-cmd#readme",
+  "homepage": "https://github.com/lucasvtiradentes/gsheet#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lucasvtiradentes/sheet-cmd.git"
+    "url": "https://github.com/lucasvtiradentes/gsheet.git"
   },
   "bugs": {
-    "url": "https://github.com/lucasvtiradentes/sheet-cmd/issues"
+    "url": "https://github.com/lucasvtiradentes/gsheet/issues"
   },
   "dependencies": {
     "@caporal/core": "^2.0.7",
