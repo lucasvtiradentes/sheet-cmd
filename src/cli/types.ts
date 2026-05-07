@@ -62,11 +62,11 @@ export type ParentCommandDefinition<
 
 export type CommandDefinition = ParentCommandDefinition | SubCommandDefinition;
 
-export type InferOptions<Flags extends readonly CommandFlag[] | undefined> = Flags extends readonly CommandFlag[]
+type InferOptions<Flags extends readonly CommandFlag[] | undefined> = Flags extends readonly CommandFlag[]
   ? Simplify<UnionToIntersection<OptionFromFlag<Flags[number]>>>
   : Record<string, never>;
 
-export type InferArgs<Args extends readonly CommandArgument[] | undefined> = Args extends readonly CommandArgument[]
+type InferArgs<Args extends readonly CommandArgument[] | undefined> = Args extends readonly CommandArgument[]
   ? Simplify<UnionToIntersection<ArgFromDefinition<Args[number]>>>
   : Record<string, never>;
 
