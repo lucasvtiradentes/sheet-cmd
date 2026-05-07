@@ -26,7 +26,7 @@ export function assertRequiredOAuthScopes(grantedScopes: string[]): void {
       'Google returned an access token without required scopes.',
       `Missing scopes: ${missingScopes.join(', ')}`,
       `Granted scopes: ${grantedScopes.length > 0 ? grantedScopes.join(', ') : 'none'}`,
-      'Fix: in Google Cloud Console, add the missing scopes to the OAuth consent screen, publish/save the consent screen, then run `sheet-cmd account reauth` again.'
+      'Fix: in Google Cloud Console, add the missing scopes to the OAuth consent screen, publish/save the consent screen, then run `gsheet account reauth` again.'
     ].join('\n')
   );
 }

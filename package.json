@@ -1,6 +1,6 @@
 {
-  "name": "sheet-cmd",
-  "version": "1.1.6",
+  "name": "gsheet-lvt",
+  "version": "0.0.0",
   "packageManager": "pnpm@10.11.0",
   "description": "A CLI tool to interact with Google Sheets - perfect for LLM integrations",
   "type": "module",
@@ -13,8 +13,8 @@
     }
   },
   "bin": {
-    "sheet-cmd": "./dist/cli.js",
-    "sheet": "./dist/cli.js"
+    "gs": "./dist/cli.js",
+    "gsheet": "./dist/cli.js"
   },
   "files": [
     "dist"
@@ -22,13 +22,14 @@
   "scripts": {
     "check": "biome check src/ scripts/ tests/",
     "check:fix": "biome check --fix src/ scripts/ tests/",
-    "dev": "SHEET_CMD_PROG_NAME=sheet-cmd tsx src/cli.ts",
+    "dev": "SHEET_CMD_PROG_NAME=gsheet tsx src/cli.ts",
     "dev:install": "tsx scripts/install-dev-version.ts",
     "dev:uninstall": "tsx scripts/uninstall-dev-version.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsup",
+    "postbuild": "pnpm gen:docs",
     "gen:docs": "tsx scripts/gen-docs.ts",
-    "start": "SHEET_CMD_PROG_NAME=sheet-cmd node dist/cli.js",
+    "start": "SHEET_CMD_PROG_NAME=gsheet node dist/cli.js",
     "test:unit": "vitest run tests/unit",
     "test:e2e": "vitest run --config tests/e2e/vitest.config.ts",
     "format": "biome format --write .",

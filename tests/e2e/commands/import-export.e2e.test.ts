@@ -20,7 +20,7 @@ describe('Import/Export E2E', () => {
     testHomeDir = fixtures.testHomeDir;
     testTabName = fixtures.testTabName;
 
-    tempTestDir = path.join(os.tmpdir(), `sheet-cmd-import-export-${Date.now()}`);
+    tempTestDir = path.join(os.tmpdir(), `gsheet-import-export-${Date.now()}`);
     fs.mkdirSync(tempTestDir, { recursive: true });
   });
 

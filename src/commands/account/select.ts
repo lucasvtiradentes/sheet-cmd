@@ -14,7 +14,7 @@ export const selectAccountCommand = defineSubCommand({
 
     if (accounts.length === 0) {
       Logger.warning('No accounts configured.');
-      Logger.info('Use: sheet-cmd account add');
+      Logger.info('Use: gsheet account add');
       process.exit(0);
     }
 

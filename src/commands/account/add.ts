@@ -47,7 +47,7 @@ export const addAccountCommand = defineSubCommand({
     Logger.bold('STEP 3: Configure OAuth Consent Screen');
     Logger.link(`  ${GOOGLE_CLOUD_CONSOLE_URLS.CONSENT_SCREEN}`);
     Logger.info('  - User Type: External');
-    Logger.info('  - App name: sheet-cmd (or any name)');
+    Logger.info('  - App name: gsheet (or any name)');
     Logger.info('  - User support email: your email');
     Logger.info('  - Developer contact: your email');
     Logger.info('  - Click "SAVE AND CONTINUE"');
@@ -74,7 +74,7 @@ export const addAccountCommand = defineSubCommand({
     Logger.link(`  ${GOOGLE_CLOUD_CONSOLE_URLS.CREDENTIALS}`);
     Logger.info('  - Click "CREATE CREDENTIALS" → "OAuth client ID"');
     Logger.info('  - Application type: Desktop app');
-    Logger.info('  - Name: sheet-cmd');
+    Logger.info('  - Name: gsheet');
     Logger.info('  - Click "CREATE"');
     Logger.info('  - Copy the Client ID and Client Secret');
     Logger.plain('');
@@ -107,7 +107,7 @@ export const addAccountCommand = defineSubCommand({
       Logger.success(`Account '${result.email}' added and set as active!`);
     } else {
       Logger.success(`Account '${result.email}' added successfully!`);
-      Logger.info('Switch to this account: sheet-cmd account select');
+      Logger.info('Switch to this account: gsheet account select');
     }
     process.exit(0);
   }

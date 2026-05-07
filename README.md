@@ -25,34 +25,34 @@ Manage Google Sheets from the command line: read, write, import/export data acro
 
 ```bash
 # 1. Install
-npm install -g sheet-cmd
+npm install -g gsheet-lvt
 
 # 2. Setup Google OAuth credentials
 # → See "Google Cloud Console Setup" section below
 
 # 3. Add your Google account
-sheet-cmd account add
+gsheet account add
 # → Follow the setup instructions
 # → Paste Client ID and Client Secret
 # → Browser opens for authentication
 # → Grant permissions
 
 # 4. Add a spreadsheet
-sheet-cmd spreadsheet add
+gsheet spreadsheet add
 # → Browse and select from Google Drive
 
 # 5. Select a sheet
-sheet-cmd sheet select
+gsheet sheet select
 # → Choose sheet to work with
 
 # 6. Start using!
-sheet-cmd sheet read
+gsheet sheet read
 ```
 
 <details>
 <summary><b>Google Cloud Console Setup</b></summary>
 
-To use sheet-cmd, you need OAuth 2.0 credentials from Google Cloud Console:
+To use gsheet, you need OAuth 2.0 credentials from Google Cloud Console:
 
 **1. Go to [Google Cloud Console](https://console.cloud.google.com/)**
 
@@ -67,7 +67,7 @@ To use sheet-cmd, you need OAuth 2.0 credentials from Google Cloud Console:
 **4. Configure OAuth Consent Screen**
 - Go to: [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent)
 - User Type: **External**
-- App name: sheet-cmd (or any name)
+- App name: gsheet (or any name)
 - User support email: your email
 - Developer contact: your email
 - Click "SAVE AND CONTINUE"
@@ -90,7 +90,7 @@ To use sheet-cmd, you need OAuth 2.0 credentials from Google Cloud Console:
 - Go to: [Credentials](https://console.cloud.google.com/apis/credentials)
 - Click "CREATE CREDENTIALS" > "OAuth client ID"
 - Application type: **Desktop app**
-- Name: sheet-cmd
+- Name: gsheet
 - Click "CREATE"
 - **Copy the Client ID and Client Secret**
 
@@ -108,19 +108,19 @@ All commands use the **active account**, **active spreadsheet**, and **active sh
 **add** - Add a Google account via OAuth
 
 ```bash
-sheet-cmd account add
+gsheet account add
 ```
 
 **list** - List all configured Google accounts
 
 ```bash
-sheet-cmd account list
+gsheet account list
 ```
 
 **select** - Select active Google account
 
 ```bash
-sheet-cmd account select [email]
+gsheet account select [email]
 ```
 
 Arguments:
@@ -129,7 +129,7 @@ Arguments:
 **remove** - Remove a Google account
 
 ```bash
-sheet-cmd account remove [email]
+gsheet account remove [email]
 ```
 
 Arguments:
@@ -138,7 +138,7 @@ Arguments:
 **reauth** - Re-authenticate the active account
 
 ```bash
-sheet-cmd account reauth
+gsheet account reauth
 ```
 
 ### Spreadsheet Commands
@@ -146,7 +146,7 @@ sheet-cmd account reauth
 **add** - Add a new spreadsheet (interactive by default, use --id for manual)
 
 ```bash
-sheet-cmd spreadsheet add [--id <value>] [--name <value>]
+gsheet spreadsheet add [--id <value>] [--name <value>]
 ```
 
 Options:
@@ -156,7 +156,7 @@ Options:
 **list** - List all configured spreadsheets
 
 ```bash
-sheet-cmd spreadsheet list [--output <value>]
+gsheet spreadsheet list [--output <value>]
 ```
 
 Options:
@@ -165,7 +165,7 @@ Options:
 **remove** - Remove a spreadsheet configuration
 
 ```bash
-sheet-cmd spreadsheet remove [--id <value>]
+gsheet spreadsheet remove [--id <value>]
 ```
 
 Options:
@@ -174,7 +174,7 @@ Options:
 **select** - Select a different spreadsheet (sets as active)
 
 ```bash
-sheet-cmd spreadsheet select [--id <value>] [--add] [--name <value>]
+gsheet spreadsheet select [--id <value>] [--add] [--name <value>]
 ```
 
 Options:
@@ -185,7 +185,7 @@ Options:
 **active** - Show the currently active spreadsheet
 
 ```bash
-sheet-cmd spreadsheet active [--output <value>]
+gsheet spreadsheet active [--output <value>]
 ```
 
 Options:
@@ -196,7 +196,7 @@ Options:
 **list** - List all sheets in a spreadsheet
 
 ```bash
-sheet-cmd sheet list [--output <value>]
+gsheet sheet list [--output <value>]
 ```
 
 Options:
@@ -205,7 +205,7 @@ Options:
 **active** - Show the currently active sheet
 
 ```bash
-sheet-cmd sheet active [--output <value>]
+gsheet sheet active [--output <value>]
 ```
 
 Options:
@@ -214,7 +214,7 @@ Options:
 **select** - Select a sheet (sets as active)
 
 ```bash
-sheet-cmd sheet select [--name <value>]
+gsheet sheet select [--name <value>]
 ```
 
 Options:
@@ -223,7 +223,7 @@ Options:
 **read** - Read the complete content of a sheet
 
 ```bash
-sheet-cmd sheet read [--name <value>] [--output <value>] [--formulas] [--export <value>] [--range <value>]
+gsheet sheet read [--name <value>] [--output <value>] [--formulas] [--export <value>] [--range <value>]
 ```
 
 Options:
@@ -236,7 +236,7 @@ Options:
 **add** - Add a new sheet to the spreadsheet
 
 ```bash
-sheet-cmd sheet add --name <value>
+gsheet sheet add --name <value>
 ```
 
 Options:
@@ -245,7 +245,7 @@ Options:
 **remove** - Remove a sheet from the spreadsheet
 
 ```bash
-sheet-cmd sheet remove [--name <value>]
+gsheet sheet remove [--name <value>]
 ```
 
 Options:
@@ -254,7 +254,7 @@ Options:
 **rename** - Rename a sheet in the spreadsheet
 
 ```bash
-sheet-cmd sheet rename [--name <value>] --new-name <value>
+gsheet sheet rename [--name <value>] --new-name <value>
 ```
 
 Options:
@@ -264,7 +264,7 @@ Options:
 **copy** - Copy a sheet to a new sheet
 
 ```bash
-sheet-cmd sheet copy [--name <value>] --to <value>
+gsheet sheet copy [--name <value>] --to <value>
 ```
 
 Options:
@@ -274,7 +274,7 @@ Options:
 **write** - Write to a specific cell or range of cells
 
 ```bash
-sheet-cmd sheet write [--name <value>] [--cell <value>] [--range <value>] --value <value> [--no-preserve]
+gsheet sheet write [--name <value>] [--cell <value>] [--range <value>] --value <value> [--no-preserve]
 ```
 
 Options:
@@ -287,7 +287,7 @@ Options:
 **append** - Append a new row to the end of the sheet
 
 ```bash
-sheet-cmd sheet append [--name <value>] --value <value>
+gsheet sheet append [--name <value>] --value <value>
 ```
 
 Options:
@@ -297,7 +297,7 @@ Options:
 **import** - Import CSV file to a sheet
 
 ```bash
-sheet-cmd sheet import [--name <value>] --file <value> [--skip-header]
+gsheet sheet import [--name <value>] --file <value> [--skip-header]
 ```
 
 Options:
@@ -308,7 +308,7 @@ Options:
 **export** - Export sheet data to JSON or CSV format
 
 ```bash
-sheet-cmd sheet export [--name <value>] [--range <value>] --format <value> [--output <value>]
+gsheet sheet export [--name <value>] [--range <value>] --format <value> [--output <value>]
 ```
 
 Options:
@@ -320,7 +320,7 @@ Options:
 **row-add** - Add a row to the sheet
 
 ```bash
-sheet-cmd sheet row-add --row <value> [--name <value>] [--above] [--below] [--formulas] [--count <value>]
+gsheet sheet row-add --row <value> [--name <value>] [--above] [--below] [--formulas] [--count <value>]
 ```
 
 Options:
@@ -334,7 +334,7 @@ Options:
 **row-remove** - Remove a row from the sheet
 
 ```bash
-sheet-cmd sheet row-remove --row <value> [--name <value>] [--above] [--below] [--count <value>]
+gsheet sheet row-remove --row <value> [--name <value>] [--above] [--below] [--count <value>]
 ```
 
 Options:
@@ -346,10 +346,10 @@ Options:
 
 ### Update
 
-**update** - Update sheet-cmd to latest version
+**update** - Update gsheet to latest version
 
 ```bash
-sheet-cmd update
+gsheet update
 ```
 
 ### Completion Commands
@@ -357,7 +357,7 @@ sheet-cmd update
 **completion** - Generate shell completion scripts
 
 ```bash
-sheet-cmd completion [shell]
+gsheet completion [shell]
 ```
 
 Arguments:
@@ -366,7 +366,7 @@ Arguments:
 **install** - Install shell completion for your current shell
 
 ```bash
-sheet-cmd completion install
+gsheet completion install
 ```
 <!-- COMMANDS:END -->
 
@@ -378,9 +378,9 @@ sheet-cmd completion install
 <summary><b>Configuration Files</b></summary>
 
 Configuration files are stored in:
-- **Linux/WSL**: `~/.config/sheet-cmd/`
-- **macOS**: `~/Library/Preferences/sheet-cmd/`
-- **Windows**: `%APPDATA%/sheet-cmd/`
+- **Linux/WSL**: `~/.config/gsheet/`
+- **macOS**: `~/Library/Preferences/gsheet/`
+- **Windows**: `%APPDATA%/gsheet/`
 
 **Files:**
 - `user_metadata.json` - Stores accounts, active selections, and spreadsheets
@@ -389,7 +389,7 @@ Configuration files are stored in:
 **Example structure:**
 ```json
 {
-  "config_path": "~/.config/sheet-cmd/config.json",
+  "config_path": "~/.config/gsheet/config.json",
   "activeAccount": "user@gmail.com",
   "accounts": {
     "user@gmail.com": {
@@ -432,13 +432,13 @@ Sheet CMD is designed to be LLM-friendly, making it easy for AI tools like [Clau
 **Example Claude Code workflow:**
 ```bash
 # Claude can read your budget spreadsheet
-sheet-cmd sheet read --name "Budget" --output markdown
+gsheet sheet read --name "Budget" --output markdown
 
 # Process the data and write results back
-sheet-cmd sheet write --name "Analysis" --cell A1 --value "Summary"
+gsheet sheet write --name "Analysis" --cell A1 --value "Summary"
 
 # Export for further analysis
-sheet-cmd sheet export --name "Data" --format json --output data.json
+gsheet sheet export --name "Data" --format json --output data.json
 ```
 
 </details>
@@ -446,19 +446,19 @@ sheet-cmd sheet export --name "Data" --format json --output data.json
 <details>
 <summary><b>Uninstallation</b></summary>
 
-To completely remove sheet-cmd:
+To completely remove gsheet:
 
 ```bash
 # 1. Remove shell completions (if installed)
-sheet-cmd completion uninstall
+gsheet completion uninstall
 
 # 2. Uninstall the package
-npm uninstall -g sheet-cmd
+npm uninstall -g gsheet-lvt
 
 # 3. (Optional) Remove configuration files
-# Linux/WSL: rm -rf ~/.config/sheet-cmd/
-# macOS: rm -rf ~/Library/Preferences/sheet-cmd/
-# Windows: Remove %APPDATA%/sheet-cmd/
+# Linux/WSL: rm -rf ~/.config/gsheet/
+# macOS: rm -rf ~/Library/Preferences/gsheet/
+# Windows: Remove %APPDATA%/gsheet/
 ```
 
 </details>

@@ -17,6 +17,7 @@ import {
 import { getZshCompletionScript } from '../cli/completion/zsh';
 import { argument, defineCommand, defineSubCommand } from '../cli/define';
 import { ConfigManager } from '../config/config-manager';
+import { APP_INFO } from '../config/constants';
 import { Logger } from '../utils/logger';
 
 enum CompletionShell {
@@ -149,7 +150,7 @@ async function installZshCompletion(): Promise<void> {
     mkdirSync(targetDir, { recursive: true });
   }
 
-  const completionFile = join(targetDir, '_sheet-cmd');
+  const completionFile = join(targetDir, `_${APP_INFO.name}`);
   writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Zsh));
 
   Logger.success(`Zsh completion installed to ${completionFile}`);
@@ -201,7 +202,7 @@ async function installBashCompletion(): Promise<void> {
     mkdirSync(targetDir, { recursive: true });
   }
 
-  const completionFile = join(targetDir, 'sheet-cmd');
+  const completionFile = join(targetDir, APP_INFO.name);
   writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Bash));
 
   Logger.success(`Bash completion installed to ${completionFile}`);
@@ -258,7 +259,7 @@ async function installZshCompletionSilent(): Promise<void> {
     mkdirSync(targetDir, { recursive: true });
   }
 
-  const completionFile = join(targetDir, '_sheet-cmd');
+  const completionFile = join(targetDir, `_${APP_INFO.name}`);
   writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Zsh));
 }
 
@@ -289,7 +290,7 @@ async function installBashCompletionSilent(): Promise<void> {
     mkdirSync(targetDir, { recursive: true });
   }
 
-  const completionFile = join(targetDir, 'sheet-cmd');
+  const completionFile = join(targetDir, APP_INFO.name);
   writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Bash));
 }
 
@@ -298,7 +299,7 @@ async function installFishCompletion(): Promise<void> {
   const targetDir = join(homeDir, '.config', 'fish', 'completions');
   mkdirSync(targetDir, { recursive: true });
 
-  const completionFile = join(targetDir, 'sheet-cmd.fish');
+  const completionFile = join(targetDir, `${APP_INFO.name}.fish`);
   writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Fish));
 
   Logger.success(`Fish completion installed to ${completionFile}`);
@@ -312,7 +313,7 @@ async function installFishCompletionSilent(): Promise<void> {
   const targetDir = join(homeDir, '.config', 'fish', 'completions');
   mkdirSync(targetDir, { recursive: true });
 
-  const completionFile = join(targetDir, 'sheet-cmd.fish');
+  const completionFile = join(targetDir, `${APP_INFO.name}.fish`);
   writeFileSync(completionFile, await getCurrentCompletionScript(CompletionShell.Fish));
 }
 

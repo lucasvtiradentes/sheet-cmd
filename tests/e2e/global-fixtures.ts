@@ -8,7 +8,7 @@ export interface GlobalFixtures {
   testHomeDir: string;
 }
 
-const FIXTURES_FILE = path.join(os.tmpdir(), 'sheet-cmd-e2e-fixtures.json');
+const FIXTURES_FILE = path.join(os.tmpdir(), 'gsheet-e2e-fixtures.json');
 
 export function saveGlobalFixtures(fixtures: GlobalFixtures): void {
   fs.writeFileSync(FIXTURES_FILE, JSON.stringify(fixtures, null, 2));

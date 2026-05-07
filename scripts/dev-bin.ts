@@ -1,9 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { APP_INFO } from '../src/config/constants';
-
-export const devBinNames = [`${APP_INFO.name}d`, 'sheetd'];
+export const devBinNames = ['gsheetd', 'gsd'];
 
 export function getDevBinDir() {
   if (process.env.SHEET_CMD_DEV_BIN_DIR) return process.env.SHEET_CMD_DEV_BIN_DIR;

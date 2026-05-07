@@ -17,7 +17,7 @@ export function handleCommandError(baseMessage: string | ((error: unknown) => st
     if (errorDetails.includes('invalid_grant')) {
       Logger.error('OAuth token refresh failed: invalid_grant');
       Logger.info('Your refresh token is expired or invalid');
-      Logger.info('Fix: sheet-cmd account reauth');
+      Logger.info('Fix: gsheet account reauth');
       process.exit(1);
     }
 

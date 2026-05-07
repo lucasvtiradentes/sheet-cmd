@@ -20,7 +20,7 @@ describe('Advanced Features E2E', () => {
     testHomeDir = fixtures.testHomeDir;
     testTabName = fixtures.testTabName;
 
-    tempTestDir = path.join(os.tmpdir(), `sheet-cmd-advanced-${Date.now()}`);
+    tempTestDir = path.join(os.tmpdir(), `gsheet-advanced-${Date.now()}`);
     fs.mkdirSync(tempTestDir, { recursive: true });
   });
 

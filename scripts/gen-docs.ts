@@ -8,6 +8,7 @@ import {
   type ParentCommandDefinition,
   type SubCommandDefinition
 } from '../src/cli/types';
+import { APP_INFO } from '../src/config/constants';
 
 const readmePath = 'README.md';
 const startMarker = '<!-- COMMANDS:START -->';
@@ -35,7 +36,7 @@ function parentCommandDocs(command: ParentCommandDefinition) {
         `**${command.name}** - ${command.description}`,
         '',
         '```bash',
-        `sheet-cmd ${command.name}${parentUsageSuffix(command)}`,
+        `${APP_INFO.name} ${command.name}${parentUsageSuffix(command)}`,
         '```',
         '',
         argumentList(command.arguments)
@@ -53,7 +54,7 @@ function commandDocs(command: SubCommandDefinition, parent?: string) {
     `**${command.name}** - ${command.description}`,
     '',
     '```bash',
-    `sheet-cmd ${commandPath}${usageSuffix(command)}`,
+    `${APP_INFO.name} ${commandPath}${usageSuffix(command)}`,
     '```'
   ];
 

@@ -15,7 +15,7 @@ export const removeSpreadsheetCommand = defineSubCommand({
 
     if (!activeAccount) {
       Logger.error('No active account set.');
-      Logger.info('Use: sheet-cmd account add');
+      Logger.info('Use: gsheet account add');
       process.exit(1);
     }
 

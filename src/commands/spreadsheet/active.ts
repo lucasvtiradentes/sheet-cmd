@@ -14,7 +14,7 @@ export const activeSpreadsheetCommand = defineSubCommand({
 
     if (!activeAccount) {
       Logger.error('No active account set.');
-      Logger.info('Use: sheet-cmd account add');
+      Logger.info('Use: gsheet account add');
       return;
     }
 
@@ -22,7 +22,7 @@ export const activeSpreadsheetCommand = defineSubCommand({
 
     if (!activeSpreadsheetName) {
       Logger.warning('No active spreadsheet set.');
-      Logger.info('Use "sheet-cmd spreadsheet select <name>" to set one.');
+      Logger.info('Use "gsheet spreadsheet select <name>" to set one.');
       return;
     }
 

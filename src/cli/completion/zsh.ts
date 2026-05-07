@@ -1,3 +1,4 @@
+import { APP_INFO } from '../../config/constants';
 import { type CompletionGroup, type CompletionOption, commandKey, getFunctionName, globalOptions } from './shared';
 
 export function getZshCompletionScript(
@@ -6,7 +7,7 @@ export function getZshCompletionScript(
   subcommands: Map<string, CompletionGroup[]>,
   options: Map<string, CompletionOption[]>
 ) {
-  const functionName = getFunctionName(binNames[0] ?? 'sheet-cmd');
+  const functionName = getFunctionName(binNames[0] ?? APP_INFO.name);
   return `#compdef ${binNames.join(' ')}
 
 ${functionName}() {
@@ -32,7 +33,7 @@ ${formatZshOptionArrays(options)}
   fi
 
   case $words[2] in
-${formatZshCompletionCases(binNames[0] ?? 'sheet-cmd', subcommands, options)}
+${formatZshCompletionCases(binNames[0] ?? APP_INFO.name, subcommands, options)}
   esac
 }
 

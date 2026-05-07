@@ -61,7 +61,7 @@ export class GoogleDriveService {
       Logger.info(`  - ${OAUTH_SCOPES.DRIVE_READONLY}`);
       Logger.info('\nTo fix this:');
       Logger.info('  1. Add Drive API scope in OAuth Consent Screen');
-      Logger.info('  2. Run: sheet-cmd account reauth');
+      Logger.info('  2. Run: gsheet account reauth');
       throw error;
     }
   }

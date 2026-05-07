@@ -13,7 +13,7 @@ export const listAccountsCommand = defineSubCommand({
 
     if (accounts.length === 0) {
       Logger.info('No accounts configured.');
-      Logger.info('Add one with: sheet-cmd account add');
+      Logger.info('Add one with: gsheet account add');
       return;
     }
 

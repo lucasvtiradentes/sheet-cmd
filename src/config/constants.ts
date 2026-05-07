@@ -10,7 +10,8 @@ const packageJsonPath = findPackageJsonPath(__dirname);
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
 export const APP_INFO = {
-  name: 'sheet-cmd',
+  name: 'gsheet',
+  packageName: packageJson.name,
   display_name: 'Google Sheets CLI',
   version: packageJson.version
 };

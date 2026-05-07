@@ -13,7 +13,7 @@ export const reauthAccountCommand = defineSubCommand({
 
     if (!activeAccount) {
       Logger.error('No active account set.');
-      Logger.info('Use: sheet-cmd account switch <email>');
+      Logger.info('Use: gsheet account switch <email>');
       process.exit(1);
     }
 

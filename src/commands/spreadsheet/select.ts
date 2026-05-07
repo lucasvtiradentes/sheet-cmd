@@ -20,7 +20,7 @@ export const selectSpreadsheetCommand = defineSubCommand({
 
     if (!activeAccount) {
       Logger.error('No active account set.');
-      Logger.info('Use: sheet-cmd account add');
+      Logger.info('Use: gsheet account add');
       process.exit(1);
     }
 
@@ -30,7 +30,7 @@ export const selectSpreadsheetCommand = defineSubCommand({
       const spreadsheets = configManager.listSpreadsheets(activeAccount.email);
 
       if (spreadsheets.length === 0) {
-        Logger.warning('No spreadsheets configured. Use "sheet-cmd spreadsheet add" to add one.');
+        Logger.warning('No spreadsheets configured. Use "gsheet spreadsheet add" to add one.');
         return;
       }
 

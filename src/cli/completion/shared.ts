@@ -23,7 +23,7 @@ export function isVisibleCompletionCommand(command: Command) {
 }
 
 export function getCompletionBinNames(binName: string) {
-  return [...new Set([binName, APP_INFO.name, 'sheet'])];
+  return [...new Set([binName, APP_INFO.name, 'gs'])];
 }
 
 export function getRootCommands(commands: Command[]) {

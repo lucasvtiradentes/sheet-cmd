@@ -25,7 +25,7 @@ export async function refreshToken(credentials: OAuthCredentials): Promise<OAuth
   const accessToken = newTokens.access_token || credentials.access_token;
 
   if (!accessToken) {
-    throw new Error('No access token available after refresh. Run `sheet-cmd account reauth`.');
+    throw new Error('No access token available after refresh. Run `gsheet account reauth`.');
   }
 
   const tokenInfo = await oauth2Client.getTokenInfo(accessToken);

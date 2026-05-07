@@ -5,6 +5,7 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
 import { defineSubCommand } from '../cli/define';
+import { APP_INFO } from '../config/constants';
 import { Logger } from '../utils/logger';
 import { reinstallCompletionSilently } from './completion';
 
@@ -18,14 +19,14 @@ enum PackageManager {
 }
 
 const updateCommandsByPackageManager = {
-  [PackageManager.Npm]: 'npm update -g sheet-cmd',
-  [PackageManager.Pnpm]: 'pnpm update -g sheet-cmd',
-  [PackageManager.Yarn]: 'yarn global upgrade sheet-cmd'
+  [PackageManager.Npm]: `npm update -g ${APP_INFO.packageName}`,
+  [PackageManager.Pnpm]: `pnpm update -g ${APP_INFO.packageName}`,
+  [PackageManager.Yarn]: `yarn global upgrade ${APP_INFO.packageName}`
 } as const satisfies Record<PackageManager, string>;
 
 export const updateCommand = defineSubCommand({
   name: 'update',
-  description: 'Update sheet-cmd to latest version',
+  description: `Update ${APP_INFO.name} to latest version`,
   errorMessage: 'Failed to check for updates',
   action: async () => {
     Logger.loading('Checking current version...');
@@ -48,7 +49,7 @@ export const updateCommand = defineSubCommand({
     Logger.info(`📦 Latest version: ${latestVersion}`);
 
     if (currentVersion === latestVersion) {
-      Logger.success('sheet-cmd is already up to date!');
+      Logger.success(`${APP_INFO.name} is already up to date!`);
       return;
     }
 
@@ -57,13 +58,13 @@ export const updateCommand = defineSubCommand({
     const packageManager = await detectPackageManager();
 
     if (!packageManager) {
-      Logger.error('Could not detect how sheet-cmd was installed');
+      Logger.error(`Could not detect how ${APP_INFO.name} was installed`);
       Logger.dim('Please update manually using your package manager');
       return;
     }
 
     Logger.info(`📦 Detected package manager: ${packageManager}`);
-    Logger.loading(`Updating sheet-cmd from ${currentVersion} to ${latestVersion}...`);
+    Logger.loading(`Updating ${APP_INFO.name} from ${currentVersion} to ${latestVersion}...`);
 
     const updateCommand = getUpdateCommand(packageManager);
     const { stdout, stderr } = await execAsync(updateCommand);
@@ -73,7 +74,7 @@ export const updateCommand = defineSubCommand({
       return;
     }
 
-    Logger.success(`sheet-cmd updated successfully from ${currentVersion} to ${latestVersion}!`);
+    Logger.success(`${APP_INFO.name} updated successfully from ${currentVersion} to ${latestVersion}!`);
 
     if (stdout) {
       Logger.dim(stdout);
@@ -124,7 +125,7 @@ async function getGlobalNpmPath(): Promise<string | null> {
 
   try {
     const whereCommand = isWindows ? 'where' : 'which';
-    const { stdout } = await execAsync(`${whereCommand} sheet-cmd`);
+    const { stdout } = await execAsync(`${whereCommand} ${APP_INFO.name}`);
     const execPath = stdout.trim();
 
     if (execPath) {
@@ -140,8 +141,8 @@ async function getGlobalNpmPath(): Promise<string | null> {
     }
   } catch {
     try {
-      const { stdout } = await execAsync('npm list -g --depth=0 sheet-cmd');
-      if (stdout.includes('sheet-cmd')) {
+      const { stdout } = await execAsync(`npm list -g --depth=0 ${APP_INFO.packageName}`);
+      if (stdout.includes(APP_INFO.packageName)) {
         return PackageManager.Npm;
       }
     } catch {}
@@ -162,7 +163,7 @@ function getCurrentVersion(): string | null {
 
 async function getLatestVersion(): Promise<string | null> {
   try {
-    const { stdout } = await execAsync('npm view sheet-cmd version');
+    const { stdout } = await execAsync(`npm view ${APP_INFO.packageName} version`);
     return stdout.trim();
   } catch {
     return null;

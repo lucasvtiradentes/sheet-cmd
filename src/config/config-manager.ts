@@ -392,7 +392,7 @@ export class ConfigManager {
 
 async function assertCredentialsHaveRequiredScopes(credentials: OAuthCredentials): Promise<void> {
   if (!credentials.access_token) {
-    throw new Error('No access token available. Run `sheet-cmd account reauth`.');
+    throw new Error('No access token available. Run `gsheet account reauth`.');
   }
 
   const oauth2Client = new OAuth2Client(credentials.client_id, credentials.client_secret);

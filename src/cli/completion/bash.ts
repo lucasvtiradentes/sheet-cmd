@@ -1,3 +1,4 @@
+import { APP_INFO } from '../../config/constants';
 import { type CompletionGroup, type CompletionOption, getFunctionName, globalOptions, optionWords } from './shared';
 
 export function getBashCompletionScript(
@@ -6,7 +7,7 @@ export function getBashCompletionScript(
   subcommands: Map<string, CompletionGroup[]>,
   _options: Map<string, CompletionOption[]>
 ) {
-  const functionName = getFunctionName(binNames[0] ?? 'sheet-cmd');
+  const functionName = getFunctionName(binNames[0] ?? APP_INFO.name);
   return `${functionName}() {
   local cur root subcommand
   cur="\${COMP_WORDS[COMP_CWORD]}"

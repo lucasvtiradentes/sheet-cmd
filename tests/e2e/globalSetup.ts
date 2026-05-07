@@ -18,8 +18,8 @@ export async function setup() {
 
   console.log('🌍 Creating global fixtures for all E2E tests...');
 
-  const testHomeDir = path.join(os.tmpdir(), `sheet-cmd-global-e2e-${Date.now()}`);
-  const testConfigDir = path.join(testHomeDir, '.config', 'sheet-cmd');
+  const testHomeDir = path.join(os.tmpdir(), `gsheet-global-e2e-${Date.now()}`);
+  const testConfigDir = path.join(testHomeDir, '.config', 'gsheet');
 
   try {
     fs.mkdirSync(testConfigDir, { recursive: true });

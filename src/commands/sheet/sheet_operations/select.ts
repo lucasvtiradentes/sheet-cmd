@@ -15,14 +15,14 @@ export const selectCommand = defineSubCommand({
 
     if (!activeAccount) {
       Logger.error('No active account set.');
-      Logger.info('Use: sheet-cmd account add');
+      Logger.info('Use: gsheet account add');
       process.exit(1);
     }
 
     const activeSpreadsheetName = configManager.getActiveSpreadsheetName(activeAccount.email);
     if (!activeSpreadsheetName) {
       Logger.error('No active spreadsheet set.');
-      Logger.info('Use: sheet-cmd spreadsheet select <name>');
+      Logger.info('Use: gsheet spreadsheet select <name>');
       process.exit(1);
     }
 
