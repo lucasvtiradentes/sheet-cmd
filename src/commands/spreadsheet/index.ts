@@ -1,12 +1,12 @@
 import { Command } from 'commander';
 
-import { createCommandFromSchema } from '../../definitions/command-builder.js';
-import { CommandNames } from '../../definitions/types.js';
-import { createActiveSpreadsheetCommand } from './local-configs/active-spreadsheet.js';
-import { createAddSpreadsheetCommand } from './local-configs/add-spreadsheet.js';
-import { createListSpreadsheetsCommand } from './local-configs/list-spreadsheets.js';
-import { createRemoveSpreadsheetCommand } from './local-configs/remove-spreadsheet.js';
-import { createSelectSpreadsheetCommand } from './local-configs/select-spreadsheet.js';
+import { createCommandFromSchema } from '../../definitions/command-builder';
+import { CommandNames } from '../../definitions/types';
+import { createActiveSpreadsheetCommand } from './local-configs/active-spreadsheet';
+import { createAddSpreadsheetCommand } from './local-configs/add-spreadsheet';
+import { createListSpreadsheetsCommand } from './local-configs/list-spreadsheets';
+import { createRemoveSpreadsheetCommand } from './local-configs/remove-spreadsheet';
+import { createSelectSpreadsheetCommand } from './local-configs/select-spreadsheet';
 
 export function createSpreadsheetCommand(): Command {
   const spreadsheet = createCommandFromSchema(CommandNames.SPREADSHEET);

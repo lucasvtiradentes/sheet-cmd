@@ -1,6 +1,6 @@
 import { Command } from 'commander';
-import { handleCommandError } from '../utils/error-handler.js';
-import { getCommand, getSubCommand } from './commands.js';
+import { handleCommandError } from '../utils/error-handler';
+import { getCommand, getSubCommand } from './commands';
 
 export function createCommandFromSchema(
   commandName: string,

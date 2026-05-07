@@ -1,11 +1,11 @@
 import { Command } from 'commander';
 import * as readline from 'readline';
-import { performOAuthFlow } from '../../auth/oauth-flow.js';
-import { ConfigManager } from '../../config/config-manager.js';
-import { GOOGLE_CLOUD_CONSOLE_URLS } from '../../config/constants.js';
-import { createSubCommandFromSchema } from '../../definitions/command-builder.js';
-import { CommandNames, SubCommandNames } from '../../definitions/types.js';
-import { Logger } from '../../utils/logger.js';
+import { performOAuthFlow } from '../../auth/oauth-flow';
+import { ConfigManager } from '../../config/config-manager';
+import { GOOGLE_CLOUD_CONSOLE_URLS } from '../../config/constants';
+import { createSubCommandFromSchema } from '../../definitions/command-builder';
+import { CommandNames, SubCommandNames } from '../../definitions/types';
+import { Logger } from '../../utils/logger';
 
 async function promptInput(question: string): Promise<string> {
   const rl = readline.createInterface({

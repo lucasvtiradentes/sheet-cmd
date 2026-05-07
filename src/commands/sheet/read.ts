@@ -1,52 +1,52 @@
 import { Command } from 'commander';
 import { writeFileSync } from 'fs';
-import { getActiveSheetName, getGoogleSheetsService } from '../../core/command-helpers.js';
-import { createSubCommandFromSchema } from '../../definitions/command-builder.js';
-import type { SheetReadOptions } from '../../definitions/command-types.js';
-import { CommandNames, SubCommandNames } from '../../definitions/types.js';
-import { formatAsCSV, formatAsMarkdown } from '../../utils/formatters.js';
-import { Logger } from '../../utils/logger.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../core/command-helpers';
+import { createSubCommandFromSchema } from '../../definitions/command-builder';
+import type { SheetReadOptions } from '../../definitions/command-types';
+import { CommandNames, SubCommandNames } from '../../definitions/types';
+import { formatAsCSV, formatAsMarkdown } from '../../utils/formatters';
+import { Logger } from '../../utils/logger';
 
 type OutputFormat = 'markdown' | 'csv';
 
 export function createReadCommand(): Command {
   const sheetReadCommand = async (options: SheetReadOptions) => {
-      const outputFormat = options.output ?? 'markdown';
-      const validFormats: OutputFormat[] = ['markdown', 'csv'];
-      if (!validFormats.includes(outputFormat)) {
-        Logger.error(`Invalid output format '${outputFormat}'. Valid formats: ${validFormats.join(', ')}`);
-        process.exit(1);
-      }
+    const outputFormat = options.output ?? 'markdown';
+    const validFormats: OutputFormat[] = ['markdown', 'csv'];
+    if (!validFormats.includes(outputFormat)) {
+      Logger.error(`Invalid output format '${outputFormat}'. Valid formats: ${validFormats.join(', ')}`);
+      process.exit(1);
+    }
 
-      const sheetsService = await getGoogleSheetsService();
-      const sheetName = getActiveSheetName(options.name);
+    const sheetsService = await getGoogleSheetsService();
+    const sheetName = getActiveSheetName(options.name);
 
-      Logger.loading(`Reading sheet '${sheetName}'...`);
-      const includeFormulas = options.formulas ?? false;
-      const data = options.range
-        ? await sheetsService.getSheetDataRange(sheetName, options.range, includeFormulas)
-        : await sheetsService.getSheetData(sheetName, includeFormulas);
+    Logger.loading(`Reading sheet '${sheetName}'...`);
+    const includeFormulas = options.formulas ?? false;
+    const data = options.range
+      ? await sheetsService.getSheetDataRange(sheetName, options.range, includeFormulas)
+      : await sheetsService.getSheetData(sheetName, includeFormulas);
 
-      if (data.length === 0) {
-        Logger.warning('Sheet is empty');
-        process.exit(0);
-      }
+    if (data.length === 0) {
+      Logger.warning('Sheet is empty');
+      process.exit(0);
+    }
 
-      let output: string;
-      if (outputFormat === 'markdown') {
-        output = formatAsMarkdown(data);
-      } else {
-        output = formatAsCSV(data);
-      }
+    let output: string;
+    if (outputFormat === 'markdown') {
+      output = formatAsMarkdown(data);
+    } else {
+      output = formatAsCSV(data);
+    }
 
-      if (options.export) {
-        writeFileSync(options.export, output, 'utf-8');
-        Logger.success(`Content exported to ${options.export}`);
-      } else {
-        Logger.success(`Content of sheet '${sheetName}':\n`);
-        Logger.plain(output);
-      }
-    };
+    if (options.export) {
+      writeFileSync(options.export, output, 'utf-8');
+      Logger.success(`Content exported to ${options.export}`);
+    } else {
+      Logger.success(`Content of sheet '${sheetName}':\n`);
+      Logger.plain(output);
+    }
+  };
 
   return createSubCommandFromSchema(
     CommandNames.SHEET,

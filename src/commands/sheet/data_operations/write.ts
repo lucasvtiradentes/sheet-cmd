@@ -1,10 +1,10 @@
 import { Command } from 'commander';
-import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers.js';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
-import type { SheetWriteOptions } from '../../../definitions/command-types.js';
-import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
-import { columnLetterToNumber } from '../../../utils/cell.js';
-import { Logger } from '../../../utils/logger.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder';
+import type { SheetWriteOptions } from '../../../definitions/command-types';
+import { CommandNames, SubCommandNames } from '../../../definitions/types';
+import { columnLetterToNumber } from '../../../utils/cell';
+import { Logger } from '../../../utils/logger';
 
 export function createWriteCommand(): Command {
   const sheetWriteCommand = async (options: SheetWriteOptions) => {

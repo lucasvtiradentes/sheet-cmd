@@ -1,5 +1,5 @@
-import { APP_INFO } from '../../config/constants.js';
-import { type Command, CommandNames, SubCommandNames } from '../types.js';
+import { APP_INFO } from '../../config/constants';
+import { type Command, CommandNames, SubCommandNames } from '../types';
 
 export const completionCommandDefinition: Command = {
   name: CommandNames.COMPLETION,

@@ -1,19 +1,19 @@
 import { Command } from 'commander';
-import { createCommandFromSchema } from '../../definitions/command-builder.js';
-import { CommandNames } from '../../definitions/types.js';
-import { createAppendCommand } from './data_operations/append.js';
-import { createWriteCommand } from './data_operations/write.js';
-import { createExportCommand } from './import_export/export.js';
-import { createImportCommand } from './import_export/import.js';
-import { createListCommand } from './list.js';
-import { createReadCommand } from './read.js';
-import { createRowAddCommand } from './row_operations/add-row.js';
-import { createRowRemoveCommand } from './row_operations/remove-row.js';
-import { createAddCommand } from './sheet_operations/add.js';
-import { createCopyCommand } from './sheet_operations/copy.js';
-import { createRemoveCommand } from './sheet_operations/remove.js';
-import { createRenameCommand } from './sheet_operations/rename.js';
-import { createSelectCommand } from './sheet_operations/select.js';
+import { createCommandFromSchema } from '../../definitions/command-builder';
+import { CommandNames } from '../../definitions/types';
+import { createAppendCommand } from './data_operations/append';
+import { createWriteCommand } from './data_operations/write';
+import { createExportCommand } from './import_export/export';
+import { createImportCommand } from './import_export/import';
+import { createListCommand } from './list';
+import { createReadCommand } from './read';
+import { createRowAddCommand } from './row_operations/add-row';
+import { createRowRemoveCommand } from './row_operations/remove-row';
+import { createAddCommand } from './sheet_operations/add';
+import { createCopyCommand } from './sheet_operations/copy';
+import { createRemoveCommand } from './sheet_operations/remove';
+import { createRenameCommand } from './sheet_operations/rename';
+import { createSelectCommand } from './sheet_operations/select';
 
 export function createSheetCommand(): Command {
   const sheet = createCommandFromSchema(CommandNames.SHEET);

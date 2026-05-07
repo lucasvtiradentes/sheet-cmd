@@ -4,11 +4,11 @@ import { join } from 'node:path';
 import chalk from 'chalk';
 import { Command } from 'commander';
 
-import { ConfigManager } from '../config/config-manager.js';
-import { createCommandFromSchema, createSubCommandFromSchema } from '../definitions/command-builder.js';
-import { generateBashCompletion, generateZshCompletion } from '../definitions/generators/completion-generator.js';
-import { CommandNames, SubCommandNames } from '../definitions/types.js';
-import { Logger } from '../utils/logger.js';
+import { ConfigManager } from '../config/config-manager';
+import { createCommandFromSchema, createSubCommandFromSchema } from '../definitions/command-builder';
+import { generateBashCompletion, generateZshCompletion } from '../definitions/generators/completion-generator';
+import { CommandNames, SubCommandNames } from '../definitions/types';
+import { Logger } from '../utils/logger';
 
 const ZSH_COMPLETION_SCRIPT = generateZshCompletion();
 

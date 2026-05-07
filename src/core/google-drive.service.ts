@@ -1,7 +1,7 @@
 import { google } from 'googleapis';
-import { OAUTH_SCOPES } from '../config/constants.js';
-import type { OAuthCredentials } from '../config/types.js';
-import { Logger } from '../utils/logger.js';
+import { OAUTH_SCOPES } from '../config/constants';
+import type { OAuthCredentials } from '../config/types';
+import { Logger } from '../utils/logger';
 
 export interface DriveSpreadsheet {
   id: string;

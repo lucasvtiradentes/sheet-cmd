@@ -1,8 +1,8 @@
 import { OAuth2Client } from 'google-auth-library';
 import http from 'http';
-import { GOOGLE_API_URLS, OAUTH_CONFIG, OAUTH_SCOPES } from '../config/constants.js';
-import type { OAuthCredentials } from '../config/types.js';
-import { Logger } from '../utils/logger.js';
+import { GOOGLE_API_URLS, OAUTH_CONFIG, OAUTH_SCOPES } from '../config/constants';
+import type { OAuthCredentials } from '../config/types';
+import { Logger } from '../utils/logger';
 
 interface OAuthFlowResult {
   email: string;

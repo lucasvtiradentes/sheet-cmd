@@ -11,8 +11,10 @@
   },
   "scripts": {
     "dev": "tsx src/cli.ts",
+    "dev:install": "tsx scripts/install-dev-version.ts",
+    "dev:uninstall": "tsx scripts/uninstall-dev-version.ts",
     "typecheck": "tsc --noEmit",
-    "build": "rimraf ./dist && tsc",
+    "build": "tsup",
     "postbuild": "pnpm run update-docs",
     "update-docs": "tsx scripts/update-docs.ts",
     "start": "node dist/cli.js",
@@ -54,6 +56,7 @@
     "@types/node": "^22.18.8",
     "dotenv": "^17.2.3",
     "rimraf": "^5.0.5",
+    "tsup": "^8.5.1",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
     "vitest": "^3.2.4"

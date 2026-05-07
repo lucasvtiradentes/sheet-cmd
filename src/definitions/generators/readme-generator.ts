@@ -1,4 +1,4 @@
-import { COMMANDS_SCHEMA } from '../commands.js';
+import { COMMANDS_SCHEMA } from '../commands';
 
 function generateAllCommands(): string {
   let output = '';

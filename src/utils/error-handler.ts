@@ -1,4 +1,4 @@
-import { Logger } from './logger.js';
+import { Logger } from './logger';
 
 export function formatError(error: unknown): string {
   if (error instanceof Error) {

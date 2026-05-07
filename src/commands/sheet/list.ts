@@ -1,9 +1,9 @@
 import { Command } from 'commander';
-import { getGoogleSheetsService } from '../../core/command-helpers.js';
-import { createSubCommandFromSchema } from '../../definitions/command-builder.js';
-import type { SheetListOptions } from '../../definitions/command-types.js';
-import { CommandNames, SubCommandNames } from '../../definitions/types.js';
-import { Logger } from '../../utils/logger.js';
+import { getGoogleSheetsService } from '../../core/command-helpers';
+import { createSubCommandFromSchema } from '../../definitions/command-builder';
+import type { SheetListOptions } from '../../definitions/command-types';
+import { CommandNames, SubCommandNames } from '../../definitions/types';
+import { Logger } from '../../utils/logger';
 
 export function createListCommand(): Command {
   const sheetListCommand = async (_options: SheetListOptions) => {

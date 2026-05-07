@@ -1,10 +1,10 @@
 import { Command } from 'commander';
-import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers.js';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
-import type { RowAddOptions } from '../../../definitions/command-types.js';
-import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
-import { Logger } from '../../../utils/logger.js';
-import { validatePositiveInteger, validateRequired } from '../../../utils/validators.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder';
+import type { RowAddOptions } from '../../../definitions/command-types';
+import { CommandNames, SubCommandNames } from '../../../definitions/types';
+import { Logger } from '../../../utils/logger';
+import { validatePositiveInteger, validateRequired } from '../../../utils/validators';
 
 export function createRowAddCommand(): Command {
   const rowAddCommand = async (options: RowAddOptions) => {
@@ -58,10 +58,5 @@ export function createRowAddCommand(): Command {
     }
   };
 
-  return createSubCommandFromSchema(
-    CommandNames.SHEET,
-    SubCommandNames.ROW_ADD,
-    rowAddCommand,
-    'Failed to add row'
-  );
+  return createSubCommandFromSchema(CommandNames.SHEET, SubCommandNames.ROW_ADD, rowAddCommand, 'Failed to add row');
 }

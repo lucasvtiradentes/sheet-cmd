@@ -1,4 +1,4 @@
-import { ConfigManager } from '../config/config-manager.js';
+import { ConfigManager } from '../config/config-manager';
 
 let configManagerInstance: ConfigManager | null = null;
 

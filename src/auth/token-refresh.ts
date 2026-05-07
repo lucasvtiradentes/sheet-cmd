@@ -1,6 +1,6 @@
 import { OAuth2Client } from 'google-auth-library';
-import { TOKEN_REFRESH_THRESHOLD_MS } from '../config/constants.js';
-import type { OAuthCredentials } from '../config/types.js';
+import { TOKEN_REFRESH_THRESHOLD_MS } from '../config/constants';
+import type { OAuthCredentials } from '../config/types';
 
 export async function refreshTokenIfNeeded(credentials: OAuthCredentials): Promise<OAuthCredentials> {
   const now = Date.now();

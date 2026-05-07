@@ -1,9 +1,9 @@
 import { Command } from 'commander';
-import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers.js';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
-import type { SheetCopyOptions } from '../../../definitions/command-types.js';
-import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
-import { Logger } from '../../../utils/logger.js';
+import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder';
+import type { SheetCopyOptions } from '../../../definitions/command-types';
+import { CommandNames, SubCommandNames } from '../../../definitions/types';
+import { Logger } from '../../../utils/logger';
 
 export function createCopyCommand(): Command {
   const sheetCopyCommand = async (options: SheetCopyOptions) => {

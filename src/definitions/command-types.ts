@@ -1,4 +1,4 @@
-import type { SubCommand } from './types.js';
+import type { SubCommand } from './types';
 
 export type FlagType<T extends SubCommand> = T extends { flags: Array<infer F> }
   ? F extends { name: string; type: infer Type; required?: boolean }

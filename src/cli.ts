@@ -2,13 +2,13 @@
 
 import { Command } from 'commander';
 
-import { createAccountCommand } from './commands/account/index.js';
-import { createCompletionCommand } from './commands/completion.js';
-import { displayHelpText } from './commands/help-text.js';
-import { createSheetCommand } from './commands/sheet/index.js';
-import { createSpreadsheetCommand } from './commands/spreadsheet/index.js';
-import { createUpdateCommand } from './commands/update.js';
-import { APP_INFO } from './config/constants.js';
+import { createAccountCommand } from './commands/account/index';
+import { createCompletionCommand } from './commands/completion';
+import { displayHelpText } from './commands/help-text';
+import { createSheetCommand } from './commands/sheet/index';
+import { createSpreadsheetCommand } from './commands/spreadsheet/index';
+import { createUpdateCommand } from './commands/update';
+import { APP_INFO } from './config/constants';
 
 const program = new Command();
 

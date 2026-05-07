@@ -1,7 +1,7 @@
 import chalk from 'chalk';
-import { APP_INFO } from '../../config/constants.js';
-import { COMMANDS_SCHEMA } from '../commands.js';
-import type { Command, SubCommand } from '../types.js';
+import { APP_INFO } from '../../config/constants';
+import { COMMANDS_SCHEMA } from '../commands';
+import type { Command, SubCommand } from '../types';
 
 function formatFlag(flag: { name: string; description?: string; type?: string; required?: boolean }): string {
   const requiredMarker = flag.required ? '*' : '';

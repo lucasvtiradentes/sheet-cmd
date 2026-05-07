@@ -1,9 +1,9 @@
-import { accountCommandDefinition } from './commands/account.definition.js';
-import { completionCommandDefinition } from './commands/completion.definition.js';
-import { sheetCommandDefinition } from './commands/sheet.definition.js';
-import { spreadsheetCommandDefinition } from './commands/spreadsheet.definition.js';
-import { updateCommandDefinition } from './commands/update.definition.js';
-import type { Command, SubCommand } from './types.js';
+import { accountCommandDefinition } from './commands/account.definition';
+import { completionCommandDefinition } from './commands/completion.definition';
+import { sheetCommandDefinition } from './commands/sheet.definition';
+import { spreadsheetCommandDefinition } from './commands/spreadsheet.definition';
+import { updateCommandDefinition } from './commands/update.definition';
+import type { Command, SubCommand } from './types';
 
 export const COMMANDS_SCHEMA: Command[] = [
   accountCommandDefinition,

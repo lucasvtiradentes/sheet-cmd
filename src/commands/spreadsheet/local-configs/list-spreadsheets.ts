@@ -1,8 +1,8 @@
 import { Command } from 'commander';
-import { ConfigManager } from '../../../config/config-manager.js';
-import { createSubCommandFromSchema } from '../../../definitions/command-builder.js';
-import { CommandNames, SubCommandNames } from '../../../definitions/types.js';
-import { Logger } from '../../../utils/logger.js';
+import { ConfigManager } from '../../../config/config-manager';
+import { createSubCommandFromSchema } from '../../../definitions/command-builder';
+import { CommandNames, SubCommandNames } from '../../../definitions/types';
+import { Logger } from '../../../utils/logger';
 
 export function createListSpreadsheetsCommand(): Command {
   const spreadsheetListCommand = async () => {

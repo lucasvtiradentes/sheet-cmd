@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const packageJsonPath = path.join(__dirname, '..', '..', 'package.json');
+const packageJsonPath = findPackageJsonPath(__dirname);
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf-8'));
 
 export const APP_INFO = {
@@ -87,3 +87,22 @@ export const OAUTH_CONFIG = {
 };
 
 export const TOKEN_REFRESH_THRESHOLD_MS = 5 * 60 * 1000;
+
+function findPackageJsonPath(startDir: string): string {
+  let currentDir = startDir;
+
+  while (true) {
+    const candidate = path.join(currentDir, 'package.json');
+
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+
+    const parentDir = path.dirname(currentDir);
+    if (parentDir === currentDir) {
+      throw new Error('Could not find package.json');
+    }
+
+    currentDir = parentDir;
+  }
+}

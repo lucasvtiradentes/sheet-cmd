@@ -1,5 +1,5 @@
-import { APP_INFO } from '../../config/constants.js';
-import { type Command, CommandNames } from '../types.js';
+import { APP_INFO } from '../../config/constants';
+import { type Command, CommandNames } from '../types';
 
 export const updateCommandDefinition: Command = {
   name: CommandNames.UPDATE,

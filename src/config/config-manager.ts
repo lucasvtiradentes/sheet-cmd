@@ -1,9 +1,9 @@
 import * as fs from 'fs';
-import { refreshTokenIfNeeded } from '../auth/token-refresh.js';
-import { readJson, writeJson } from '../utils/json.js';
-import { CONFIG_PATHS } from './constants.js';
-import type { Account, OAuthCredentials, SheetsConfig, SpreadsheetConfig, UserMetadata } from './types.js';
-import { sheetsConfigSchema, userMetadataSchema } from './types.js';
+import { refreshTokenIfNeeded } from '../auth/token-refresh';
+import { readJson, writeJson } from '../utils/json';
+import { CONFIG_PATHS } from './constants';
+import type { Account, OAuthCredentials, SheetsConfig, SpreadsheetConfig, UserMetadata } from './types';
+import { sheetsConfigSchema, userMetadataSchema } from './types';
 
 export class ConfigManager {
   private userMetadata: UserMetadata | null = null;

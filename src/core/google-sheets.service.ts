@@ -1,6 +1,6 @@
 import { OAuth2Client } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
-import type { OAuthCredentials } from '../config/types.js';
+import type { OAuthCredentials } from '../config/types';
 
 export interface GoogleSheetsConfig {
   spreadsheetId: string;
@@ -173,7 +173,12 @@ export class GoogleSheetsService {
     await sheet.saveUpdatedCells();
   }
 
-  async writeCellRange(sheetName: string, range: string, values: (string | number)[][], noPreserve?: boolean): Promise<void> {
+  async writeCellRange(
+    sheetName: string,
+    range: string,
+    values: (string | number)[][],
+    noPreserve?: boolean
+  ): Promise<void> {
     await this.ensureConnection();
 
     if (!this.doc) {

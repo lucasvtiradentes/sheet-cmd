@@ -6,10 +6,10 @@ import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
 import { promisify } from 'util';
 
-import { createCommandFromSchema } from '../definitions/command-builder.js';
-import { CommandNames } from '../definitions/types.js';
-import { Logger } from '../utils/logger.js';
-import { reinstallCompletionSilently } from './completion.js';
+import { createCommandFromSchema } from '../definitions/command-builder';
+import { CommandNames } from '../definitions/types';
+import { Logger } from '../utils/logger';
+import { reinstallCompletionSilently } from './completion';
 
 const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));

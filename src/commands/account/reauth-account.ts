@@ -1,9 +1,9 @@
 import { Command } from 'commander';
-import { performOAuthFlow } from '../../auth/oauth-flow.js';
-import { ConfigManager } from '../../config/config-manager.js';
-import { createSubCommandFromSchema } from '../../definitions/command-builder.js';
-import { CommandNames, SubCommandNames } from '../../definitions/types.js';
-import { Logger } from '../../utils/logger.js';
+import { performOAuthFlow } from '../../auth/oauth-flow';
+import { ConfigManager } from '../../config/config-manager';
+import { createSubCommandFromSchema } from '../../definitions/command-builder';
+import { CommandNames, SubCommandNames } from '../../definitions/types';
+import { Logger } from '../../utils/logger';
 
 export function createReauthAccountCommand(): Command {
   const accountReauthCommand = async () => {
