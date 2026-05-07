@@ -1,9 +1,9 @@
 import { defineCommand } from '../define';
-import { activeSpreadsheetCommand } from './local-configs/active-spreadsheet';
-import { addSpreadsheetCommand } from './local-configs/add-spreadsheet';
-import { listSpreadsheetsCommand } from './local-configs/list-spreadsheets';
-import { removeSpreadsheetCommand } from './local-configs/remove-spreadsheet';
-import { selectSpreadsheetCommand } from './local-configs/select-spreadsheet';
+import { activeSpreadsheetCommand } from './local-configs/active';
+import { addSpreadsheetCommand } from './local-configs/add';
+import { listSpreadsheetsCommand } from './local-configs/list';
+import { removeSpreadsheetCommand } from './local-configs/remove';
+import { selectSpreadsheetCommand } from './local-configs/select';
 
 export const spreadsheetCommand = defineCommand({
   name: 'spreadsheet',

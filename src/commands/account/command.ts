@@ -1,9 +1,9 @@
 import { defineCommand } from '../define';
-import { addAccountCommand } from './add-account';
-import { listAccountsCommand } from './list-accounts';
-import { reauthAccountCommand } from './reauth-account';
-import { removeAccountCommand } from './remove-account';
-import { selectAccountCommand } from './select-account';
+import { addAccountCommand } from './add';
+import { listAccountsCommand } from './list';
+import { reauthAccountCommand } from './reauth';
+import { removeAccountCommand } from './remove';
+import { selectAccountCommand } from './select';
 
 export const accountCommand = defineCommand({
   name: 'account',
