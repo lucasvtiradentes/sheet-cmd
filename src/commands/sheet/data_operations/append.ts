@@ -1,5 +1,6 @@
 import { defineSubCommand, flag } from '../../../cli/define';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
+import { getRawOptionValue } from '../../../utils/cli-options';
 import { Logger } from '../../../utils/logger';
 import { inferCellType } from '../../../utils/type-inference';
 
@@ -17,7 +18,8 @@ export const appendCommand = defineSubCommand({
     const sheetName = getActiveSheetName(options.name);
 
     const inferTypes = options.inferTypes !== false;
-    const values = options.value.split(',').map((value) => {
+    const rawValue = getRawOptionValue('--value', '-v') ?? String(options.value);
+    const values = rawValue.split(',').map((value) => {
       const trimmed = value.trim();
       return inferTypes ? inferCellType(trimmed) : trimmed;
     });

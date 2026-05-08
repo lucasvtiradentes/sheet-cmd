@@ -119,6 +119,31 @@ describe('Data Operations E2E', () => {
     expect(readResult.stdout).toContain('TRUE');
   }, 60000);
 
+  it('should infer single cell value files with trailing newlines', async () => {
+    const valueFile = path.join(testHomeDir, 'single-cell-number.txt');
+    fs.writeFileSync(valueFile, '1\n');
+
+    const writeResult = await execCommand(
+      `sheet write -n "${testTabName}" -c P10 --value-file "${valueFile}"`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(writeResult.exitCode).toBe(0);
+
+    await execCommand(`sheet write -n "${testTabName}" -c P11 -v "=ISNUMBER(P10)"`, undefined, 15000, testHomeDir);
+
+    const readResult = await execCommand(
+      `sheet read -n "${testTabName}" -r P11:P11 -o csv`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(readResult.stdout).toContain('TRUE');
+  }, 60000);
+
   it('should write to a range of cells', async () => {
     const writeResult = await execCommand(
       `sheet write -n "${testTabName}" -r A1:D5 -v "Product,Price,Quantity,Total;Laptop,999.99,2,1999.98;Mouse,29.99,5,149.95;Keyboard,79.99,3,239.97;Monitor,299.99,1,299.99"`,
@@ -151,6 +176,26 @@ describe('Data Operations E2E', () => {
     expect(writeResult.exitCode).toBe(0);
     expect(writeResult.stdout).toContain('C10:D11');
   }, 30000);
+
+  it('should keep non-table JSON values literal when writing to a single cell', async () => {
+    const writeResult = await execCommand(
+      `sheet write -n "${testTabName}" -c O10 -v "[1,2,3]"`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(writeResult.exitCode).toBe(0);
+
+    const readResult = await execCommand(
+      `sheet read -n "${testTabName}" -r O10:O10 -o csv`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(readResult.stdout).toContain('[1,2,3]');
+  }, 60000);
 
   it('should write delimited table values starting at a cell', async () => {
     const writeResult = await execCommand(
@@ -292,6 +337,7 @@ describe('Data Operations E2E', () => {
   it('should infer appended values by default and allow disabling type inference', async () => {
     const appendTabName = `Append-Infer-${Date.now()}`;
     await execCommand(`sheet add -n "${appendTabName}"`, undefined, 15000, testHomeDir);
+    await execCommand(`sheet write -n "${appendTabName}" -r A1:B1 -v "Count,Code"`, undefined, 15000, testHomeDir);
 
     const appendResult1 = await execCommand(
       `sheet append -n "${appendTabName}" -v "1,001"`,
@@ -301,11 +347,11 @@ describe('Data Operations E2E', () => {
     );
     expect(appendResult1.exitCode).toBe(0);
 
-    await execCommand(`sheet write -n "${appendTabName}" -c A2 -v "=ISNUMBER(A1)"`, undefined, 15000, testHomeDir);
-    await execCommand(`sheet write -n "${appendTabName}" -c B2 -v "=ISTEXT(B1)"`, undefined, 15000, testHomeDir);
+    await execCommand(`sheet write -n "${appendTabName}" -c A3 -v "=ISNUMBER(A2)"`, undefined, 15000, testHomeDir);
+    await execCommand(`sheet write -n "${appendTabName}" -c B3 -v "=ISTEXT(B2)"`, undefined, 15000, testHomeDir);
 
     const inferredReadResult = await execCommand(
-      `sheet read -n "${appendTabName}" -r A2:B2 -o csv`,
+      `sheet read -n "${appendTabName}" -r A3:B3 -o csv`,
       undefined,
       15000,
       testHomeDir
@@ -320,10 +366,10 @@ describe('Data Operations E2E', () => {
     );
     expect(appendResult2.exitCode).toBe(0);
 
-    await execCommand(`sheet write -n "${appendTabName}" -c A4 -v "=ISTEXT(A3)"`, undefined, 15000, testHomeDir);
+    await execCommand(`sheet write -n "${appendTabName}" -c A5 -v "=ISTEXT(A4)"`, undefined, 15000, testHomeDir);
 
     const textReadResult = await execCommand(
-      `sheet read -n "${appendTabName}" -r A4:A4 -o csv`,
+      `sheet read -n "${appendTabName}" -r A5:A5 -o csv`,
       undefined,
       15000,
       testHomeDir

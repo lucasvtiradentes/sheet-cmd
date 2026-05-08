@@ -13,10 +13,8 @@ export interface GoogleSheetsConfig {
 export class GoogleSheetsService {
   private doc: GoogleSpreadsheet | null = null;
   private auth: OAuth2Client;
-  private credentials: OAuthCredentials;
 
   constructor(private config: GoogleSheetsConfig) {
-    this.credentials = config.oauthCredentials;
     this.auth = new OAuth2Client(config.oauthCredentials.client_id, config.oauthCredentials.client_secret);
 
     this.auth.setCredentials({
@@ -190,7 +188,7 @@ export class GoogleSheetsService {
       throw new Error(`Sheet '${sheetName}' not found`);
     }
 
-    const [start] = range.split(':');
+    const [start, end] = range.split(':');
     const startAddress = parseCellAddress(start);
     const rowCount = (startAddress?.rowIndex ?? 0) + values.length;
     const columnCount = (startAddress?.columnIndex ?? 0) + values.reduce((max, row) => Math.max(max, row.length), 0);
@@ -203,7 +201,6 @@ export class GoogleSheetsService {
 
     await sheet.loadCells(range);
 
-    const [, end] = range.split(':');
     const startCell = sheet.getCellByA1(start);
     const endCell = sheet.getCellByA1(end);
 
@@ -262,14 +259,7 @@ export class GoogleSheetsService {
       });
     }
 
-    const googleAuth = new google.auth.OAuth2(this.credentials.client_id, this.credentials.client_secret);
-    googleAuth.setCredentials({
-      access_token: this.credentials.access_token,
-      refresh_token: this.credentials.refresh_token,
-      expiry_date: this.credentials.expiry_date
-    });
-
-    const sheets = google.sheets({ version: 'v4', auth: googleAuth });
+    const sheets = this.getRawSheetsApi();
     const escapedSheetName = sheetName.replace(/'/g, "''");
     await sheets.spreadsheets.values.update({
       spreadsheetId: this.config.spreadsheetId,
@@ -293,7 +283,27 @@ export class GoogleSheetsService {
       throw new Error(`Sheet '${sheetName}' not found`);
     }
 
-    await sheet.addRow(values);
+    const sheets = this.getRawSheetsApi();
+    const escapedSheetName = sheetName.replace(/'/g, "''");
+    await sheets.spreadsheets.values.append({
+      spreadsheetId: this.config.spreadsheetId,
+      range: `'${escapedSheetName}'!A1`,
+      valueInputOption: 'RAW',
+      insertDataOption: 'INSERT_ROWS',
+      requestBody: {
+        values: [values]
+      }
+    });
+  }
+
+  private getRawSheetsApi() {
+    const googleAuth = new google.auth.OAuth2(
+      this.config.oauthCredentials.client_id,
+      this.config.oauthCredentials.client_secret
+    );
+    googleAuth.setCredentials(this.auth.credentials);
+
+    return google.sheets({ version: 'v4', auth: googleAuth });
   }
 
   async getSheetDataRange(sheetName: string, range: string, includeFormulas = false): Promise<string[][]> {

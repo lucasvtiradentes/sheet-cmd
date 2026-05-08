@@ -2,10 +2,11 @@ import { readFileSync } from 'node:fs';
 import { defineSubCommand, flag } from '../../../cli/define';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
 import { columnLetterToNumber, rangeFromStartCell } from '../../../utils/cell';
+import { getRawOptionValue } from '../../../utils/cli-options';
 import { Logger } from '../../../utils/logger';
 import { type CellValue, inferCellType, inferTableTypes } from '../../../utils/type-inference';
 
-function parseJsonTable(value: string, inferTypes: boolean): CellValue[][] | null {
+function parseJsonTable(value: string, inferTypes: boolean, failOnInvalid = true): CellValue[][] | null {
   if (!value.trim().startsWith('[')) return null;
 
   try {
@@ -15,6 +16,7 @@ function parseJsonTable(value: string, inferTypes: boolean): CellValue[][] | nul
     }
     return inferTypes ? inferTableTypes(values) : values;
   } catch (_error) {
+    if (!failOnInvalid) return null;
     Logger.error('Invalid JSON array format. Expected 2D array like [["a","b"],["c","d"]]');
     process.exit(1);
   }
@@ -72,11 +74,14 @@ export const writeCommand = defineSubCommand({
       process.exit(1);
     }
 
-    const value = options.valueFile ? readFileSync(options.valueFile, 'utf-8') : options.value;
+    const value = options.valueFile
+      ? readFileSync(options.valueFile, 'utf-8')
+      : (getRawOptionValue('--value', '-v') ?? String(options.value));
     const sheetsService = await getGoogleSheetsService();
     const sheetName = getActiveSheetName(options.name);
     const inferTypes = options.inferTypes !== false;
-    const jsonTable = parseJsonTable(value, inferTypes);
+    const strictTableParse = Boolean(options.initialCell || options.range);
+    const jsonTable = parseJsonTable(value, inferTypes, strictTableParse);
     const startCell = options.initialCell ?? options.cell;
 
     if (startCell) {
@@ -96,7 +101,7 @@ export const writeCommand = defineSubCommand({
         await sheetsService.writeCellRange(sheetName, range, values, noPreserve);
         Logger.success(`Range ${range} updated successfully`);
       } else {
-        const cellValue = inferTypes ? inferCellType(value) : value;
+        const cellValue = inferTypes ? inferCellType(value.trim()) : value;
         Logger.loading(`Writing to cell ${startCell}...`);
         await sheetsService.writeCell(sheetName, startCell, cellValue);
         Logger.success(`Cell ${startCell} updated successfully`);
