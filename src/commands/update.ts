@@ -7,7 +7,6 @@ import { promisify } from 'util';
 import { defineSubCommand } from '../cli/define';
 import { APP_INFO, getProgramName } from '../config/constants';
 import { Logger } from '../utils/logger';
-import { reinstallCompletionSilently } from './completion';
 
 const execAsync = promisify(exec);
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -69,31 +68,14 @@ export const updateCommand = defineSubCommand({
     const updateCommand = getUpdateCommand(packageManager);
     const { stdout, stderr } = await execAsync(updateCommand);
 
-    if (stderr && !stderr.includes('npm WARN')) {
-      Logger.error(`Error updating: ${stderr}`);
-      return;
-    }
-
     Logger.success(`${getProgramName()} updated successfully from ${currentVersion} to ${latestVersion}!`);
 
     if (stdout) {
       Logger.dim(stdout);
     }
 
-    const completionReinstalled = await reinstallCompletionSilently();
-    if (completionReinstalled) {
-      Logger.dim('✨ Shell completion updated');
-      Logger.info('');
-      Logger.info('To activate the updated completion, run:');
-
-      const currentShell = process.env.SHELL || '';
-      if (currentShell.includes('zsh')) {
-        Logger.info('  exec zsh');
-      } else if (currentShell.includes('bash')) {
-        Logger.info('  exec bash');
-      } else {
-        Logger.info('  # Restart your shell');
-      }
+    if (stderr) {
+      Logger.dim(stderr);
     }
   }
 });
@@ -102,13 +84,17 @@ async function detectPackageManager(): Promise<PackageManager | null> {
   const npmPath = await getGlobalNpmPath();
 
   if (!npmPath) {
-    return null;
+    return (await isInstalledWithNpm()) ? PackageManager.Npm : null;
   }
 
+  return getPackageManagerFromPath(npmPath) ?? PackageManager.Npm;
+}
+
+function getPackageManagerFromPath(npmPath: string): PackageManager | null {
   const possiblePaths = [
-    { manager: PackageManager.Npm, patterns: ['/npm/', '\\npm\\', '/node/', '\\node\\'] },
     { manager: PackageManager.Yarn, patterns: ['/yarn/', '\\yarn\\', '/.yarn/', '\\.yarn\\'] },
-    { manager: PackageManager.Pnpm, patterns: ['/pnpm/', '\\pnpm\\', '/.pnpm/', '\\.pnpm\\'] }
+    { manager: PackageManager.Pnpm, patterns: ['/pnpm/', '\\pnpm\\', '/.pnpm/', '\\.pnpm\\'] },
+    { manager: PackageManager.Npm, patterns: ['/npm/', '\\npm\\', '/node/', '\\node\\', '/node_modules/'] }
   ];
 
   for (const { manager, patterns } of possiblePaths) {
@@ -117,7 +103,7 @@ async function detectPackageManager(): Promise<PackageManager | null> {
     }
   }
 
-  return PackageManager.Npm;
+  return null;
 }
 
 async function getGlobalNpmPath(): Promise<string | null> {
@@ -140,15 +126,19 @@ async function getGlobalNpmPath(): Promise<string | null> {
       return execPath;
     }
   } catch {
-    try {
-      const { stdout } = await execAsync(`npm list -g --depth=0 ${APP_INFO.packageName}`);
-      if (stdout.includes(APP_INFO.packageName)) {
-        return PackageManager.Npm;
-      }
-    } catch {}
+    return null;
   }
 
   return null;
+}
+
+async function isInstalledWithNpm(): Promise<boolean> {
+  try {
+    const { stdout } = await execAsync(`npm list -g --depth=0 ${APP_INFO.packageName}`);
+    return stdout.includes(APP_INFO.packageName);
+  } catch {
+    return false;
+  }
 }
 
 function getCurrentVersion(): string | null {
