@@ -6,7 +6,21 @@ import { Logger } from '../../../utils/logger';
 
 type CellValue = string | number;
 
-function parseJsonTable(value: string): CellValue[][] | null {
+function inferCellType(value: CellValue): CellValue {
+  if (typeof value !== 'string' || value === '') return value;
+
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue) || String(numericValue) !== value) return value;
+  if (Number.isInteger(numericValue) && Math.abs(numericValue) > Number.MAX_SAFE_INTEGER) return value;
+
+  return numericValue;
+}
+
+function inferTableTypes(values: CellValue[][]): CellValue[][] {
+  return values.map((row) => row.map(inferCellType));
+}
+
+function parseJsonTable(value: string, inferTypes: boolean): CellValue[][] | null {
   if (!value.trim().startsWith('[')) return null;
 
   try {
@@ -14,23 +28,19 @@ function parseJsonTable(value: string): CellValue[][] | null {
     if (!Array.isArray(values) || !Array.isArray(values[0])) {
       throw new Error('Value must be a 2D array');
     }
-    return values;
+    return inferTypes ? inferTableTypes(values) : values;
   } catch (_error) {
     Logger.error('Invalid JSON array format. Expected 2D array like [["a","b"],["c","d"]]');
     process.exit(1);
   }
 }
 
-function parseDelimitedTable(value: string): CellValue[][] {
+function parseDelimitedTable(value: string, inferTypes: boolean): CellValue[][] {
   const rows = value.split(';').map((row) => row.trim());
   return rows.map((row) =>
     row.split(',').map((cell) => {
       const trimmed = cell.trim();
-      const numericValue = trimmed.replace(',', '.');
-      if (!Number.isNaN(Number(numericValue)) && numericValue !== '') {
-        return Number(numericValue);
-      }
-      return trimmed;
+      return inferTypes ? inferCellType(trimmed) : trimmed;
     })
   );
 }
@@ -47,6 +57,7 @@ export const writeCommand = defineSubCommand({
     flag.string('--range', 'Range (e.g., A1:B2) - required if --cell not provided', { alias: '-r' }),
     flag.string('--value', 'Value to write (use , for columns, ; for rows)', { alias: '-v' }),
     flag.string('--value-file', 'Read the value to write from a file'),
+    flag.boolean('--no-infer-types', 'Keep JSON string values as text without numeric type inference'),
     flag.boolean('--no-preserve', 'Overwrite cells with formulas or data validation')
   ],
   errorMessage: 'Failed to write to sheet',
@@ -75,7 +86,8 @@ export const writeCommand = defineSubCommand({
     const value = options.valueFile ? readFileSync(options.valueFile, 'utf-8') : options.value;
     const sheetsService = await getGoogleSheetsService();
     const sheetName = getActiveSheetName(options.name);
-    const jsonTable = parseJsonTable(value);
+    const inferTypes = options.inferTypes !== false;
+    const jsonTable = parseJsonTable(value, inferTypes);
     const startCell = options.initialCell ?? options.cell;
 
     if (startCell) {
@@ -99,7 +111,7 @@ export const writeCommand = defineSubCommand({
         Logger.success(`Cell ${startCell} updated successfully`);
       }
     } else if (options.range) {
-      const values = jsonTable ?? parseDelimitedTable(value);
+      const values = jsonTable ?? parseDelimitedTable(value, inferTypes);
 
       const rangeParts = options.range.split(':');
       if (rangeParts.length === 2) {

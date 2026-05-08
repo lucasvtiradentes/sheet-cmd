@@ -64,6 +64,79 @@ describe('Data Operations E2E', () => {
     expect(writeResult.stdout).toContain('C10:D11');
   }, 30000);
 
+  it('should infer numeric JSON string values by default', async () => {
+    const valueFile = path.join(testHomeDir, 'infer-types-table.json');
+    fs.writeFileSync(valueFile, JSON.stringify([['1', '001']]));
+
+    const writeResult = await execCommand(
+      `sheet write -n "${testTabName}" --initial-cell E10 --value-file "${valueFile}"`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(writeResult.exitCode).toBe(0);
+
+    await execCommand(`sheet write -n "${testTabName}" -c E11 -v "=ISNUMBER(E10)"`, undefined, 15000, testHomeDir);
+    await execCommand(`sheet write -n "${testTabName}" -c F11 -v "=ISTEXT(F10)"`, undefined, 15000, testHomeDir);
+
+    const readResult = await execCommand(
+      `sheet read -n "${testTabName}" -r E11:F11 -o csv`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(readResult.stdout).toContain('TRUE,TRUE');
+  }, 60000);
+
+  it('should keep JSON string values as text when type inference is disabled', async () => {
+    const valueFile = path.join(testHomeDir, 'no-infer-types-table.json');
+    fs.writeFileSync(valueFile, JSON.stringify([['1']]));
+
+    const writeResult = await execCommand(
+      `sheet write -n "${testTabName}" --initial-cell G10 --value-file "${valueFile}" --no-infer-types`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(writeResult.exitCode).toBe(0);
+
+    await execCommand(`sheet write -n "${testTabName}" -c G11 -v "=ISTEXT(G10)"`, undefined, 15000, testHomeDir);
+
+    const readResult = await execCommand(
+      `sheet read -n "${testTabName}" -r G11:G11 -o csv`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(readResult.stdout).toContain('TRUE');
+  }, 60000);
+
+  it('should keep delimited values as text when type inference is disabled', async () => {
+    const writeResult = await execCommand(
+      `sheet write -n "${testTabName}" -r H10:H10 -v "1" --no-infer-types`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(writeResult.exitCode).toBe(0);
+
+    await execCommand(`sheet write -n "${testTabName}" -c H11 -v "=ISTEXT(H10)"`, undefined, 15000, testHomeDir);
+
+    const readResult = await execCommand(
+      `sheet read -n "${testTabName}" -r H11:H11 -o csv`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(readResult.stdout).toContain('TRUE');
+  }, 60000);
+
   it('should handle dimension mismatch error', async () => {
     const writeResult = await execCommand(
       `sheet write -n "${testTabName}" -r A1:C3 -v "value1,value2"`,
