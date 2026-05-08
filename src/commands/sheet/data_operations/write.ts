@@ -30,6 +30,10 @@ function parseDelimitedTable(value: string, inferTypes: boolean): CellValue[][] 
   );
 }
 
+function parseTable(value: string, inferTypes: boolean): CellValue[][] {
+  return parseJsonTable(value, inferTypes) ?? parseDelimitedTable(value, inferTypes);
+}
+
 export const writeCommand = defineSubCommand({
   name: 'write',
   description: 'Write to a specific cell or range of cells',
@@ -42,7 +46,7 @@ export const writeCommand = defineSubCommand({
     flag.string('--range', 'Range (e.g., A1:B2) - required if --cell not provided', { alias: '-r' }),
     flag.string('--value', 'Value to write (use , for columns, ; for rows)', { alias: '-v' }),
     flag.string('--value-file', 'Read the value to write from a file'),
-    flag.boolean('--no-infer-types', 'Keep values as text without numeric type inference'),
+    flag.boolean('--no-infer-types', 'Keep values as text instead of inferring exact numeric strings'),
     flag.boolean('--no-preserve', 'Overwrite cells with formulas or data validation')
   ],
   errorMessage: 'Failed to write to sheet',
@@ -76,9 +80,10 @@ export const writeCommand = defineSubCommand({
     const startCell = options.initialCell ?? options.cell;
 
     if (startCell) {
-      if (jsonTable) {
-        const actualRows = jsonTable.length;
-        const actualCols = jsonTable.reduce((max, row) => Math.max(max, row.length), 0);
+      if (jsonTable || options.initialCell) {
+        const values = jsonTable ?? parseDelimitedTable(value, inferTypes);
+        const actualRows = values.length;
+        const actualCols = values.reduce((max, row) => Math.max(max, row.length), 0);
         const range = rangeFromStartCell(startCell, actualRows, actualCols);
 
         if (!range) {
@@ -88,15 +93,16 @@ export const writeCommand = defineSubCommand({
 
         const noPreserve = options.preserve === false;
         Logger.loading(`Writing to range ${range}...`);
-        await sheetsService.writeCellRange(sheetName, range, jsonTable, noPreserve);
+        await sheetsService.writeCellRange(sheetName, range, values, noPreserve);
         Logger.success(`Range ${range} updated successfully`);
       } else {
+        const cellValue = inferTypes ? inferCellType(value) : value;
         Logger.loading(`Writing to cell ${startCell}...`);
-        await sheetsService.writeCell(sheetName, startCell, value);
+        await sheetsService.writeCell(sheetName, startCell, cellValue);
         Logger.success(`Cell ${startCell} updated successfully`);
       }
     } else if (options.range) {
-      const values = jsonTable ?? parseDelimitedTable(value, inferTypes);
+      const values = parseTable(value, inferTypes);
 
       const rangeParts = options.range.split(':');
       if (rangeParts.length === 2) {

@@ -155,6 +155,39 @@ Pierre Dubois,pierre@email.com,555-0110,Paris,France`;
     await execCommand(`sheet remove -n "${importTabName}"`, undefined, 15000, testHomeDir);
   }, 75000);
 
+  it('should import CSV values starting at an initial cell', async () => {
+    const csvFile = path.join(tempTestDir, 'import-initial-cell.csv');
+    fs.writeFileSync(csvFile, 'Count,Code\n1,001');
+
+    const importTabName = `Import-Initial-${Date.now()}`;
+
+    await execCommand(`sheet add -n "${importTabName}"`, undefined, 15000, testHomeDir);
+
+    const importResult = await execCommand(
+      `sheet import -n "${importTabName}" -f "${csvFile}" --initial-cell C5`,
+      undefined,
+      20000,
+      testHomeDir
+    );
+
+    expect(importResult.exitCode).toBe(0);
+
+    await execCommand(`sheet write -n "${importTabName}" -c C7 -v "=ISNUMBER(C6)"`, undefined, 15000, testHomeDir);
+    await execCommand(`sheet write -n "${importTabName}" -c D7 -v "=ISTEXT(D6)"`, undefined, 15000, testHomeDir);
+
+    const readResult = await execCommand(
+      `sheet read -n "${importTabName}" -r C5:D7 -o csv`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(readResult.stdout).toContain('Count,Code');
+    expect(readResult.stdout).toContain('TRUE,TRUE');
+
+    await execCommand(`sheet remove -n "${importTabName}"`, undefined, 15000, testHomeDir);
+  }, 75000);
+
   it('should keep CSV values as text when type inference is disabled', async () => {
     const csvFile = path.join(tempTestDir, 'import-no-infer-types.csv');
     fs.writeFileSync(csvFile, 'Count\n1');

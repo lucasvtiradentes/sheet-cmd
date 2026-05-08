@@ -1,7 +1,7 @@
 import { readFileSync } from 'fs';
 import { defineSubCommand, flag } from '../../../cli/define';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
-import { numberToColumnLetter } from '../../../utils/cell';
+import { rangeFromStartCell } from '../../../utils/cell';
 import { parseCSV } from '../../../utils/csv';
 import { Logger } from '../../../utils/logger';
 import { inferTableTypes } from '../../../utils/type-inference';
@@ -12,8 +12,9 @@ export const importCommand = defineSubCommand({
   flags: [
     flag.string('--name', 'Tab name (uses active if not provided)', { alias: '-n' }),
     flag.string('--file', 'CSV file path', { alias: '-f', required: true }),
+    flag.string('--initial-cell', 'Start cell for imported values (default: A1)'),
     flag.boolean('--skip-header', 'Skip header row when importing'),
-    flag.boolean('--no-infer-types', 'Keep CSV values as text without numeric type inference')
+    flag.boolean('--no-infer-types', 'Keep CSV values as text instead of inferring exact numeric strings')
   ],
   errorMessage: 'Failed to import data',
   action: async ({ options }) => {
@@ -48,7 +49,13 @@ export const importCommand = defineSubCommand({
       Array.from({ length: columnCount }, (_, index) => row[index] ?? '')
     );
     const values = options.inferTypes === false ? normalizedData : inferTableTypes(normalizedData);
-    const range = `A1:${numberToColumnLetter(columnCount - 1)}${normalizedData.length}`;
+    const initialCell = options.initialCell ?? 'A1';
+    const range = rangeFromStartCell(initialCell, normalizedData.length, columnCount);
+
+    if (!range) {
+      Logger.error(`Invalid initial cell address: ${initialCell}`);
+      process.exit(1);
+    }
 
     await sheetsService.writeRawCellRange(sheetName, range, values);
 

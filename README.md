@@ -94,8 +94,8 @@ gs sheet remove [--name <value>]
 gs sheet rename [--name <value>] --new-name <value>
 gs sheet copy [--name <value>] --to <value>
 gs sheet write [--name <value>] [--cell <value>] [--initial-cell <value>] [--range <value>] [--value <value>] [--value-file <value>] [--no-infer-types] [--no-preserve]
-gs sheet append [--name <value>] --value <value>
-gs sheet import [--name <value>] --file <value> [--skip-header] [--no-infer-types]
+gs sheet append [--name <value>] --value <value> [--no-infer-types]
+gs sheet import [--name <value>] --file <value> [--initial-cell <value>] [--skip-header] [--no-infer-types]
 gs sheet export [--name <value>] [--range <value>] --format <value> [--output <value>]
 gs sheet row-add --row <value> [--name <value>] [--above] [--below] [--formulas] [--count <value>]
 gs sheet row-remove --row <value> [--name <value>] [--above] [--below] [--count <value>]

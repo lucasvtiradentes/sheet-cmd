@@ -3,6 +3,7 @@ import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { google } from 'googleapis';
 import type { OAuthCredentials } from '../config/types';
 import { parseCellAddress } from '../utils/cell';
+import type { CellValue } from '../utils/type-inference';
 
 export interface GoogleSheetsConfig {
   spreadsheetId: string;
@@ -159,7 +160,7 @@ export class GoogleSheetsService {
     await sheet.duplicate({ title: newSheetName });
   }
 
-  async writeCell(sheetName: string, cell: string, value: string): Promise<void> {
+  async writeCell(sheetName: string, cell: string, value: CellValue): Promise<void> {
     await this.ensureConnection();
 
     if (!this.doc) {
@@ -177,12 +178,7 @@ export class GoogleSheetsService {
     await sheet.saveUpdatedCells();
   }
 
-  async writeCellRange(
-    sheetName: string,
-    range: string,
-    values: (string | number)[][],
-    noPreserve?: boolean
-  ): Promise<void> {
+  async writeCellRange(sheetName: string, range: string, values: CellValue[][], noPreserve?: boolean): Promise<void> {
     await this.ensureConnection();
 
     if (!this.doc) {
@@ -243,7 +239,7 @@ export class GoogleSheetsService {
     await sheet.saveUpdatedCells();
   }
 
-  async writeRawCellRange(sheetName: string, range: string, values: (string | number)[][]): Promise<void> {
+  async writeRawCellRange(sheetName: string, range: string, values: CellValue[][]): Promise<void> {
     await this.ensureConnection();
 
     if (!this.doc) {
@@ -255,8 +251,10 @@ export class GoogleSheetsService {
       throw new Error(`Sheet '${sheetName}' not found`);
     }
 
-    const rowCount = values.length;
-    const columnCount = values.reduce((max, row) => Math.max(max, row.length), 0);
+    const [start] = range.split(':');
+    const startAddress = parseCellAddress(start);
+    const rowCount = (startAddress?.rowIndex ?? 0) + values.length;
+    const columnCount = (startAddress?.columnIndex ?? 0) + values.reduce((max, row) => Math.max(max, row.length), 0);
     if (rowCount > sheet.rowCount || columnCount > sheet.columnCount) {
       await sheet.resize({
         rowCount: Math.max(rowCount, sheet.rowCount),
@@ -283,7 +281,7 @@ export class GoogleSheetsService {
     });
   }
 
-  async appendRow(sheetName: string, values: string[]): Promise<void> {
+  async appendRow(sheetName: string, values: CellValue[]): Promise<void> {
     await this.ensureConnection();
 
     if (!this.doc) {

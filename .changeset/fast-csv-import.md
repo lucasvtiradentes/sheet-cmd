@@ -9,3 +9,5 @@ Allow `sheet write --initial-cell` to write JSON table values from a start cell 
 Infer numeric-looking JSON string values by default when writing, with `--no-infer-types` available to keep them as text.
 
 Infer numeric-looking CSV values by default when importing, with `--no-infer-types` available to keep them as text.
+
+Standardize type inference across cell writes and appended rows, and allow CSV imports to start from `--initial-cell`.
