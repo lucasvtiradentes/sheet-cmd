@@ -3,22 +3,7 @@ import { defineSubCommand, flag } from '../../../cli/define';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
 import { columnLetterToNumber, rangeFromStartCell } from '../../../utils/cell';
 import { Logger } from '../../../utils/logger';
-
-type CellValue = string | number;
-
-function inferCellType(value: CellValue): CellValue {
-  if (typeof value !== 'string' || value === '') return value;
-
-  const numericValue = Number(value);
-  if (!Number.isFinite(numericValue) || String(numericValue) !== value) return value;
-  if (Number.isInteger(numericValue) && Math.abs(numericValue) > Number.MAX_SAFE_INTEGER) return value;
-
-  return numericValue;
-}
-
-function inferTableTypes(values: CellValue[][]): CellValue[][] {
-  return values.map((row) => row.map(inferCellType));
-}
+import { type CellValue, inferCellType, inferTableTypes } from '../../../utils/type-inference';
 
 function parseJsonTable(value: string, inferTypes: boolean): CellValue[][] | null {
   if (!value.trim().startsWith('[')) return null;
@@ -57,7 +42,7 @@ export const writeCommand = defineSubCommand({
     flag.string('--range', 'Range (e.g., A1:B2) - required if --cell not provided', { alias: '-r' }),
     flag.string('--value', 'Value to write (use , for columns, ; for rows)', { alias: '-v' }),
     flag.string('--value-file', 'Read the value to write from a file'),
-    flag.boolean('--no-infer-types', 'Keep JSON string values as text without numeric type inference'),
+    flag.boolean('--no-infer-types', 'Keep values as text without numeric type inference'),
     flag.boolean('--no-preserve', 'Overwrite cells with formulas or data validation')
   ],
   errorMessage: 'Failed to write to sheet',

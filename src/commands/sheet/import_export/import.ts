@@ -4,6 +4,7 @@ import { getActiveSheetName, getGoogleSheetsService } from '../../../core/comman
 import { numberToColumnLetter } from '../../../utils/cell';
 import { parseCSV } from '../../../utils/csv';
 import { Logger } from '../../../utils/logger';
+import { inferTableTypes } from '../../../utils/type-inference';
 
 export const importCommand = defineSubCommand({
   name: 'import',
@@ -11,7 +12,8 @@ export const importCommand = defineSubCommand({
   flags: [
     flag.string('--name', 'Tab name (uses active if not provided)', { alias: '-n' }),
     flag.string('--file', 'CSV file path', { alias: '-f', required: true }),
-    flag.boolean('--skip-header', 'Skip header row when importing')
+    flag.boolean('--skip-header', 'Skip header row when importing'),
+    flag.boolean('--no-infer-types', 'Keep CSV values as text without numeric type inference')
   ],
   errorMessage: 'Failed to import data',
   action: async ({ options }) => {
@@ -45,9 +47,10 @@ export const importCommand = defineSubCommand({
     const normalizedData = dataToImport.map((row) =>
       Array.from({ length: columnCount }, (_, index) => row[index] ?? '')
     );
+    const values = options.inferTypes === false ? normalizedData : inferTableTypes(normalizedData);
     const range = `A1:${numberToColumnLetter(columnCount - 1)}${normalizedData.length}`;
 
-    await sheetsService.writeRawCellRange(sheetName, range, normalizedData);
+    await sheetsService.writeRawCellRange(sheetName, range, values);
 
     Logger.success(`Successfully imported ${dataToImport.length} rows to '${sheetName}'`);
   }

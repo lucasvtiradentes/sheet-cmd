@@ -120,6 +120,72 @@ Pierre Dubois,pierre@email.com,555-0110,Paris,France`;
     await execCommand(`sheet remove -n "${importTabName}"`, undefined, 15000, testHomeDir);
   }, 75000);
 
+  it('should infer numeric CSV values by default when importing', async () => {
+    const csvFile = path.join(tempTestDir, 'import-infer-types.csv');
+    const csvContent = `Count,Code
+1,001`;
+
+    fs.writeFileSync(csvFile, csvContent);
+
+    const importTabName = `Import-Infer-${Date.now()}`;
+
+    await execCommand(`sheet add -n "${importTabName}"`, undefined, 15000, testHomeDir);
+
+    const importResult = await execCommand(
+      `sheet import -n "${importTabName}" -f "${csvFile}"`,
+      undefined,
+      20000,
+      testHomeDir
+    );
+
+    expect(importResult.exitCode).toBe(0);
+
+    await execCommand(`sheet write -n "${importTabName}" -c A3 -v "=ISNUMBER(A2)"`, undefined, 15000, testHomeDir);
+    await execCommand(`sheet write -n "${importTabName}" -c B3 -v "=ISTEXT(B2)"`, undefined, 15000, testHomeDir);
+
+    const readResult = await execCommand(
+      `sheet read -n "${importTabName}" -r A3:B3 -o csv`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(readResult.stdout).toContain('TRUE,TRUE');
+
+    await execCommand(`sheet remove -n "${importTabName}"`, undefined, 15000, testHomeDir);
+  }, 75000);
+
+  it('should keep CSV values as text when type inference is disabled', async () => {
+    const csvFile = path.join(tempTestDir, 'import-no-infer-types.csv');
+    fs.writeFileSync(csvFile, 'Count\n1');
+
+    const importTabName = `Import-No-Infer-${Date.now()}`;
+
+    await execCommand(`sheet add -n "${importTabName}"`, undefined, 15000, testHomeDir);
+
+    const importResult = await execCommand(
+      `sheet import -n "${importTabName}" -f "${csvFile}" --no-infer-types`,
+      undefined,
+      20000,
+      testHomeDir
+    );
+
+    expect(importResult.exitCode).toBe(0);
+
+    await execCommand(`sheet write -n "${importTabName}" -c A3 -v "=ISTEXT(A2)"`, undefined, 15000, testHomeDir);
+
+    const readResult = await execCommand(
+      `sheet read -n "${importTabName}" -r A3:A3 -o csv`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(readResult.stdout).toContain('TRUE');
+
+    await execCommand(`sheet remove -n "${importTabName}"`, undefined, 15000, testHomeDir);
+  }, 75000);
+
   it('should handle non-existent CSV file gracefully', async () => {
     const nonExistentFile = path.join(tempTestDir, 'does-not-exist.csv');
 
