@@ -9,7 +9,7 @@ export function columnLetterToNumber(colLetter: string): number {
   return result - 1;
 }
 
-export function numberToColumnLetter(columnIndex: number): string {
+function numberToColumnLetter(columnIndex: number): string {
   let columnNumber = columnIndex + 1;
   let result = '';
 
