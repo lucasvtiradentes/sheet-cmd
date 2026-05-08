@@ -2,6 +2,7 @@ import { OAuth2Client } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { google } from 'googleapis';
 import type { OAuthCredentials } from '../config/types';
+import { parseCellAddress } from '../utils/cell';
 
 export interface GoogleSheetsConfig {
   spreadsheetId: string;
@@ -193,8 +194,10 @@ export class GoogleSheetsService {
       throw new Error(`Sheet '${sheetName}' not found`);
     }
 
-    const rowCount = values.length;
-    const columnCount = values.reduce((max, row) => Math.max(max, row.length), 0);
+    const [start] = range.split(':');
+    const startAddress = parseCellAddress(start);
+    const rowCount = (startAddress?.rowIndex ?? 0) + values.length;
+    const columnCount = (startAddress?.columnIndex ?? 0) + values.reduce((max, row) => Math.max(max, row.length), 0);
     if (rowCount > sheet.rowCount || columnCount > sheet.columnCount) {
       await sheet.resize({
         rowCount: Math.max(rowCount, sheet.rowCount),
@@ -204,7 +207,7 @@ export class GoogleSheetsService {
 
     await sheet.loadCells(range);
 
-    const [start, end] = range.split(':');
+    const [, end] = range.split(':');
     const startCell = sheet.getCellByA1(start);
     const endCell = sheet.getCellByA1(end);
 

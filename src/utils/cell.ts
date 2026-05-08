@@ -21,3 +21,23 @@ export function numberToColumnLetter(columnIndex: number): string {
 
   return result;
 }
+
+export function parseCellAddress(cell: string): { columnIndex: number; rowIndex: number } | null {
+  const match = cell.match(/^([A-Z]+)(\d+)$/i);
+  if (!match) return null;
+
+  return {
+    columnIndex: columnLetterToNumber(match[1]),
+    rowIndex: parseInt(match[2], 10) - 1
+  };
+}
+
+export function rangeFromStartCell(startCell: string, rowCount: number, columnCount: number): string | null {
+  const parsed = parseCellAddress(startCell);
+  if (!parsed || rowCount < 1 || columnCount < 1) return null;
+
+  const endColumn = numberToColumnLetter(parsed.columnIndex + columnCount - 1);
+  const endRow = parsed.rowIndex + rowCount;
+
+  return `${startCell}:${endColumn}${endRow}`;
+}

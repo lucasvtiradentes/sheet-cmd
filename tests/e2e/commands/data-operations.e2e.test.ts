@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { loadGlobalFixtures } from '../../configs/e2e-global-fixtures';
 import { execCommand } from '../../configs/e2e-test-utils';
@@ -39,6 +41,27 @@ describe('Data Operations E2E', () => {
 
     expect(writeResult.exitCode).toBe(0);
     expect(writeResult.stdout.toLowerCase()).toMatch(/updated|success/);
+  }, 30000);
+
+  it('should write JSON table values starting at a cell', async () => {
+    const valueFile = path.join(testHomeDir, 'cell-start-table.json');
+    fs.writeFileSync(
+      valueFile,
+      JSON.stringify([
+        ['Header A', 'Header B'],
+        ['Value A', 'Value B']
+      ])
+    );
+
+    const writeResult = await execCommand(
+      `sheet write -n "${testTabName}" --initial-cell C10 --value-file "${valueFile}"`,
+      undefined,
+      15000,
+      testHomeDir
+    );
+
+    expect(writeResult.exitCode).toBe(0);
+    expect(writeResult.stdout).toContain('C10:D11');
   }, 30000);
 
   it('should handle dimension mismatch error', async () => {

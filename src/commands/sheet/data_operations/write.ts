@@ -1,63 +1,105 @@
+import { readFileSync } from 'node:fs';
 import { defineSubCommand, flag } from '../../../cli/define';
 import { getActiveSheetName, getGoogleSheetsService } from '../../../core/command-helpers';
-import { columnLetterToNumber } from '../../../utils/cell';
+import { columnLetterToNumber, rangeFromStartCell } from '../../../utils/cell';
 import { Logger } from '../../../utils/logger';
+
+type CellValue = string | number;
+
+function parseJsonTable(value: string): CellValue[][] | null {
+  if (!value.trim().startsWith('[')) return null;
+
+  try {
+    const values = JSON.parse(value);
+    if (!Array.isArray(values) || !Array.isArray(values[0])) {
+      throw new Error('Value must be a 2D array');
+    }
+    return values;
+  } catch (_error) {
+    Logger.error('Invalid JSON array format. Expected 2D array like [["a","b"],["c","d"]]');
+    process.exit(1);
+  }
+}
+
+function parseDelimitedTable(value: string): CellValue[][] {
+  const rows = value.split(';').map((row) => row.trim());
+  return rows.map((row) =>
+    row.split(',').map((cell) => {
+      const trimmed = cell.trim();
+      const numericValue = trimmed.replace(',', '.');
+      if (!Number.isNaN(Number(numericValue)) && numericValue !== '') {
+        return Number(numericValue);
+      }
+      return trimmed;
+    })
+  );
+}
 
 export const writeCommand = defineSubCommand({
   name: 'write',
   description: 'Write to a specific cell or range of cells',
   flags: [
     flag.string('--name', 'Tab name (uses active if not provided)', { alias: '-n' }),
-    flag.string('--cell', 'Cell address (e.g., A1) - required if --range not provided', { alias: '-c' }),
+    flag.string('--cell', 'Cell address or table start cell (e.g., A1) - required if --range not provided', {
+      alias: '-c'
+    }),
+    flag.string('--initial-cell', 'Start cell for table values (e.g., A1)'),
     flag.string('--range', 'Range (e.g., A1:B2) - required if --cell not provided', { alias: '-r' }),
-    flag.string('--value', 'Value to write (use , for columns, ; for rows)', { alias: '-v', required: true }),
+    flag.string('--value', 'Value to write (use , for columns, ; for rows)', { alias: '-v' }),
+    flag.string('--value-file', 'Read the value to write from a file'),
     flag.boolean('--no-preserve', 'Overwrite cells with formulas or data validation')
   ],
   errorMessage: 'Failed to write to sheet',
   action: async ({ options }) => {
-    if (!options.cell && !options.range) {
-      Logger.error('Either --cell or --range must be specified');
+    if (!options.cell && !options.initialCell && !options.range) {
+      Logger.error('Either --cell, --initial-cell, or --range must be specified');
       process.exit(1);
     }
 
-    if (options.cell && options.range) {
-      Logger.error('Cannot use both --cell and --range at the same time');
+    const locationCount = [options.cell, options.initialCell, options.range].filter(Boolean).length;
+    if (locationCount > 1) {
+      Logger.error('Use only one of --cell, --initial-cell, or --range');
       process.exit(1);
     }
 
+    if (!options.value && !options.valueFile) {
+      Logger.error('Either --value or --value-file must be specified');
+      process.exit(1);
+    }
+
+    if (options.value && options.valueFile) {
+      Logger.error('Cannot use both --value and --value-file at the same time');
+      process.exit(1);
+    }
+
+    const value = options.valueFile ? readFileSync(options.valueFile, 'utf-8') : options.value;
     const sheetsService = await getGoogleSheetsService();
     const sheetName = getActiveSheetName(options.name);
+    const jsonTable = parseJsonTable(value);
+    const startCell = options.initialCell ?? options.cell;
 
-    if (options.cell) {
-      Logger.loading(`Writing to cell ${options.cell}...`);
-      await sheetsService.writeCell(sheetName, options.cell, options.value);
-      Logger.success(`Cell ${options.cell} updated successfully`);
-    } else if (options.range) {
-      let values: (string | number)[][];
+    if (startCell) {
+      if (jsonTable) {
+        const actualRows = jsonTable.length;
+        const actualCols = jsonTable.reduce((max, row) => Math.max(max, row.length), 0);
+        const range = rangeFromStartCell(startCell, actualRows, actualCols);
 
-      if (options.value.trim().startsWith('[')) {
-        try {
-          values = JSON.parse(options.value);
-          if (!Array.isArray(values) || !Array.isArray(values[0])) {
-            throw new Error('Value must be a 2D array');
-          }
-        } catch (_error) {
-          Logger.error('Invalid JSON array format. Expected 2D array like [["a","b"],["c","d"]]');
+        if (!range) {
+          Logger.error(`Invalid cell address: ${startCell}`);
           process.exit(1);
         }
+
+        const noPreserve = options.preserve === false;
+        Logger.loading(`Writing to range ${range}...`);
+        await sheetsService.writeCellRange(sheetName, range, jsonTable, noPreserve);
+        Logger.success(`Range ${range} updated successfully`);
       } else {
-        const rows = options.value.split(';').map((row) => row.trim());
-        values = rows.map((row) =>
-          row.split(',').map((cell) => {
-            const trimmed = cell.trim();
-            const numericValue = trimmed.replace(',', '.');
-            if (!Number.isNaN(Number(numericValue)) && numericValue !== '') {
-              return Number(numericValue);
-            }
-            return trimmed;
-          })
-        );
+        Logger.loading(`Writing to cell ${startCell}...`);
+        await sheetsService.writeCell(sheetName, startCell, value);
+        Logger.success(`Cell ${startCell} updated successfully`);
       }
+    } else if (options.range) {
+      const values = jsonTable ?? parseDelimitedTable(value);
 
       const rangeParts = options.range.split(':');
       if (rangeParts.length === 2) {
@@ -76,7 +118,7 @@ export const writeCommand = defineSubCommand({
           const expectedCols = columnLetterToNumber(endCol) - columnLetterToNumber(startCol) + 1;
 
           const actualRows = values.length;
-          const actualCols = Math.max(...values.map((row) => row.length));
+          const actualCols = values.reduce((max, row) => Math.max(max, row.length), 0);
 
           if (actualRows !== expectedRows || actualCols !== expectedCols) {
             Logger.error(

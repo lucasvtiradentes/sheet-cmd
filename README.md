@@ -93,7 +93,7 @@ gs sheet add --name <value>
 gs sheet remove [--name <value>]
 gs sheet rename [--name <value>] --new-name <value>
 gs sheet copy [--name <value>] --to <value>
-gs sheet write [--name <value>] [--cell <value>] [--range <value>] --value <value> [--no-preserve]
+gs sheet write [--name <value>] [--cell <value>] [--initial-cell <value>] [--range <value>] [--value <value>] [--value-file <value>] [--no-preserve]
 gs sheet append [--name <value>] --value <value>
 gs sheet import [--name <value>] --file <value> [--skip-header]
 gs sheet export [--name <value>] [--range <value>] --format <value> [--output <value>]
