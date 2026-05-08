@@ -1,5 +1,6 @@
 import { OAuth2Client } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { google } from 'googleapis';
 import type { OAuthCredentials } from '../config/types';
 
 export interface GoogleSheetsConfig {
@@ -10,8 +11,10 @@ export interface GoogleSheetsConfig {
 export class GoogleSheetsService {
   private doc: GoogleSpreadsheet | null = null;
   private auth: OAuth2Client;
+  private credentials: OAuthCredentials;
 
   constructor(private config: GoogleSheetsConfig) {
+    this.credentials = config.oauthCredentials;
     this.auth = new OAuth2Client(config.oauthCredentials.client_id, config.oauthCredentials.client_secret);
 
     this.auth.setCredentials({
@@ -190,6 +193,15 @@ export class GoogleSheetsService {
       throw new Error(`Sheet '${sheetName}' not found`);
     }
 
+    const rowCount = values.length;
+    const columnCount = values.reduce((max, row) => Math.max(max, row.length), 0);
+    if (rowCount > sheet.rowCount || columnCount > sheet.columnCount) {
+      await sheet.resize({
+        rowCount: Math.max(rowCount, sheet.rowCount),
+        columnCount: Math.max(columnCount, sheet.columnCount)
+      });
+    }
+
     await sheet.loadCells(range);
 
     const [start, end] = range.split(':');
@@ -226,6 +238,46 @@ export class GoogleSheetsService {
     }
 
     await sheet.saveUpdatedCells();
+  }
+
+  async writeRawCellRange(sheetName: string, range: string, values: (string | number)[][]): Promise<void> {
+    await this.ensureConnection();
+
+    if (!this.doc) {
+      throw new Error('Failed to connect to Google Sheets');
+    }
+
+    const sheet = this.doc.sheetsByTitle[sheetName];
+    if (!sheet) {
+      throw new Error(`Sheet '${sheetName}' not found`);
+    }
+
+    const rowCount = values.length;
+    const columnCount = values.reduce((max, row) => Math.max(max, row.length), 0);
+    if (rowCount > sheet.rowCount || columnCount > sheet.columnCount) {
+      await sheet.resize({
+        rowCount: Math.max(rowCount, sheet.rowCount),
+        columnCount: Math.max(columnCount, sheet.columnCount)
+      });
+    }
+
+    const googleAuth = new google.auth.OAuth2(this.credentials.client_id, this.credentials.client_secret);
+    googleAuth.setCredentials({
+      access_token: this.credentials.access_token,
+      refresh_token: this.credentials.refresh_token,
+      expiry_date: this.credentials.expiry_date
+    });
+
+    const sheets = google.sheets({ version: 'v4', auth: googleAuth });
+    const escapedSheetName = sheetName.replace(/'/g, "''");
+    await sheets.spreadsheets.values.update({
+      spreadsheetId: this.config.spreadsheetId,
+      range: `'${escapedSheetName}'!${range}`,
+      valueInputOption: 'RAW',
+      requestBody: {
+        values
+      }
+    });
   }
 
   async appendRow(sheetName: string, values: string[]): Promise<void> {

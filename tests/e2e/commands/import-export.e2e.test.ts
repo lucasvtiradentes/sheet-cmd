@@ -115,6 +115,7 @@ Pierre Dubois,pierre@email.com,555-0110,Paris,France`;
 
     expect(importResult.exitCode).toBe(0);
     expect(importResult.stdout.toLowerCase()).toMatch(/imported|success/);
+    expect(importResult.stdout).not.toMatch(/Imported \d+\/\d+ rows/);
 
     await execCommand(`sheet remove -n "${importTabName}"`, undefined, 15000, testHomeDir);
   }, 75000);
