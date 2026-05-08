@@ -16,6 +16,9 @@ export const APP_INFO = {
   version: packageJson.version
 };
 
+export const CLI_BIN_NAMES = [APP_INFO.name, 'gs'];
+export const DEV_CLI_BIN_NAMES = [`${APP_INFO.name}d`, 'gsd'];
+
 export function getProgramName(): string {
   return process.env.SHEET_CMD_PROG_NAME || APP_INFO.name;
 }

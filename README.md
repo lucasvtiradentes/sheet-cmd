@@ -8,7 +8,7 @@
   <div>gsheet</div>
   <!-- </DYNFIELD:HEADER_LOGO> -->
   <br />
-  <a href="#-overview">Overview</a> • <a href="#-motivation">Motivation</a> • <a href="#-features">Features</a> • <a href="#-quick-start">Quick Start</a> • <a href="#-commands">Commands</a> • <a href="#-configuration">Configuration</a> • <a href="#-license">License</a>
+  <a href="#-overview">Overview</a> • <a href="#-motivation">Motivation</a> • <a href="#-features">Features</a> • <a href="#-quick-start">Quick Start</a> • <a href="#-commands">Commands</a> • <a href="#-completion">Completion</a> • <a href="#-configuration">Configuration</a> • <a href="#-license">License</a>
 </div>
 
 <!-- <DYNFIELD:TOP_DIVIDER> -->
@@ -109,14 +109,42 @@ gs completion fish
 ```
 <!-- </DYNFIELD:COMMANDS> -->
 
+## 🧩 Completion
+
+Add completion to your shell config so `gs <tab>` can show available commands, subcommands, and flags.
+
+```sh
+eval "$(gs completion zsh)"
+```
+
+Use `command -v gs >/dev/null 2>&1 && eval "$(gs completion zsh)"` instead if this shell config is shared with machines where `gs` may not be installed.
+
+For the interactive completion menu shown while typing, install the [zsh-autocomplete](https://github.com/marlonrichert/zsh-autocomplete) project. Bash and Fish completion scripts are also available:
+
+```sh
+gs completion bash
+gs completion fish
+```
+
 ## 🛠️ Development
 
-Install the dev CLI once to use `gsheetd` and `gsd` anywhere on your machine while testing local source changes:
+Install the development binaries when you want local code changes to be available from any terminal. This creates `gsheetd` and `gsd`, which run the current workspace version:
 
 ```sh
 pnpm dev:install
 gsheetd --help
 gsd --help
+```
+
+For development autocomplete, follow the Completion section and use the dev binary in your shell config:
+
+```sh
+command -v gsd >/dev/null 2>&1 && eval "$(gsd completion zsh)"
+```
+
+Remove the development binaries when you no longer need them:
+
+```sh
 pnpm dev:uninstall
 ```
 
@@ -125,8 +153,8 @@ pnpm dev:uninstall
 Configuration is stored locally under the app config directory for your OS:
 
 - Linux/WSL: `~/.config/gsheet/`
-- macOS: `~/Library/Preferences/gsheet/`
-- Windows: `%APPDATA%/gsheet/`
+- macOS:     `~/Library/Preferences/gsheet/`
+- Windows:   `%APPDATA%/gsheet/`
 
 OAuth tokens are stored locally and refreshed automatically before expiry.
 

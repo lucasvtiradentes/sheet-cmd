@@ -1,5 +1,5 @@
 import type { Command } from '@caporal/core';
-import { APP_INFO } from '../../config/constants';
+import { CLI_BIN_NAMES, DEV_CLI_BIN_NAMES } from '../../config/constants';
 
 export type CompletionGroup = {
   description?: string;
@@ -23,7 +23,8 @@ export function isVisibleCompletionCommand(command: Command) {
 }
 
 export function getCompletionBinNames(binName: string) {
-  return [...new Set([binName, APP_INFO.name, 'gs'])];
+  const aliases = DEV_CLI_BIN_NAMES.includes(binName) ? DEV_CLI_BIN_NAMES : CLI_BIN_NAMES;
+  return [...new Set([binName, ...aliases])];
 }
 
 export function getRootCommands(commands: Command[]) {
